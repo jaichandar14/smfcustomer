@@ -13,4 +13,196 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="Title" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_16ssp</item>
+        <!--<item name="fontFamily">@font/inter_regular</item>-->
+    </style>
+    <style name="ToolBarTitle" parent="Title">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_14ssp</item>
+        <!--<item name="fontFamily">@font/inter_regular</item>-->
+    </style>
+    <style name="TitleCenter" parent="Title">
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="TitleAccent" parent="Title">
+        <item name="android:textColor">?attr/colorAccent</item>
+    </style>
+
+    <style name="TitleCenterWhite" parent="TitleWhite">
+        <item name="android:textAlignment">center</item>
+    </style>
+    <style name="TitleBlackItalic" parent="Title">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+    <style name="TitlePrimary" parent="Title">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+    <style name="TitleWhite" parent="Title">
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <style name="TitleWhiteItalic" parent="TitleWhite">
+        <item name="android:textStyle">italic</item>
+    </style>
+
+    <style name="SubTitle" parent="Title">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_12ssp</item>
+    </style>
+
+    <style name="SubTitleLight" parent="Title">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/_13ssp</item>
+    </style>
+    <style name="SubTitleCenter" parent="SubTitle">
+        <item name="android:textAlignment">center</item>
+    </style>
+    <style name="SubTitleAccent" parent="SubTitle">
+        <item name="android:textColor">?attr/colorAccent</item>
+    </style>
+    <style name="SubTitleBlackItalic" parent="SubTitle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+    <style name="SubTitleBlackItalicCenter" parent="SubTitleBlackItalic">
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="SubTitlePrimary" parent="SubTitle">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+    <style name="SubSubTitlePrimary" parent="SubTitlePrimary">
+        <item name="android:textSize">@dimen/_10ssp</item>
+    </style>
+    <style name="SubSubTitleAccent" parent="SubSubTitlePrimary">
+        <item name="android:textColor">?attr/colorAccent</item>
+    </style>
+    <style name="SubSubTitle" parent="SubTitle">
+        <item name="android:textSize">@dimen/_10ssp</item>
+    </style>
+
+    <style name="SubSubSubTitle" parent="SubTitle">
+        <item name="android:textSize">@dimen/_8ssp</item>
+    </style>
+    <style name="SubTitleWhite" parent="SubTitle">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="SubTitleWhiteCenter" parent="SubTitleWhite">
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="SubTitleWhiteItalic" parent="SubTitleWhite">
+        <item name="android:textStyle">italic</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.App.CornerSize50Percent" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="button" parent="Widget.AppCompat.Button">
+        <item name="android:minWidth">@dimen/_50sdp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:elevation">@dimen/_2sdp</item>
+        <item name="android:textSize">@dimen/_12ssp</item>
+        <item name="android:gravity">center</item>
+        <!--<item name="fontFamily">@font/inter_regular</item>-->
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+    </style>
+
+
+    <style name="buttonAccent" parent="button">
+        <item name="android:background">?attr/colorAccent</item>
+        <item name="android:paddingStart">@dimen/_4sdp</item>
+        <item name="android:paddingEnd">@dimen/_4sdp</item>
+    </style>
+
+    <style name="buttonPrimary" parent="buttonAccent">
+        <item name="android:background">@color/purple_500</item>
+    </style>
+    <style name="smallButton" parent="Widget.AppCompat.Button.Small">
+        <item name="android:background">?attr/colorAccent</item>
+        <item name="android:minWidth">@dimen/_30sdp</item>
+        <item name="android:elevation">@dimen/_2sdp</item>
+        <item name="android:textSize">@dimen/_10ssp</item>
+    </style>
+    <style name="smallButtonAccent" parent="buttonAccent">
+        <item name="android:background">?attr/colorAccent</item>
+        <item name="android:minWidth">@dimen/_30sdp</item>
+        <item name="android:height">@dimen/_30sdp</item>
+        <item name="android:maxHeight">@dimen/_30sdp</item>
+        <item name="android:elevation">@dimen/_10sdp</item>
+        <item name="android:textSize">@dimen/_10ssp</item>
+    </style>
+
+    <style name="textButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textSize">@dimen/_12ssp</item>
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+        <!--<item name="fontFamily">@font/inter_regular</item>-->
+    </style>
+
+    <style name="textButtonSmall" parent="textButton">
+        <item name="android:textSize">@dimen/_10ssp</item>
+    </style>
+
+    <style name="textButtonBlack" parent="textButton">
+        <item name="android:textColor">@color/black</item>
+        <item name="background">@color/white</item>
+    </style>
+
+    <style name="FabStyle" parent="Widget.Design.FloatingActionButton">
+        <item name="tint">@color/white</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="useCompatPadding">true</item>
+    </style>
+
+    <style name="ToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <!-- Customize color of navigation drawer icon and back arrow -->
+        <item name="colorControlNormal">@color/white</item>
+        <item name="android:titleTextColor">@color/white</item>
+        <item name="android:textSize">@dimen/_12sdp</item>
+        <item name="android:titleTextStyle">@style/SubTitle</item>
+        <!--<item name="fontFamily">@font/inter_regular</item>-->
+        <item name="android:elevation">@dimen/_40sdp</item>
+    </style>
+
+    <style name="AppCardStyle" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/white</item>
+    </style>
+    <style name="SettingCardStyle" parent="AppCardStyle">
+        <item name="cardElevation">@dimen/_1sdp</item>
+        <item name="cardMaxElevation">@dimen/_4sdp</item>
+        <item name="cardPreventCornerOverlap">true</item>
+        <item name="android:layout_marginTop">@dimen/_1sdp</item>
+        <item name="useCompatPadding">true</item>
+        <item name="contentPaddingLeft">@dimen/_10sdp</item>
+        <item name="contentPaddingRight">@dimen/_10sdp</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="rcContact" parent="SettingCardStyle">
+        <item name="useCompatPadding">true</item>
+    </style>
+
+    <style name="BaseSwitch" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:textSize">@dimen/_12ssp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="colorSwitchThumbNormal">@color/grey</item>
+        <item name="android:colorForeground">#42221f1f</item>
+    </style>
+
+    <style name="TextInputOTPLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/purple_500</item>
+        <item name="android:textColorHint">@color/grey</item>
+        <item name="android:layout_margin">@dimen/_2sdp</item>
+    </style>
+    <style name="TextInputLayoutStyle" parent="TextInputOTPLayoutStyle">
+        <item name="boxStrokeColor">@color/purple_500</item>
+        <item name="android:textColorHint">@color/grey</item>
+        <item name="android:layout_margin">@dimen/_12sdp</item>
+    </style>
 </resources>
