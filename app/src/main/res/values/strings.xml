@@ -10,4 +10,14 @@
     <string name="select_reason">Select Reason</string>
     <string name="select_language">Select Language</string>
     <string name="configuration_error_contact_devloper">Configuration error, please contact developer.</string>
+
+    <string name="server_not_found">Server not found</string>
+    <string name="time_out_error">Time out error, try after sometime.</string>
+    <string name="service_not_available">Service not available, try again later.</string>
+    <string name="internal_server_error">Internal server error</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="too_many_request">Too many request, Please try after few seconds.</string>
+    <string name="invalid_credential">Invalid credential</string>
+    <string name="unAuthorised_request">Un Authorised request</string>
+    <string name="login">Login</string>
 </resources>

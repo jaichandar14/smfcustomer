@@ -103,8 +103,8 @@ abstract class BaseViewModel : ViewModel() {
     }
 */
     fun prepareRequest(requestDTO: RequestDTO): RequestDTO {
-        requestDTO.accessToken = preferenceHelper[SharedPrefConstant.ACCESS_TOKEN, ""]
-        requestDTO.appKey = BuildConfig.MY_APP_KEY
+        //requestDTO.accessToken = preferenceHelper[SharedPrefConstant.ACCESS_TOKEN, ""]
+        //requestDTO.appKey = BuildConfig.MY_APP_KEY
         return requestDTO
     }
 

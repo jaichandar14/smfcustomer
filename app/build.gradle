@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "com.smf.customer"
-        minSdk 21
+        minSdk 23
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -74,4 +74,7 @@ dependencies {
     // For DP and SP
     implementation 'com.intuit.sdp:sdp-android:1.1.0'
     implementation 'com.intuit.ssp:ssp-android:1.0.6'
+
+    // Firebase
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.1'
 }

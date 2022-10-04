@@ -19,4 +19,6 @@ object SharedPrefConstant {
 
     val LAST_NAME: String
         get() = "LAST_NAME"
+    val USER_ID: String
+        get() = "USER_ID"
 }

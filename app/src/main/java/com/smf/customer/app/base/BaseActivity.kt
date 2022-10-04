@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.smf.customer.R
-import com.smf.customer.SplashActivity
+import com.smf.customer.view.splash.SplashActivity
 import com.smf.customer.app.listener.DialogTwoButtonListener
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
@@ -12,7 +12,6 @@ import com.smf.customer.dialog.DialogConstant
 import com.smf.customer.dialog.TwoButtonDialogFragment
 import com.smf.customer.utility.MyToast
 import com.smf.customer.utility.Util
-import com.smf.customer.view.splash.SplashActivity
 import javax.inject.Inject
 
 abstract class BaseActivity<T:BaseViewModel> : AppActivity(), DialogTwoButtonListener {

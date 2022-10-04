@@ -1,6 +1,6 @@
 package com.smf.customer.di
 
-import com.smf.customer.SplashActivity
+import com.smf.customer.view.splash.SplashActivity
 import com.smf.customer.di.retrofit.NetworkModule
 import com.smf.customer.di.sharedpreference.SharedPreferencesModule
 import dagger.Component
