@@ -49,22 +49,21 @@ class OneInputTwoBtnDialogFragment : BaseDialogFragment() {
     }
 
     override fun setData() {
-        dataBinding.tvTitle.text = requireArguments().getString(KEY_TITLE)
-        dataBinding.tilInput.hint = requireArguments().getString(KEY_INPUT_HINT)
-        dataBinding.etInput.inputType = requireArguments().getInt(KEY_INPUT_TYPE)
-        dataBinding.btnPositive.text = getString(requireArguments().getInt(KEY_POSITIVE))
-        dataBinding.btnNegative.text = getString(requireArguments().getInt(KEY_NEGATIVE))
-
+//        dataBinding.tvTitle.text = requireArguments().getString(KEY_TITLE)
+//        dataBinding.tilInput.hint = requireArguments().getString(KEY_INPUT_HINT)
+//        dataBinding.etInput.inputType = requireArguments().getInt(KEY_INPUT_TYPE)
+//        dataBinding.btnPositive.text = getString(requireArguments().getInt(KEY_POSITIVE))
+//        dataBinding.btnNegative.text = getString(requireArguments().getInt(KEY_NEGATIVE))
     }
 
     override fun setupClickListeners() {
-        dataBinding.btnNegative.setOnClickListener {
-            oneButtonStringParamListener.onPositiveClick(this)
-            dismiss()
-        }
-        dataBinding.btnPositive.setOnClickListener {
-            dismiss()
-            oneButtonStringParamListener.onPositiveClick(dataBinding.etInput.text.toString())
-        }
+//        dataBinding.btnNegative.setOnClickListener {
+//            oneButtonStringParamListener.onPositiveClick(this)
+//            dismiss()
+//        }
+//        dataBinding.btnPositive.setOnClickListener {
+//            dismiss()
+//            oneButtonStringParamListener.onPositiveClick(dataBinding.etInput.text.toString())
+//        }
     }
 }

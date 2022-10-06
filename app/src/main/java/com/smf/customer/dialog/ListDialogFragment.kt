@@ -58,36 +58,35 @@ class ListDialogFragment : BaseDialogFragment(), AdapterOneClickListener {
     }
 
     override fun setData() {
-        dataBinding.clError.visibility = View.GONE
-        dataBinding.rcList.layoutManager = LinearLayoutManager(this.context)
-        dataBinding.rcList.adapter = listItemAdapter
-
-        dataBinding.tvTitle.text = requireArguments().getString(KEY_TITLE)
-        dataBinding.btnPositive.text =
-            getString(requireArguments().getInt(KEY_BUTTON_1))
-        dataBinding.btnNegative.text =
-            getString(requireArguments().getInt(KEY_BUTTON_2))
-        dialogListItemList =
-            requireArguments().getSerializable(KEY_LIST_ITEM) as ArrayList<DialogListItem>
-        listItemAdapter.setDialogListItemList(dialogListItemList)
-
+//        dataBinding.clError.visibility = View.GONE
+//        dataBinding.rcList.layoutManager = LinearLayoutManager(this.context)
+//        dataBinding.rcList.adapter = listItemAdapter
+//
+//        dataBinding.tvTitle.text = requireArguments().getString(KEY_TITLE)
+//        dataBinding.btnPositive.text =
+//            getString(requireArguments().getInt(KEY_BUTTON_1))
+//        dataBinding.btnNegative.text =
+//            getString(requireArguments().getInt(KEY_BUTTON_2))
+//        dialogListItemList =
+//            requireArguments().getSerializable(KEY_LIST_ITEM) as ArrayList<DialogListItem>
+//        listItemAdapter.setDialogListItemList(dialogListItemList)
     }
 
     override fun setupClickListeners() {
-        dataBinding.btnNegative.setOnClickListener {
-            twoButtonListener.onNegativeClick(this)
-        }
-        dataBinding.btnPositive.setOnClickListener {
-            if (mPosition >= 0) {
-                twoButtonListener.onPositiveClick(dialogListItemList[mPosition].id)
-                twoButtonListener.onPositiveClick(this)
-            } else {
-                dataBinding.clError.visibility = View.VISIBLE
-            }
-        }
-        dataBinding.ivClose.setOnClickListener {
-            dataBinding.clError.visibility = View.GONE
-        }
+//        dataBinding.btnNegative.setOnClickListener {
+//            twoButtonListener.onNegativeClick(this)
+//        }
+//        dataBinding.btnPositive.setOnClickListener {
+//            if (mPosition >= 0) {
+//                twoButtonListener.onPositiveClick(dialogListItemList[mPosition].id)
+//                twoButtonListener.onPositiveClick(this)
+//            } else {
+//                dataBinding.clError.visibility = View.VISIBLE
+//            }
+//        }
+//        dataBinding.ivClose.setOnClickListener {
+//            dataBinding.clError.visibility = View.GONE
+//        }
     }
 
     override fun onPause() {

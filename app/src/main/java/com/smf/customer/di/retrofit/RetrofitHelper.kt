@@ -1,5 +1,6 @@
 package com.smf.customer.di.retrofit
 
+import com.smf.customer.BuildConfig
 import com.smf.customer.data.api_service.UserService
 import com.smf.customer.data.repository.UserRepositoryImpl
 import retrofit2.Retrofit
@@ -12,7 +13,7 @@ open class RetrofitHelper
 constructor(private val retrofit: Retrofit.Builder) {
 
     private fun getUserService(): UserService {
-        var retrofitR = retrofit.baseUrl(BuildConfig.BASE_URL).build()
+        val retrofitR = retrofit.baseUrl(BuildConfig.base_url).build()
         return retrofitR.create(UserService::class.java)
     }
 

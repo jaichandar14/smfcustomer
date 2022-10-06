@@ -2,7 +2,6 @@ package com.smf.customer.app.base
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.firebase.functions.FirebaseFunctions
 import com.smf.customer.BuildConfig
 import com.smf.customer.R
 import com.smf.customer.app.constant.AppConstant
