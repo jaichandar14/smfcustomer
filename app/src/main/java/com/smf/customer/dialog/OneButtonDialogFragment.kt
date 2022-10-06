@@ -48,16 +48,15 @@ class OneButtonDialogFragment : BaseDialogFragment() {
     }
 
     override fun setData() {
-        dataBinding.tvTitle.text = requireArguments().getString(KEY_TITLE)
-        dataBinding.tvMessage.text = requireArguments().getString(KEY_SUBTITLE)
-        dataBinding.btnPositive.text = requireArguments().getString(KEY_BUTTON_TEXT)
+//        dataBinding.tvTitle.text = requireArguments().getString(KEY_TITLE)
+//        dataBinding.tvMessage.text = requireArguments().getString(KEY_SUBTITLE)
+//        dataBinding.btnPositive.text = requireArguments().getString(KEY_BUTTON_TEXT)
     }
 
     override fun setupClickListeners() {
-
-        dataBinding.btnPositive.setOnClickListener {
-            oneButtonListener.onPositiveClick(this)
-        }
+//        dataBinding.btnPositive.setOnClickListener {
+//            oneButtonListener.onPositiveClick(this)
+//        }
     }
 
     override fun onPause() {
