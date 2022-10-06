@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+        
+
+    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/rcContact"
+        android:id="@+id/cvBackground"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:tag="layout/layout_dialog_list_item_0">
+
+        <TextView
+            android:id="@+id/tvItem"
+            style="@style/SubTitle"
+            android:padding="@dimen/_4sdp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </androidx.cardview.widget.CardView>
+         

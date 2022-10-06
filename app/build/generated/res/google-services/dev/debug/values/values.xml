@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">341969492657-nn9kcllb2jnc8qcna8c4mg58l2bq84hd.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">341969492657</string>
+    <string name="google_api_key" translatable="false">AIzaSyBXyoH4STL9DpGQmj-oIJEQw4Bvu51rhFM</string>
+    <string name="google_app_id" translatable="false">1:341969492657:android:afcba1fbbc7ba5c31a6090</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBXyoH4STL9DpGQmj-oIJEQw4Bvu51rhFM</string>
+    <string name="google_storage_bucket" translatable="false">festo-for-customer-dev.appspot.com</string>
+    <string name="project_id" translatable="false">festo-for-customer-dev</string>
+</resources>
