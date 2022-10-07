@@ -20,4 +20,5 @@
     <string name="invalid_credential">Invalid credential</string>
     <string name="unAuthorised_request">Un Authorised request</string>
     <string name="login">Login</string>
+    <string name="_androidx_security_master_key_">_androidx_security_master_key_</string>
 </resources>
