@@ -10,4 +10,7 @@
     <color name="browser_actions_bg_grey">#F5F5F5</color>
     <color name="semi_transparent">#D2B5B5B5</color>
     <color name="grey">#1C1C1C</color>
+    // 3246
+    <color name="elephant_black">#3B3B3B</color>
+    <color name="pairing_theme">#FF3577</color>
 </resources>

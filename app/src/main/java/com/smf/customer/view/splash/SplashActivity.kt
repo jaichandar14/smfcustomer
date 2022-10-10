@@ -4,16 +4,18 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import com.smf.customer.R
 import com.smf.customer.app.base.AppActivity
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
-import com.smf.customer.di.DaggerAppComponent
+import com.smf.customer.databinding.ActivityMainBinding
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
-import dagger.android.AndroidInjection
+import com.smf.customer.view.login.LoginActivity
 import javax.inject.Inject
 
 class SplashActivity : AppCompatActivity() {
+    val TAG = this.javaClass.simpleName
 
     companion object {
         fun starter(activity: AppActivity, logout: Boolean = false) {
@@ -26,17 +28,29 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
+    lateinit var binding: ActivityMainBinding
+
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         MyApplication.applicationComponent.inject(this)
-        if (::sharedPrefsHelper.isInitialized){
-            Log.d("TAG", "onCreate: yes")
-        }else{
-            Log.d("TAG", "onCreate: no")
+        if (::sharedPrefsHelper.isInitialized) {
+            Log.d(TAG, "onCreate: yes")
+        } else {
+            Log.d(TAG, "onCreate: no")
+        }
+        // Listener for get Started Button
+        getStartedBtnListener()
+    }
+
+    private fun getStartedBtnListener() {
+        binding.splashBtn.setOnClickListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 }
