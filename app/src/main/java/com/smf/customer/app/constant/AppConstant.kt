@@ -3,6 +3,19 @@ package com.smf.customer.app.constant
 object AppConstant {
     const val AUTHORIZATION = "authorization"
     const val EXTRA = "EXTRA"
+
+    // 3247
+    const val DEV = "dev"
+    const val QA = "qa"
+    const val UAT = "uat"
+    const val ENCODE = "UTF-8"
+    const val EMAIL = "Email"
+    const val MOBILE = "Mobile"
+    const val EVENT_ORGANIZER = "EVENT_ORGANIZER"
+    const val ERROR_MESSAGE = "errorMessage"
+    const val MESSAGE_CODE = "messageCode"
+    const val INVALID_USER = "Invalid User"
+
     // CODE
     val SUCCESS_CODE = 200
     val FORBIDDEN = 403
