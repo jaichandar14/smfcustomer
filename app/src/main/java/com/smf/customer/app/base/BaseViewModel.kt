@@ -2,7 +2,6 @@ package com.smf.customer.app.base
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.smf.customer.BuildConfig
 import com.smf.customer.R
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.app.constant.AppConstant.INTERNAL_SERVER_ERROR_CODE
@@ -15,7 +14,6 @@ import com.smf.customer.app.constant.AppConstant.UNAUTHORISED
 import com.smf.customer.data.model.request.RequestDTO
 import com.smf.customer.data.model.response.ResponseDTO
 import com.smf.customer.di.retrofit.RetrofitHelper
-import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -27,7 +25,6 @@ import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
 import javax.inject.Inject
-
 
 abstract class BaseViewModel : ViewModel() {
     var showLoading = MutableLiveData<Boolean>()
@@ -150,9 +147,11 @@ abstract class BaseViewModel : ViewModel() {
                 else -> {
                     try {
                         val response = throwable.response()!!.errorBody()!!.string()
-                        val jObjError =
-                            JSONObject(response)
-                        if (jObjError["messageCode"] == INTERNAL_SERVER_ERROR_CODE) {
+                        val jObjError = JSONObject(response)
+                        if (jObjError[AppConstant.ERROR_MESSAGE] == AppConstant.INVALID_USER) {
+                            showToastMessage(AppConstant.INVALID_USER)
+                        } else if (jObjError[AppConstant.MESSAGE_CODE] == INTERNAL_SERVER_ERROR_CODE
+                        ) {
                             retryErrorMessage.value = (R.string.internal_server_error)
                         } else {
                             retryErrorMessage.value = (R.string.something_went_wrong)
@@ -193,8 +192,7 @@ abstract class BaseViewModel : ViewModel() {
         showLoading.value = true
         disposables.add(
             observable.value!!.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onSuccess, this::onError)
+                .observeOn(AndroidSchedulers.mainThread()).subscribe(this::onSuccess, this::onError)
         )
     }
 }

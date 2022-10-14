@@ -143,4 +143,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
 
+    // country flag code
+    implementation 'com.hbb20:ccp:2.6.1'
 }
