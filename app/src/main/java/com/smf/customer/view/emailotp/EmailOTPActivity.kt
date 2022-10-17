@@ -1,0 +1,148 @@
+package com.smf.customer.view.emailotp
+
+import android.content.Intent
+import android.os.Bundle
+import android.widget.EditText
+import android.widget.Toast
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
+import com.smf.customer.R
+import com.smf.customer.app.base.BaseActivity
+import com.smf.customer.app.base.MyApplication
+import com.smf.customer.app.constant.AppConstant
+import com.smf.customer.databinding.EmailOtpActivityBinding
+import com.smf.customer.di.sharedpreference.SharedPrefConstant
+import com.smf.customer.di.sharedpreference.SharedPrefsHelper
+import com.smf.customer.utility.MyToast
+import com.smf.customer.view.dashboard.DashBoardActivity
+import com.smf.customer.view.login.LoginActivity
+import javax.inject.Inject
+
+class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.CallBackInterface {
+    private lateinit var mDataBinding: EmailOtpActivityBinding
+    private var userName: String = ""
+    private lateinit var otp0: EditText
+    private lateinit var otp1: EditText
+    private lateinit var otp2: EditText
+    private lateinit var otp3: EditText
+
+    @Inject
+    lateinit var customPinView: CustomPinView
+
+    @Inject
+    lateinit var sharedPrefsHelper: SharedPrefsHelper
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.email_otp_activity)
+        mInitialize()
+        mViewModelMethodCall()
+
+    }
+
+    // 3245 - Initialize method
+    private fun mInitialize() {
+        mDataBinding = DataBindingUtil.setContentView(this, R.layout.email_otp_activity)
+        viewModel = ViewModelProvider(this)[EmailOTPViewModel::class.java]
+        mDataBinding.otpviewmodel = viewModel
+        mDataBinding.otpactivity = this
+        mDataBinding.lifecycleOwner = this@EmailOTPActivity
+        MyApplication.applicationComponent.inject(this)
+        // Initialize CallBackInterface
+        viewModel.setCallBackInterface(this)
+        otp0 = mDataBinding.otp1ed
+        otp1 = mDataBinding.otp2ed
+        otp2 = mDataBinding.otp3ed
+        otp3 = mDataBinding.otp4ed
+    }
+
+    // 3245 -  Method to call the the methods in ViewModel
+    private fun mViewModelMethodCall() {
+        userName = getUserID()
+        customPinView.initializePin(mDataBinding)
+        viewModel.otpTimerValidation(mDataBinding, userName, this)
+
+    }
+
+    // 3245 - When submit button is clicked this method will be called
+    fun submitBtnClicked() {
+        mDataBinding.submitBtn.setOnClickListener {
+            otpValidation(
+                otp0.text.toString(), otp1.text.toString(),
+                otp2.text.toString(), otp3.text.toString()
+            )
+        }
+    }
+    // 3245 - OTP Validation Method
+    private fun otpValidation(
+        otp0: String,
+        otp1: String,
+        otp2: String,
+        otp3: String
+    ): Boolean {
+        return if (otp0.isEmpty()) {
+            viewModel.showToastMessage(AppConstant.ENTER_OTP)
+            false
+        } else {
+            viewModel.AwsAmplify().confirmSignIn(
+                this, otp0 + otp1 + otp2 + otp3
+            )
+            true
+        }
+    }
+
+    override suspend fun callBack(status: String) {
+        when (status) {
+            AppConstant.EMAIL_VERIFIED_TRUE_GOTO_DASHBOARD -> {
+                viewModel.loginUser(true, getUserID())
+            }
+            AppConstant.RESEND_OTP -> {
+                viewModel.otpTimerValidation(
+                    mDataBinding,
+                    userName,
+                    this
+                )
+            }
+            "Move_to_Dashboard" -> {
+                val intent = Intent(this, DashBoardActivity::class.java)
+                startActivity(intent)
+            }
+            "MOVE_TO_SIGNING" -> {
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+            }
+        }
+
+    }
+
+    override fun awsErrorResponse(num: String) {
+        viewModel.loginUser(false, getUserID())
+        if(num.toInt() >= 3) {
+        } else {
+            viewModel.showToastMessage(viewModel.toast)
+        }
+        mDataBinding.otp1ed.text = null
+        mDataBinding.otp3ed.text = null
+        mDataBinding.otp2ed.text = null
+        mDataBinding.otp4ed.text = null
+        mDataBinding.otp1ed.requestFocus()
+
+    }
+
+    override fun showToast(resendRestriction: Int) {
+        if (resendRestriction <= 5) {
+            MyToast.show(this, getString(R.string.otp_sent_to_your_mail), Toast.LENGTH_LONG)
+        } else {
+            MyToast.show(this, getString(R.string.resend_clicked_multiple_time), Toast.LENGTH_LONG)
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    override fun otpValidation(b: Boolean) {
+        MyToast.show(this, AppConstant.ENTER_OTP, Toast.LENGTH_LONG)
+    }
+
+    private fun getUserID(): String {
+        return sharedPrefsHelper[SharedPrefConstant.USER_ID, ""]
+    }
+}

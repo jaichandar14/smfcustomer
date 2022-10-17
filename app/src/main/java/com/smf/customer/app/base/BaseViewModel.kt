@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.smf.customer.R
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.app.constant.AppConstant.INTERNAL_SERVER_ERROR_CODE
+import com.smf.customer.app.constant.AppConstant.NEGATIVE_CODE
 import com.smf.customer.app.constant.AppConstant.NOT_FOUND
 import com.smf.customer.app.constant.AppConstant.SERVICE_UNAVAILABLE
 import com.smf.customer.app.constant.AppConstant.SERVICE_UNAVAILABLE_2
@@ -15,6 +16,7 @@ import com.smf.customer.data.model.request.RequestDTO
 import com.smf.customer.data.model.response.ResponseDTO
 import com.smf.customer.di.retrofit.RetrofitHelper
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
+import com.smf.customer.utility.CustomErrorAPI
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -38,12 +40,17 @@ abstract class BaseViewModel : ViewModel() {
     var isLoading: Boolean = false
     var skip = MutableLiveData<Int>()
     var count = 100
+    var idToken: String = ""
+    var negativeCode = true
 
     @Inject
     lateinit var retrofitHelper: RetrofitHelper
 
     @Inject
     lateinit var preferenceHelper: SharedPrefsHelper
+
+    @Inject
+    lateinit var customErrorAPI: CustomErrorAPI
 
     private var retryDialog = MutableLiveData<Boolean>(false)
 
@@ -59,8 +66,8 @@ abstract class BaseViewModel : ViewModel() {
         return retryDialog.value!!
     }
 
-    val toastMessage = MutableLiveData<String>()
-
+    var toastMessage = MutableLiveData<String>()
+    var toast: String = ""
 
     init {
         showLoading.value = false
@@ -143,6 +150,10 @@ abstract class BaseViewModel : ViewModel() {
                     //getUserToken(preferenceHelper[SharedPrefConstant.USER_ID, ""])
                     logout.value = true
                 }
+                throwable.code() == NEGATIVE_CODE -> {
+                    negativeCode = true
+                    showToastMessage(customErrorAPI.errorMessageFromAPI(throwable as HttpException))
+                }
 
                 else -> {
                     try {
@@ -195,4 +206,12 @@ abstract class BaseViewModel : ViewModel() {
                 .observeOn(AndroidSchedulers.mainThread()).subscribe(this::onSuccess, this::onError)
         )
     }
+
+    data class ErrorResponse(
+        var id: Int,
+        var errorMessage: String,
+        var errorCode: String,
+        var timeStamp: String,
+        var exceptionMessage: String
+    )
 }

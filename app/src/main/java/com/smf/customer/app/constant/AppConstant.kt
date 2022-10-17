@@ -11,7 +11,7 @@ object AppConstant {
     const val ENCODE = "UTF-8"
     const val EMAIL = "Email"
     const val MOBILE = "Mobile"
-    const val EVENT_ORGANIZER = "EVENT_ORGANIZER"
+    const val EVENT_ORGANIZER = "SERVICE_PROVIDER"
     const val ERROR_MESSAGE = "errorMessage"
     const val MESSAGE_CODE = "messageCode"
     const val INVALID_USER = "Invalid User"
@@ -34,4 +34,20 @@ object AppConstant {
     val OTP_EXPIRED = 20025
     val INVALID_OTP = 20026
     val OTP_MATCH_CODE = 20027
+    val NEGATIVE_CODE=500
+
+    // 3245
+    const val INITIAL_TIME = " 00:00"
+    const val RESEND_OTP = "Resend OTP"
+    const val EMAIL_VERIFICATION_CODE_PAGE = "goToEmailVerificationCodePage"
+    const val EMAIL_VERIFIED_TRUE_GOTO_DASHBOARD = "EMailVerifiedTrueGoToDashBoard"
+    const val INVALID_OTP_TEXT = "Invalid Otp"
+    const val FALSE = "false"
+    const val ENTER_OTP = "Enter OTP"
+    const val SIGN_IN_NOT_COMPLETED = "SignInNotCompleted"
+    const val SIGN_IN_COMPLETED_GOTO_DASH_BOARD = "signInCompletedGoToDashBoard"
+    const val BEARER = "Bearer"
+    const val ERROR_CODE_N="ER_022"
+    const val ERROR_CODE= "errorCode"
+
 }
