@@ -15,6 +15,7 @@ object AppConstant {
     const val ERROR_MESSAGE = "errorMessage"
     const val MESSAGE_CODE = "messageCode"
     const val INVALID_USER = "Invalid User"
+    const val INTERNET_ERROR = "InternetError"
 
     // CODE
     val SUCCESS_CODE = 200

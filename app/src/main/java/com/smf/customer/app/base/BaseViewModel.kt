@@ -26,6 +26,7 @@ import org.json.JSONObject
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 abstract class BaseViewModel : ViewModel() {
@@ -121,10 +122,17 @@ abstract class BaseViewModel : ViewModel() {
         with(toastMessage) { setValue(message!!) }
     }
 
+    abstract fun internetAvailabilityVM()
+
     open fun onError(throwable: Throwable) {
         try {
             when {
                 throwable is IOException -> {
+                    when (throwable) {
+                        is UnknownHostException -> {
+                            internetAvailabilityVM()
+                        }
+                    }
                     retryErrorMessage.value = (R.string.time_out_error)
                 }
                 throwable is SocketTimeoutException -> {
@@ -152,7 +160,7 @@ abstract class BaseViewModel : ViewModel() {
                 }
                 throwable.code() == NEGATIVE_CODE -> {
                     negativeCode = true
-                    showToastMessage(customErrorAPI.errorMessageFromAPI(throwable as HttpException))
+                    showToastMessage(customErrorAPI.errorMessageFromAPI(throwable))
                 }
 
                 else -> {

@@ -32,17 +32,24 @@ class LoginActivity : BaseActivity<LoginViewModel>(), LoginViewModel.CallBackInt
         binding.loginViewModel = viewModel
         binding.lifecycleOwner = this@LoginActivity
         MyApplication.applicationComponent.inject(this)
-        // SignIn Button Listener
         // Initialize CallBackInterface
         viewModel.setCallBackInterface(this)
+        // SignIn Button Listener
         signInClicked()
     }
 
     // Method for SignIn Button
     private fun signInClicked() {
         binding.signinbtn.setOnClickListener {
+            if (internetErrorDialog.checkInternetAvailable(this)) {
             signOut()
+            }
         }
+    }
+
+    override fun internetAvailability() {
+        internetErrorDialog.dismissDialog()
+        Log.d(TAG, "internetAvailable: login called")
     }
 
     // 3028 on Close Sign out
@@ -78,13 +85,18 @@ class LoginActivity : BaseActivity<LoginViewModel>(), LoginViewModel.CallBackInt
         super.onBackPressed()
         finish()
     }
+
     override fun callBack(status: String) {
         when (status) {
             AppConstant.SIGN_IN_NOT_COMPLETED -> {
                 val intent = Intent(this, EmailOTPActivity::class.java)
                 startActivity(intent)
+                viewModel.showLoading.value = false
+            }
+            AppConstant.INTERNET_ERROR -> {
+                MyApplication.isInternetConnected = false
+                internetErrorDialog.checkInternetAvailable(this@LoginActivity)
             }
         }
     }
-
 }
