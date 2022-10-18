@@ -23,4 +23,8 @@
     <color name="thumps_up_green">#94DA4E</color>
     <color name="thumbs_down_red">#FF0000</color>
     <color name="theme_header_blue">#556CD4</color>
+    // 3245
+    <color name="buttoncolor">#8D656464</color>
+    <color name="button_blue">#556cd4</color>
+
 </resources>

@@ -110,7 +110,8 @@
                     app:ccp_arrowSize="@dimen/_80sdp"
                     app:ccp_autoDetectCountry="true"
                     app:ccp_showNameCode="true"
-                    app:ccp_textSize="@dimen/_12ssp" />
+                    app:ccp_textSize="@dimen/_12ssp"
+                    tools:ignore="MissingClass" />
 
                 <TextView
                     android:layout_width="wrap_content"

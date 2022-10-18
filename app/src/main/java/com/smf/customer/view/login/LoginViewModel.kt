@@ -1,7 +1,10 @@
 package com.smf.customer.view.login
 
+import android.content.Intent
 import android.util.Log
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.amplifyframework.core.Amplify
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseViewModel
@@ -9,7 +12,12 @@ import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.data.model.response.GetUserDetails
 import com.smf.customer.data.model.response.ResponseDTO
+import com.smf.customer.di.sharedpreference.SharedPrefConstant
+import com.smf.customer.di.sharedpreference.SharedPrefsHelper
+import com.smf.customer.view.emailotp.EmailOTPActivity
 import io.reactivex.Observable
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class LoginViewModel : BaseViewModel() {
 
@@ -61,6 +69,8 @@ class LoginViewModel : BaseViewModel() {
         doNetworkOperation()
     }
 
+    @Inject
+    lateinit var sharedPrefsHelper:SharedPrefsHelper
     override fun onSuccess(responseDTO: ResponseDTO) {
         super.onSuccess(responseDTO)
         Log.d(TAG, "onSuccess: ${(responseDTO as GetUserDetails).data.userName}")
@@ -68,6 +78,8 @@ class LoginViewModel : BaseViewModel() {
         firstName = responseDTO.data.firstName
         emailId = responseDTO.data.email
         if (AppConstant.EVENT_ORGANIZER == responseDTO.data.role) {
+            sharedPrefsHelper.put(SharedPrefConstant.USER_ID,responseDTO.data.userName)
+            showLoading.value=true
             signIn(responseDTO.data.userName)
         } else {
             if (userInfo == AppConstant.EMAIL) {
@@ -82,9 +94,32 @@ class LoginViewModel : BaseViewModel() {
     private fun signIn(userName: String) {
         Amplify.Auth.signIn(userName, null, { result ->
             Log.d(TAG, "signIn: completed")
+            if (result.isSignInComplete) {
+                Log.i(TAG, "Sign in succeeded $result")
+                viewModelScope.launch {
+                    callBackInterface?.callBack("signInCompletedGoToDashBoard")
+                }
+            } else {
+                Log.i(TAG, "Sign in not complete $result")
+                viewModelScope.launch {
+                    callBackInterface?.callBack("SignInNotCompleted")
+                }
+            }
+
         }, {
             Log.e(TAG, "Failed to sign in ${it.cause!!.message!!.split(".")[0]}")
         })
+    }
+    private var callBackInterface: CallBackInterface? = null
+
+    // Initializing CallBack Interface Method
+    fun setCallBackInterface(callback: CallBackInterface) {
+        callBackInterface = callback
+    }
+
+    // CallBackInterface
+    interface CallBackInterface {
+        fun callBack(status: String)
     }
 
 }

@@ -1,5 +1,6 @@
 package com.smf.customer.view.login
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.databinding.DataBindingUtil
@@ -11,12 +12,13 @@ import com.smf.customer.app.base.BaseActivity
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.databinding.ActivityLoginBinding
+import com.smf.customer.view.emailotp.EmailOTPActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
 
-class LoginActivity : BaseActivity<LoginViewModel>() {
+class LoginActivity : BaseActivity<LoginViewModel>(), LoginViewModel.CallBackInterface {
 
     lateinit var binding: ActivityLoginBinding
     private lateinit var mobileNumberWithCountryCode: String
@@ -31,6 +33,8 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
         binding.lifecycleOwner = this@LoginActivity
         MyApplication.applicationComponent.inject(this)
         // SignIn Button Listener
+        // Initialize CallBackInterface
+        viewModel.setCallBackInterface(this)
         signInClicked()
     }
 
@@ -68,6 +72,19 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
         eMail = binding.editTextEmail.text.toString().trim()
         // Validate Mail and phone number
         viewModel.emailAndNumberValidation(phoneNumber, eMail, encodedMobileNo)
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
+    }
+    override fun callBack(status: String) {
+        when (status) {
+            AppConstant.SIGN_IN_NOT_COMPLETED -> {
+                val intent = Intent(this, EmailOTPActivity::class.java)
+                startActivity(intent)
+            }
+        }
     }
 
 }

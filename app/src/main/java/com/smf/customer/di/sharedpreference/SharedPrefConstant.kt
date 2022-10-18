@@ -11,6 +11,12 @@ object SharedPrefConstant {
     val ACCESS_TOKEN : String
         get() = "ACCESS_TOKEN"
 
+    val SP_REG_ID : String
+        get() = "spRegId"
+
+    val ROLE_ID : String
+        get() = "roleId"
+
     val IS_USER_LOGGED_IN: String
         get() = "IS_USER_LOGGED_IN"
 
@@ -19,6 +25,7 @@ object SharedPrefConstant {
 
     val LAST_NAME: String
         get() = "LAST_NAME"
+
     val USER_ID: String
-        get() = "USER_ID"
+        get() = "userId"
 }

@@ -2,8 +2,10 @@ package com.smf.customer.data.repository
 
 import com.smf.customer.data.api_service.UserService
 import com.smf.customer.data.model.request.UserRequestDTO
+import com.smf.customer.data.model.response.GetLoginInfoDTO
 import com.smf.customer.data.model.response.GetUserDetails
 import com.smf.customer.data.model.response.LoginResponseDTO
+import com.smf.customer.data.model.response.OTPValidationResponseDTO
 import io.reactivex.Observable
 import javax.inject.Inject
 
@@ -16,5 +18,16 @@ class UserRepositoryImpl @Inject constructor(userService: UserService) : UserSer
 
     override fun getUserDetails(loginName: String): Observable<GetUserDetails> {
         return mUserService.getUserDetails(loginName).doOnNext { }
+    }
+
+    override fun setOTPValidation(
+        isSuccessful: Boolean,
+        userName: String
+    ): Observable<OTPValidationResponseDTO> {
+        return mUserService.setOTPValidation(isSuccessful, userName).doOnNext {  }
+    }
+
+    override fun getLoginInfo(idToken: String): Observable<GetLoginInfoDTO> {
+        return mUserService.getLoginInfo(idToken).doOnNext {  }
     }
 }
