@@ -2,6 +2,7 @@ package com.smf.customer.view.emailotp
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
@@ -60,7 +61,6 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
         userName = getUserID()
         customPinView.initializePin(mDataBinding)
         viewModel.otpTimerValidation(mDataBinding, userName, this)
-
     }
 
     // 3245 - When submit button is clicked this method will be called
@@ -72,6 +72,7 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
             )
         }
     }
+
     // 3245 - OTP Validation Method
     private fun otpValidation(
         otp0: String,
@@ -116,7 +117,7 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
 
     override fun awsErrorResponse(num: String) {
         viewModel.loginUser(false, getUserID())
-        if(num.toInt() >= 3) {
+        if (num.toInt() >= 3) {
         } else {
             viewModel.showToastMessage(viewModel.toast)
         }

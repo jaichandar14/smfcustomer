@@ -1,8 +1,6 @@
 package com.smf.customer.view.login
 
-import android.content.Intent
 import android.util.Log
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.amplifyframework.core.Amplify
@@ -14,7 +12,6 @@ import com.smf.customer.data.model.response.GetUserDetails
 import com.smf.customer.data.model.response.ResponseDTO
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
-import com.smf.customer.view.emailotp.EmailOTPActivity
 import io.reactivex.Observable
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -70,7 +67,8 @@ class LoginViewModel : BaseViewModel() {
     }
 
     @Inject
-    lateinit var sharedPrefsHelper:SharedPrefsHelper
+    lateinit var sharedPrefsHelper: SharedPrefsHelper
+
     override fun onSuccess(responseDTO: ResponseDTO) {
         super.onSuccess(responseDTO)
         Log.d(TAG, "onSuccess: ${(responseDTO as GetUserDetails).data.userName}")
@@ -78,8 +76,8 @@ class LoginViewModel : BaseViewModel() {
         firstName = responseDTO.data.firstName
         emailId = responseDTO.data.email
         if (AppConstant.EVENT_ORGANIZER == responseDTO.data.role) {
-            sharedPrefsHelper.put(SharedPrefConstant.USER_ID,responseDTO.data.userName)
-            showLoading.value=true
+            sharedPrefsHelper.put(SharedPrefConstant.USER_ID, responseDTO.data.userName)
+            showLoading.value = true
             signIn(responseDTO.data.userName)
         } else {
             if (userInfo == AppConstant.EMAIL) {
@@ -93,23 +91,33 @@ class LoginViewModel : BaseViewModel() {
     // SignIn Method
     private fun signIn(userName: String) {
         Amplify.Auth.signIn(userName, null, { result ->
-            Log.d(TAG, "signIn: completed")
             if (result.isSignInComplete) {
-                Log.i(TAG, "Sign in succeeded $result")
                 viewModelScope.launch {
-                    callBackInterface?.callBack("signInCompletedGoToDashBoard")
+                    callBackInterface?.callBack(AppConstant.SIGN_IN_COMPLETED_GOTO_DASH_BOARD)
                 }
             } else {
-                Log.i(TAG, "Sign in not complete $result")
                 viewModelScope.launch {
-                    callBackInterface?.callBack("SignInNotCompleted")
+                    callBackInterface?.callBack(AppConstant.SIGN_IN_NOT_COMPLETED)
                 }
             }
 
         }, {
-            Log.e(TAG, "Failed to sign in ${it.cause!!.message!!.split(".")[0]}")
+            Log.d(TAG, "Failed to sign in ${it.cause!!.message!!.split(".")[0]}")
+            viewModelScope.launch {
+                val errMsg = it.cause!!.message!!.split(".")[0]
+                if (errMsg == MyApplication.appContext.resources.getString(R.string.CreateAuthChallenge_failed_with_error)) {
+                    showToastMessage(errMsg)
+                } else if (errMsg.contains(MyApplication.appContext.resources.getString(R.string.Failed_to_connect_to_cognito_idp)) ||
+                    errMsg.contains(MyApplication.appContext.resources.getString(R.string.Unable_to_resolve_host))
+                ) {
+                    retryErrorMessage.value = R.string.Internet_error
+                } else {
+                    showToastMessage(errMsg)
+                }
+            }
         })
     }
+
     private var callBackInterface: CallBackInterface? = null
 
     // Initializing CallBack Interface Method

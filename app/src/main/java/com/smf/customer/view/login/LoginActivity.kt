@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.amplifyframework.auth.options.AuthSignOutOptions
 import com.amplifyframework.core.Amplify
@@ -12,6 +13,7 @@ import com.smf.customer.app.base.BaseActivity
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.databinding.ActivityLoginBinding
+import com.smf.customer.dialog.DialogConstant
 import com.smf.customer.view.emailotp.EmailOTPActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,9 +34,9 @@ class LoginActivity : BaseActivity<LoginViewModel>(), LoginViewModel.CallBackInt
         binding.loginViewModel = viewModel
         binding.lifecycleOwner = this@LoginActivity
         MyApplication.applicationComponent.inject(this)
-        // SignIn Button Listener
         // Initialize CallBackInterface
         viewModel.setCallBackInterface(this)
+        // SignIn Button Listener
         signInClicked()
     }
 
@@ -78,11 +80,23 @@ class LoginActivity : BaseActivity<LoginViewModel>(), LoginViewModel.CallBackInt
         super.onBackPressed()
         finish()
     }
+
     override fun callBack(status: String) {
         when (status) {
             AppConstant.SIGN_IN_NOT_COMPLETED -> {
                 val intent = Intent(this, EmailOTPActivity::class.java)
                 startActivity(intent)
+                viewModel.showLoading.value = false
+            }
+        }
+    }
+
+    override fun onPositiveClick(dialogFragment: DialogFragment) {
+        super.onPositiveClick(dialogFragment)
+        when {
+            dialogFragment.tag.equals(DialogConstant.INTERNET_DIALOG) -> {
+                viewModel.hideRetryDialogFlag()
+                signOut()
             }
         }
     }
