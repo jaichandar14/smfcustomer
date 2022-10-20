@@ -25,7 +25,6 @@ class MyApplication : Application() {
     companion object {
         lateinit var appContext: Context
         lateinit var applicationComponent: AppComponent
-        var isInternetConnected: Boolean = false
     }
 
     operator fun get(context: Context): MyApplication {

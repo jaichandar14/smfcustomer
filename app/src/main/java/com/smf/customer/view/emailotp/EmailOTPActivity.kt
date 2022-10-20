@@ -146,9 +146,4 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
     private fun getUserID(): String {
         return sharedPrefsHelper[SharedPrefConstant.USER_ID, ""]
     }
-
-    override fun internetAvailability() {
-        Log.d(TAG, "internetAvailable: email otp called")
-        internetErrorDialog.dismissDialog()
-    }
 }

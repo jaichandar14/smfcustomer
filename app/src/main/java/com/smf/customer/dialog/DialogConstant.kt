@@ -1,7 +1,6 @@
 package com.smf.customer.dialog
 
 
-
 object DialogConstant {
     val RETRY_DIALOG: String
         get() = "RETRY_DIALOG"
@@ -53,4 +52,7 @@ object DialogConstant {
 
     val USER_CONSENT_DIALOG: String
         get() = "USER_CONSENT_DIALOG"
+
+    val INTERNET_DIALOG: String
+        get() = "INTERNET_DIALOG"
 }

@@ -74,7 +74,6 @@ abstract class BaseViewModel : ViewModel() {
         showLoading.value = false
     }
 
-
     /*open fun getUserToken(userId: String) {
 
         if (userId.isBlank()) {
@@ -122,18 +121,18 @@ abstract class BaseViewModel : ViewModel() {
         with(toastMessage) { setValue(message!!) }
     }
 
-    abstract fun internetAvailabilityVM()
-
     open fun onError(throwable: Throwable) {
         try {
             when {
                 throwable is IOException -> {
                     when (throwable) {
                         is UnknownHostException -> {
-                            internetAvailabilityVM()
+                            retryErrorMessage.value = R.string.Internet_error
+                        }
+                        else -> {
+                            retryErrorMessage.value = (R.string.time_out_error)
                         }
                     }
-                    retryErrorMessage.value = (R.string.time_out_error)
                 }
                 throwable is SocketTimeoutException -> {
                     retryErrorMessage.value = (R.string.time_out_error)

@@ -1,65 +1,53 @@
 package com.smf.customer.dialog
 
-//noinspection SuspiciousImport
-import android.R
-import android.app.Dialog
-import android.content.Context
-import android.view.Window
-import android.widget.LinearLayout
-import android.widget.Toast
-import androidx.appcompat.widget.AppCompatButton
-import androidx.fragment.app.DialogFragment
-import com.smf.customer.app.base.MyApplication
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import com.smf.customer.R
+import com.smf.customer.app.base.BaseDialogFragment
+import com.smf.customer.databinding.DialogNoInternetBinding
+import com.smf.customer.listener.DialogTwoButtonListener
 
-class InternetErrorDialog : DialogFragment() {
+class InternetErrorDialog : BaseDialogFragment() {
 
-    var noInternetDialog: Dialog? = null
+    private lateinit var twoButtonListener: DialogTwoButtonListener
+    private lateinit var dataBinding: DialogNoInternetBinding
 
     companion object {
-        var TAG: String = Companion::class.java.simpleName
-        fun newInstance(): InternetErrorDialog {
-            return InternetErrorDialog()
+        fun newInstance(twoButtonListener: DialogTwoButtonListener): InternetErrorDialog {
+            val internetDialog = InternetErrorDialog()
+            internetDialog.twoButtonListener = twoButtonListener
+            return internetDialog
         }
     }
 
-    fun checkInternetAvailable(context: Context): Boolean {
-        return if (!MyApplication.isInternetConnected) {
-            showFullScreenDialog(context)
-            false
-        } else {
-            true
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        dataBinding =
+            DataBindingUtil.inflate(inflater, R.layout.dialog_no_internet, container, false)
+        return dataBinding.root
+    }
+
+    override fun getTheme(): Int {
+        return R.style.FullScreenDialogTheme
+    }
+
+    override fun setData() {}
+
+    override fun setupClickListeners() {
+        dataBinding.btnRetry.setOnClickListener {
+            twoButtonListener.onPositiveClick(this)
         }
     }
 
-    private fun showFullScreenDialog(context: Context) {
-        noInternetDialog = Dialog(context, R.style.Theme)
-        noInternetDialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        noInternetDialog?.setContentView(com.smf.customer.R.layout.dialog_no_internet)
-        noInternetDialog?.setCancelable(false)
-        val window = noInternetDialog?.window
-        window?.setLayout(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.MATCH_PARENT
-        )
-        val retryBtn: AppCompatButton? =
-            noInternetDialog?.findViewById(com.smf.customer.R.id.btn_retry)
-        retryBtn?.setOnClickListener {
-            if (MyApplication.isInternetConnected) {
-                noInternetDialog?.dismiss()
-            } else {
-                Toast.makeText(
-                    context,
-                    com.smf.customer.R.string.Internet_Connection,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-        noInternetDialog?.show()
+    override fun onPause() {
+        super.onPause()
+        dismissAllowingStateLoss()
     }
 
-    fun dismissDialog() {
-        if (noInternetDialog?.isShowing == true) {
-            noInternetDialog?.dismiss()
-        }
-    }
 }

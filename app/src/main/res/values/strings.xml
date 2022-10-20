@@ -63,6 +63,6 @@
     <string name="your_device_is_not_connected_to_internet_please_make_sure_your_connection_is_working">Your device is not connected to internet, Please make sure your connection is working.</string>
     <string name="try_again">Try Again</string>
     <string name="Internet_Connection">Internet Connection is not available. Please check your network connection.</string>
-
+    <string name="Internet_error">Internet error</string>
 
 </resources>

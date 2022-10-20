@@ -180,10 +180,6 @@ class EmailOTPViewModel : BaseViewModel() {
         )
     }
 
-    override fun internetAvailabilityVM() {
-        Log.d(TAG, "internetAvailable: email vm called")
-    }
-
     override fun onError(throwable: Throwable) {
         super.onError(throwable)
         if (negativeCode) {

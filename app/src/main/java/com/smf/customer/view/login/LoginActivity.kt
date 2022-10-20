@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.amplifyframework.auth.options.AuthSignOutOptions
 import com.amplifyframework.core.Amplify
@@ -12,6 +13,7 @@ import com.smf.customer.app.base.BaseActivity
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.databinding.ActivityLoginBinding
+import com.smf.customer.dialog.DialogConstant
 import com.smf.customer.view.emailotp.EmailOTPActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,15 +43,8 @@ class LoginActivity : BaseActivity<LoginViewModel>(), LoginViewModel.CallBackInt
     // Method for SignIn Button
     private fun signInClicked() {
         binding.signinbtn.setOnClickListener {
-            if (internetErrorDialog.checkInternetAvailable(this)) {
             signOut()
-            }
         }
-    }
-
-    override fun internetAvailability() {
-        internetErrorDialog.dismissDialog()
-        Log.d(TAG, "internetAvailable: login called")
     }
 
     // 3028 on Close Sign out
@@ -93,10 +88,17 @@ class LoginActivity : BaseActivity<LoginViewModel>(), LoginViewModel.CallBackInt
                 startActivity(intent)
                 viewModel.showLoading.value = false
             }
-            AppConstant.INTERNET_ERROR -> {
-                MyApplication.isInternetConnected = false
-                internetErrorDialog.checkInternetAvailable(this@LoginActivity)
+        }
+    }
+
+    override fun onPositiveClick(dialogFragment: DialogFragment) {
+        super.onPositiveClick(dialogFragment)
+        when {
+            dialogFragment.tag.equals(DialogConstant.INTERNET_DIALOG) -> {
+                viewModel.hideRetryDialogFlag()
+                signOut()
             }
         }
     }
+
 }

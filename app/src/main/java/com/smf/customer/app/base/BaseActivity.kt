@@ -1,10 +1,10 @@
 package com.smf.customer.app.base
 
-//import com.smf.customer.dialog.TwoButtonDialogFragment
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import com.smf.customer.R
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.dialog.DialogConstant
@@ -21,9 +21,8 @@ abstract class BaseActivity<T : BaseViewModel> : AppActivity(), DialogTwoButtonL
     lateinit var preferenceHelper: SharedPrefsHelper
     var TAG: String = this.javaClass.simpleName
     lateinit var viewModel: T
-
     private lateinit var connectionLiveData: ConnectionLiveData
-    lateinit var internetErrorDialog: InternetErrorDialog
+    private var networkDialog: InternetErrorDialog? = null
 
     open fun observer() {
         viewModel.toastMessage.observe(this) { message ->
@@ -32,7 +31,6 @@ abstract class BaseActivity<T : BaseViewModel> : AppActivity(), DialogTwoButtonL
         viewModel.retryErrorMessage.observe(this) { _ ->
             showRetryDialog()
         }
-
         viewModel.logout.observe(this) { logout ->
             if (logout) {
                 viewModel.preferenceHelper.put(
@@ -46,23 +44,19 @@ abstract class BaseActivity<T : BaseViewModel> : AppActivity(), DialogTwoButtonL
                 SplashActivity.starter(this, logout = true)
             }
         }
-
+        // Observer For Network state
         connectionLiveData.observe(this) { isNetworkAvailable ->
             when (isNetworkAvailable) {
                 true -> {
                     Log.d(TAG, "connect onAvailable: act available $isNetworkAvailable")
-                    MyApplication.isInternetConnected = true
-                    internetAvailability()
+                    networkDialog?.dismiss()
                 }
                 false -> {
                     Log.d(TAG, "connect onAvailable: act not available $isNetworkAvailable")
-                    MyApplication.isInternetConnected = false
                 }
             }
         }
     }
-
-    abstract fun internetAvailability()
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
@@ -76,20 +70,26 @@ abstract class BaseActivity<T : BaseViewModel> : AppActivity(), DialogTwoButtonL
         }
         connectionLiveData = ConnectionLiveData(this)
         observer()
-        // Internet Error Dialog Initialization
-        internetErrorDialog = InternetErrorDialog.newInstance()
     }
 
     open fun showRetryDialog() {
         viewModel.showRetryDialogFlag()
-//        viewModel.retryErrorMessage.value?.let { getString(it) }?.let {
-//            TwoButtonDialogFragment.newInstance(
-//                getString(R.string.retry),
-//                it,
-//                this,
-//                positiveBtn = R.string.retry,
-//            ).show(supportFragmentManager, DialogConstant.RETRY_DIALOG)
-//        }
+        viewModel.retryErrorMessage.value?.let { getString(it) }?.let {
+            when (it) {
+                getString(R.string.Internet_error) -> {
+                    networkDialog = InternetErrorDialog.newInstance(this)
+                    networkDialog!!.show(supportFragmentManager, DialogConstant.INTERNET_DIALOG)
+                }
+                else -> {
+//                    TwoButtonDialogFragment.newInstance(
+//                        getString(R.string.retry),
+//                        it,
+//                        this,
+//                        positiveBtn = R.string.retry,
+//                    ).show(supportFragmentManager, DialogConstant.RETRY_DIALOG)
+                }
+            }
+        }
     }
 
     override fun onNegativeClick(dialogFragment: DialogFragment) {
@@ -114,4 +114,5 @@ abstract class BaseActivity<T : BaseViewModel> : AppActivity(), DialogTwoButtonL
     override fun onDialogDismissed() {
         viewModel.hideRetryDialogFlag()
     }
+
 }

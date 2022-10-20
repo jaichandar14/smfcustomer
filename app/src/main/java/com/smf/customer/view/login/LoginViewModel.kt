@@ -69,11 +69,6 @@ class LoginViewModel : BaseViewModel() {
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
 
-    override fun internetAvailabilityVM() {
-        Log.d(TAG, "internetAvailable:login vm called")
-        callBackInterface?.callBack(AppConstant.INTERNET_ERROR)
-    }
-
     override fun onSuccess(responseDTO: ResponseDTO) {
         super.onSuccess(responseDTO)
         Log.d(TAG, "onSuccess: ${(responseDTO as GetUserDetails).data.userName}")
@@ -107,7 +102,7 @@ class LoginViewModel : BaseViewModel() {
             }
 
         }, {
-            Log.e(TAG, "Failed to sign in ${it.cause!!.message!!.split(".")[0]}")
+            Log.d(TAG, "Failed to sign in ${it.cause!!.message!!.split(".")[0]}")
             viewModelScope.launch {
                 val errMsg = it.cause!!.message!!.split(".")[0]
                 if (errMsg == MyApplication.appContext.resources.getString(R.string.CreateAuthChallenge_failed_with_error)) {
@@ -115,7 +110,7 @@ class LoginViewModel : BaseViewModel() {
                 } else if (errMsg.contains(MyApplication.appContext.resources.getString(R.string.Failed_to_connect_to_cognito_idp)) ||
                     errMsg.contains(MyApplication.appContext.resources.getString(R.string.Unable_to_resolve_host))
                 ) {
-                    callBackInterface?.callBack(AppConstant.INTERNET_ERROR)
+                    retryErrorMessage.value = R.string.Internet_error
                 } else {
                     showToastMessage(errMsg)
                 }
