@@ -2,10 +2,10 @@ package com.smf.customer.view.emailotp
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseActivity
@@ -14,6 +14,7 @@ import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.databinding.EmailOtpActivityBinding
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
+import com.smf.customer.dialog.DialogConstant
 import com.smf.customer.utility.MyToast
 import com.smf.customer.view.dashboard.DashBoardActivity
 import com.smf.customer.view.login.LoginActivity
@@ -65,12 +66,12 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
 
     // 3245 - When submit button is clicked this method will be called
     fun submitBtnClicked() {
-        mDataBinding.submitBtn.setOnClickListener {
-            otpValidation(
-                otp0.text.toString(), otp1.text.toString(),
-                otp2.text.toString(), otp3.text.toString()
-            )
-        }
+        viewModel.showLoading.value = true
+        otpValidation(
+            otp0.text.toString(), otp1.text.toString(),
+            otp2.text.toString(), otp3.text.toString()
+        )
+
     }
 
     // 3245 - OTP Validation Method
@@ -116,24 +117,28 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
     }
 
     override fun awsErrorResponse(num: String) {
-        viewModel.loginUser(false, getUserID())
-        if (num.toInt() >= 3) {
+        if (num == resources.getString(R.string.Failed_to_connect_to_cognito_idp)) {
+            viewModel.retryErrorMessage.value = R.string.Internet_error
         } else {
-            viewModel.showToastMessage(viewModel.toast)
+            viewModel.loginUser(false, getUserID())
+            if (num.toInt() >= 3) {
+            } else {
+                viewModel.showToastMessage(viewModel.toast)
+            }
+            mDataBinding.otp1ed.text = null
+            mDataBinding.otp3ed.text = null
+            mDataBinding.otp2ed.text = null
+            mDataBinding.otp4ed.text = null
+            mDataBinding.otp1ed.requestFocus()
         }
-        mDataBinding.otp1ed.text = null
-        mDataBinding.otp3ed.text = null
-        mDataBinding.otp2ed.text = null
-        mDataBinding.otp4ed.text = null
-        mDataBinding.otp1ed.requestFocus()
-
     }
 
     override fun showToast(resendRestriction: Int) {
         if (resendRestriction <= 5) {
-            MyToast.show(this, getString(R.string.otp_sent_to_your_mail), Toast.LENGTH_LONG)
+            viewModel.showToastMessage(getString(R.string.otp_sent_to_your_mail))
+            viewModel.showLoading.value = false
         } else {
-            MyToast.show(this, getString(R.string.resend_clicked_multiple_time), Toast.LENGTH_LONG)
+            viewModel.showToastMessage(getString(R.string.resend_clicked_multiple_time))
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
@@ -145,5 +150,18 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
 
     private fun getUserID(): String {
         return sharedPrefsHelper[SharedPrefConstant.USER_ID, ""]
+    }
+
+    override fun onPositiveClick(dialogFragment: DialogFragment) {
+        super.onPositiveClick(dialogFragment)
+        when {
+            dialogFragment.tag.equals(DialogConstant.INTERNET_DIALOG) -> {
+                viewModel.hideRetryDialogFlag()
+                viewModel.showLoading.value = true
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+        }
     }
 }

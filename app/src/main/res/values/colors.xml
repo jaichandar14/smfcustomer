@@ -26,5 +26,10 @@
     // 3245
     <color name="buttoncolor">#8D656464</color>
     <color name="button_blue">#556cd4</color>
+    //3262
+    <color name="day_blue">#00D0FF</color>
+    <color name="title_background_blue">#2846B3</color>
+    <color name="light_blue_service_count">#D5F9FF</color>
+    <color name="darkblue_smf_font">#084172</color>
 
 </resources>
