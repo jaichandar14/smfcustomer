@@ -45,13 +45,13 @@ class EmailOTPViewModel : BaseViewModel() {
 
     // 3245 - Android-OTP expires Validation Method
     fun otpTimerValidation(
-        mDataBinding: EmailOtpActivityBinding?, userName: String, context: Context
+        mDataBinding: EmailOtpActivityBinding?, userName: String
     ) {
         var counter = 30
         val countTime: TextView = mDataBinding!!.otpTimer
         mDataBinding.otpResend.setTextColor(
             ContextCompat.getColor(
-                context, R.color.buttoncolor
+                MyApplication.appContext, R.color.buttoncolor
             )
         )
         mDataBinding.otpResend.isClickable = false
@@ -74,13 +74,13 @@ class EmailOTPViewModel : BaseViewModel() {
                 if (resendRestriction <= 6) {
                     mDataBinding.otpResend.setTextColor(
                         ContextCompat.getColor(
-                            context, R.color.button_blue
+                            MyApplication.appContext, R.color.button_blue
                         )
                     )
                     mDataBinding.otpResend.setOnClickListener {
                         showLoading.value=true
                         if (resendRestriction <= 5) {
-                            reSendOTP(userName,context)
+                            reSendOTP(userName)
                         } else {
                             callBackInterface?.showToast(resendRestriction)
                         }
@@ -95,7 +95,7 @@ class EmailOTPViewModel : BaseViewModel() {
 
     // 3245 - Android-OTP expires Validation
     // OTP Resend SignIn Method
-    fun reSendOTP(userName: String, context: Context) {
+    fun reSendOTP(userName: String) {
         Amplify.Auth.signIn(userName, null, {
             Log.d(TAG, "reSendOTP: called code resented successfully")
             viewModelScope.launch {
@@ -108,11 +108,11 @@ class EmailOTPViewModel : BaseViewModel() {
                 viewModelScope.launch {
                     val errMsg = it.cause!!.message!!.split(".")[0]
                     //   toastMessage = errMsg
-                    if (errMsg.contains(context.resources.getString(R.string.Failed_to_connect_to_cognito_idp)) ||
-                        errMsg.contains(context.resources.getString(R.string.Unable_to_resolve_host))
+                    if (errMsg.contains(MyApplication.appContext.resources.getString(R.string.Failed_to_connect_to_cognito_idp)) ||
+                        errMsg.contains(MyApplication.appContext.resources.getString(R.string.Unable_to_resolve_host))
                     ) {
                         showLoading.value = false
-                        callBackInterface!!.awsErrorResponse(context.resources.getString(R.string.Failed_to_connect_to_cognito_idp))
+                        callBackInterface!!.awsErrorResponse(MyApplication.appContext.resources.getString(R.string.Failed_to_connect_to_cognito_idp))
                     } else {
                         showToastMessage(errMsg)
                         callBackInterface!!.awsErrorResponse(num.toString())

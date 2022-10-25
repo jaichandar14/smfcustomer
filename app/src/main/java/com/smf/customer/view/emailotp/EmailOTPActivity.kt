@@ -61,7 +61,7 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
     private fun mViewModelMethodCall() {
         userName = getUserID()
         customPinView.initializePin(mDataBinding)
-        viewModel.otpTimerValidation(mDataBinding, userName, this)
+        viewModel.otpTimerValidation(mDataBinding, userName)
     }
 
     // 3245 - When submit button is clicked this method will be called
@@ -100,8 +100,7 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
             AppConstant.RESEND_OTP -> {
                 viewModel.otpTimerValidation(
                     mDataBinding,
-                    userName,
-                    this
+                    userName
                 )
             }
             "Move_to_Dashboard" -> {
