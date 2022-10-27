@@ -64,5 +64,17 @@
     <string name="try_again">Try Again</string>
     <string name="Internet_Connection">Internet Connection is not available. Please check your network connection.</string>
     <string name="Internet_error">Internet error</string>
+    // 3262
+    <string name="dashboard">Dashboard</string>
+    <string name="event_overview">Event Overview</string>
+    <string name="_4">4</string>
+    <string name="active">Active</string>
+    <string name="my_events">MY EVENTS</string>
+    <string name="_4_active_events">4 active events</string>
+    <string name="feb_20">feb 20</string>
+    <string name="services_status">Services status</string>
+    <string name="upcoming_events">Upcoming events</string>
+    <string name="saraas_birthday">Saraas Birthday</string>
+
 
 </resources>

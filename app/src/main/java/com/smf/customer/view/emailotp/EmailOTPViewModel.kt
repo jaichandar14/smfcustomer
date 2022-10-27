@@ -6,6 +6,7 @@ import android.os.CountDownTimer
 import android.util.Log
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.databinding.BaseObservable
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.amplifyframework.auth.AuthUserAttributeKey
@@ -35,7 +36,7 @@ class EmailOTPViewModel : BaseViewModel() {
     var num = 0
     var resendRestriction = 0
     private var isValid: Boolean = true
-
+    val resendColor = MutableLiveData<Boolean>()
     init {
         MyApplication.applicationComponent.inject(this)
     }
@@ -45,15 +46,11 @@ class EmailOTPViewModel : BaseViewModel() {
 
     // 3245 - Android-OTP expires Validation Method
     fun otpTimerValidation(
-        mDataBinding: EmailOtpActivityBinding?, userName: String, context: Context
+        mDataBinding: EmailOtpActivityBinding?, userName: String
     ) {
         var counter = 30
         val countTime: TextView = mDataBinding!!.otpTimer
-        mDataBinding.otpResend.setTextColor(
-            ContextCompat.getColor(
-                context, R.color.buttoncolor
-            )
-        )
+        resendColor.value=true
         mDataBinding.otpResend.isClickable = false
         object : CountDownTimer(30000, 1000) {
             @SuppressLint("SetTextI18n")
@@ -72,15 +69,11 @@ class EmailOTPViewModel : BaseViewModel() {
                 countTime.text = AppConstant.INITIAL_TIME
 
                 if (resendRestriction <= 6) {
-                    mDataBinding.otpResend.setTextColor(
-                        ContextCompat.getColor(
-                            context, R.color.button_blue
-                        )
-                    )
+                    resendColor.value=false
                     mDataBinding.otpResend.setOnClickListener {
+                        showLoading.value=true
                         if (resendRestriction <= 5) {
                             reSendOTP(userName)
-                            callBackInterface?.showToast(resendRestriction)
                         } else {
                             callBackInterface?.showToast(resendRestriction)
                         }
@@ -99,6 +92,7 @@ class EmailOTPViewModel : BaseViewModel() {
         Amplify.Auth.signIn(userName, null, {
             Log.d(TAG, "reSendOTP: called code resented successfully")
             viewModelScope.launch {
+                callBackInterface?.showToast(resendRestriction)
                 callBackInterface?.callBack(AppConstant.RESEND_OTP)
             }
         },
@@ -107,8 +101,15 @@ class EmailOTPViewModel : BaseViewModel() {
                 viewModelScope.launch {
                     val errMsg = it.cause!!.message!!.split(".")[0]
                     //   toastMessage = errMsg
-                    showToastMessage(errMsg)
-                    callBackInterface!!.awsErrorResponse(num.toString())
+                    if (errMsg.contains(MyApplication.appContext.resources.getString(R.string.Failed_to_connect_to_cognito_idp)) ||
+                        errMsg.contains(MyApplication.appContext.resources.getString(R.string.Unable_to_resolve_host))
+                    ) {
+                        showLoading.value = false
+                        callBackInterface!!.awsErrorResponse(MyApplication.appContext.resources.getString(R.string.Failed_to_connect_to_cognito_idp))
+                    } else {
+                        showToastMessage(errMsg)
+                        callBackInterface!!.awsErrorResponse(num.toString())
+                    }
                 }
             })
     }
@@ -219,11 +220,12 @@ class EmailOTPViewModel : BaseViewModel() {
                             ) == true
                         ) {
                             toast = context.resources.getString(R.string.OTP_is_expired)
-                            // showToastMessage(context.resources.getString(R.string.OTP_is_expired))
                             callBackInterface!!.awsErrorResponse(num.toString())
                         } else if (errMsg.contains(context.resources.getString(R.string.Failed_to_connect_to_cognito_idp)) ||
                             errMsg.contains(context.resources.getString(R.string.Unable_to_resolve_host))
                         ) {
+                            showLoading.value=false
+
                             callBackInterface!!.awsErrorResponse(context.resources.getString(R.string.Failed_to_connect_to_cognito_idp))
                         } else {
                             toast = AppConstant.INVALID_OTP.toString()
@@ -275,7 +277,7 @@ class EmailOTPViewModel : BaseViewModel() {
                         if (errMsg.contains(context.resources.getString(R.string.Unable_to_resolve_host)) ||
                             errMsg.contains(context.resources.getString(R.string.Failed_to_connect_to_cognito_idp))
                         ) {
-                            callBackInterface!!.awsErrorResponse(context.resources.getString(R.string.Failed_to_connect_to_cognito_idp))
+                          callBackInterface!!.awsErrorResponse(context.resources.getString(R.string.Failed_to_connect_to_cognito_idp))
                         } else if (errMsg.contains(context.resources.getString(R.string.Operation_requires_a_signed_in_state))) {
                             callBackInterface!!.awsErrorResponse(context.resources.getString(R.string.Operation_requires_a_signed_in_state))
                         }
