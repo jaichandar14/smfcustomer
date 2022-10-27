@@ -6,6 +6,7 @@ import android.os.CountDownTimer
 import android.util.Log
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.databinding.BaseObservable
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.amplifyframework.auth.AuthUserAttributeKey
@@ -35,7 +36,7 @@ class EmailOTPViewModel : BaseViewModel() {
     var num = 0
     var resendRestriction = 0
     private var isValid: Boolean = true
-
+    val resendColor = MutableLiveData<Boolean>()
     init {
         MyApplication.applicationComponent.inject(this)
     }
@@ -49,11 +50,7 @@ class EmailOTPViewModel : BaseViewModel() {
     ) {
         var counter = 30
         val countTime: TextView = mDataBinding!!.otpTimer
-        mDataBinding.otpResend.setTextColor(
-            ContextCompat.getColor(
-                MyApplication.appContext, R.color.buttoncolor
-            )
-        )
+        resendColor.value=true
         mDataBinding.otpResend.isClickable = false
         object : CountDownTimer(30000, 1000) {
             @SuppressLint("SetTextI18n")
@@ -72,11 +69,7 @@ class EmailOTPViewModel : BaseViewModel() {
                 countTime.text = AppConstant.INITIAL_TIME
 
                 if (resendRestriction <= 6) {
-                    mDataBinding.otpResend.setTextColor(
-                        ContextCompat.getColor(
-                            MyApplication.appContext, R.color.button_blue
-                        )
-                    )
+                    resendColor.value=false
                     mDataBinding.otpResend.setOnClickListener {
                         showLoading.value=true
                         if (resendRestriction <= 5) {
