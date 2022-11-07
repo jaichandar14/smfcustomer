@@ -145,4 +145,9 @@ dependencies {
 
     // country flag code
     implementation 'com.hbb20:ccp:2.6.1'
+
+    // Tabview
+    implementation 'com.google.android.material:material:1.4.0'
+    //noinspection GradleCompatible
+    implementation 'com.android.support:design:23.2.1'
 }

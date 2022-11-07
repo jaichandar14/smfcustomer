@@ -11,6 +11,7 @@ import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.databinding.ActivityMainBinding
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
+import com.smf.customer.view.dashboard.DashBoardActivity
 import com.smf.customer.view.login.LoginActivity
 import javax.inject.Inject
 

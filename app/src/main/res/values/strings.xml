@@ -75,6 +75,12 @@
     <string name="services_status">Services status</string>
     <string name="upcoming_events">Upcoming events</string>
     <string name="saraas_birthday">Saraas Birthday</string>
+    // 3262
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="new_request">New Request</string>
+    <string name="icon">icon</string>
+    <string name="select_your_event">Select your event</string>
+    <string name="next">Next</string>
 
 
 </resources>
