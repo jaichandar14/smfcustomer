@@ -1,5 +1,6 @@
 package com.smf.customer.view.myevents
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.databinding.DataBindingUtil
@@ -11,6 +12,7 @@ import com.smf.customer.R
 import com.smf.customer.app.base.BaseActivity
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.view.dashboard.model.EventStatusDTO
+import com.smf.customer.view.eventDetails.EventDetailsActivity
 import com.smf.customer.view.myevents.Adaptor.MyEventListAdaptor
 
 // 3262
@@ -29,6 +31,11 @@ class MyEventsActivity : BaseActivity<MyEventsViewModel>(),
         mEventOverviewRecycler()
         mAdapterEvent.refreshItems(getMyEvents(), position)
 
+        mDataBinding.appCompatButton.setOnClickListener {
+            val intent = Intent(this, EventDetailsActivity::class.java)
+            intent.putExtra("template", 186)
+            startActivity(intent)
+        }
     }
 
     private fun mInitialize() {
