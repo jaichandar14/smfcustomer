@@ -93,18 +93,18 @@ abstract class BaseActivity<T : BaseViewModel> : AppActivity(), DialogTwoButtonL
     }
 
     override fun onNegativeClick(dialogFragment: DialogFragment) {
-        dialogFragment.dismiss()
         when {
             dialogFragment.tag.equals(DialogConstant.RETRY_DIALOG) -> {
+                dialogFragment.dismiss()
                 viewModel.hideRetryDialogFlag()
             }
         }
     }
 
     override fun onPositiveClick(dialogFragment: DialogFragment) {
-        dialogFragment.dismiss()
         when {
             dialogFragment.tag.equals(DialogConstant.RETRY_DIALOG) -> {
+                dialogFragment.dismiss()
                 viewModel.hideRetryDialogFlag()
                 viewModel.doNetworkOperation()
             }
