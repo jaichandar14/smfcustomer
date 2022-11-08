@@ -11,7 +11,7 @@ object AppConstant {
     const val ENCODE = "UTF-8"
     const val EMAIL = "Email"
     const val MOBILE = "Mobile"
-    const val EVENT_ORGANIZER = "SERVICE_PROVIDER"
+    const val EVENT_ORGANIZER = "EVENT_ORGANIZER"
     const val ERROR_MESSAGE = "errorMessage"
     const val MESSAGE_CODE = "messageCode"
     const val INVALID_USER = "Invalid User"

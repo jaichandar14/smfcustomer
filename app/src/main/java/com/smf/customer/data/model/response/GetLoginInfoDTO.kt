@@ -1,11 +1,11 @@
 package com.smf.customer.data.model.response
 
 data class GetLoginInfoDTO(
-    val data: Datas,
+    val data: GetLoginData?,
     val success: Boolean
 ):ResponseDTO()
 
-data class Datas(
+data class GetLoginData(
     val email: String,
     val firstName: String,
     val isActive: Boolean,
