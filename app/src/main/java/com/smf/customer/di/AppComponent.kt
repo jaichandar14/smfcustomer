@@ -12,6 +12,7 @@ import com.smf.customer.view.eventDetails.EventDetailsViewModel
 import com.smf.customer.view.login.LoginActivity
 import com.smf.customer.view.login.LoginViewModel
 import com.smf.customer.view.myevents.MyEventsActivity
+import com.smf.customer.view.myevents.MyEventsViewModel
 import com.smf.customer.view.splash.SplashActivity
 import dagger.Component
 import javax.inject.Singleton
@@ -29,6 +30,7 @@ interface AppComponent {
     fun inject(viewModel: DashBoardViewModel)
     fun inject(fragment: MainDashBoardFragment)
     fun inject(activity: MyEventsActivity)
+    fun inject(viewModel: MyEventsViewModel)
     fun inject(activity: EventDetailsActivity)
     fun inject(viewModel: EventDetailsViewModel)
 }

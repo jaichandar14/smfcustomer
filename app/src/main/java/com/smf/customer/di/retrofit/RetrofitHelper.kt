@@ -1,7 +1,9 @@
 package com.smf.customer.di.retrofit
 
 import com.smf.customer.BuildConfig
+import com.smf.customer.data.api_service.EventService
 import com.smf.customer.data.api_service.UserService
+import com.smf.customer.data.repository.EventRepositoryImpl
 import com.smf.customer.data.repository.UserRepositoryImpl
 import retrofit2.Retrofit
 import javax.inject.Inject
@@ -19,5 +21,13 @@ constructor(private val retrofit: Retrofit.Builder) {
 
     fun getUserRepository(): UserRepositoryImpl {
         return UserRepositoryImpl(getUserService())
+    }
+
+    private fun getEventService(): EventService {
+        val retrofitR1 = retrofit.baseUrl(BuildConfig.base_url).build()
+        return retrofitR1.create(EventService::class.java)
+    }
+    fun getEventRepository(): EventRepositoryImpl {
+        return EventRepositoryImpl(getEventService())
     }
 }

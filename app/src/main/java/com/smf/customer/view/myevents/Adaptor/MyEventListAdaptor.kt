@@ -16,7 +16,6 @@ import com.smf.customer.view.dashboard.model.EventStatusDTO
 class MyEventListAdaptor : RecyclerView.Adapter<MyEventListAdaptor.MyEventListViewHolder>() {
 
     private var myEventsList = ArrayList<EventStatusDTO>()
-    private var onClickListener: OnServiceClickListener? = null
     var pos: Int? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyEventListViewHolder {
@@ -55,8 +54,6 @@ class MyEventListAdaptor : RecyclerView.Adapter<MyEventListAdaptor.MyEventListVi
                 if (position == 0) {
                     zeroCount += 1
                 }
-                // clickedpos=position
-//                clickedpos=true
                 callBackInterface?.onclick(position)
             }
 

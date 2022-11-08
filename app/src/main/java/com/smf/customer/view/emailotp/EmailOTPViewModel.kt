@@ -5,8 +5,6 @@ import android.content.Context
 import android.os.CountDownTimer
 import android.util.Log
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.databinding.BaseObservable
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.amplifyframework.auth.AuthUserAttributeKey
@@ -37,6 +35,7 @@ class EmailOTPViewModel : BaseViewModel() {
     var resendRestriction = 0
     private var isValid: Boolean = true
     val resendColor = MutableLiveData<Boolean>()
+
     init {
         MyApplication.applicationComponent.inject(this)
     }
@@ -50,7 +49,7 @@ class EmailOTPViewModel : BaseViewModel() {
     ) {
         var counter = 30
         val countTime: TextView = mDataBinding!!.otpTimer
-        resendColor.value=true
+        resendColor.value = true
         mDataBinding.otpResend.isClickable = false
         object : CountDownTimer(30000, 1000) {
             @SuppressLint("SetTextI18n")
@@ -69,9 +68,9 @@ class EmailOTPViewModel : BaseViewModel() {
                 countTime.text = AppConstant.INITIAL_TIME
 
                 if (resendRestriction <= 6) {
-                    resendColor.value=false
+                    resendColor.value = false
                     mDataBinding.otpResend.setOnClickListener {
-                        showLoading.value=true
+                        showLoading.value = true
                         if (resendRestriction <= 5) {
                             reSendOTP(userName)
                         } else {
@@ -105,7 +104,11 @@ class EmailOTPViewModel : BaseViewModel() {
                         errMsg.contains(MyApplication.appContext.resources.getString(R.string.Unable_to_resolve_host))
                     ) {
                         showLoading.value = false
-                        callBackInterface!!.awsErrorResponse(MyApplication.appContext.resources.getString(R.string.Failed_to_connect_to_cognito_idp))
+                        callBackInterface!!.awsErrorResponse(
+                            MyApplication.appContext.resources.getString(
+                                R.string.Failed_to_connect_to_cognito_idp
+                            )
+                        )
                     } else {
                         showToastMessage(errMsg)
                         callBackInterface!!.awsErrorResponse(num.toString())
@@ -167,18 +170,24 @@ class EmailOTPViewModel : BaseViewModel() {
 
     // Method For Set SpRegId And RollID to SharedPreference From Login Api
     private fun setSpRegIdAndRollID(apiResponse: GetLoginInfoDTO) {
-        sharedPrefsHelper.put(
-            SharedPrefConstant.SP_REG_ID,
-            apiResponse.data.spRegId
-        )
-        sharedPrefsHelper.put(
-            SharedPrefConstant.ROLE_ID,
-            apiResponse.data.roleId
-        )
-        sharedPrefsHelper.put(
-            SharedPrefConstant.USER_ID,
-            apiResponse.data.userName
-        )
+        apiResponse.data?.let {
+            sharedPrefsHelper.put(
+                SharedPrefConstant.SP_REG_ID,
+                it.spRegId
+            )
+        }
+        apiResponse.data?.let {
+            sharedPrefsHelper.put(
+                SharedPrefConstant.ROLE_ID,
+                it.roleId
+            )
+        }
+        apiResponse.data?.let {
+            sharedPrefsHelper.put(
+                SharedPrefConstant.USER_ID,
+                it.userName
+            )
+        }
     }
 
     override fun onError(throwable: Throwable) {
@@ -224,7 +233,7 @@ class EmailOTPViewModel : BaseViewModel() {
                         } else if (errMsg.contains(context.resources.getString(R.string.Failed_to_connect_to_cognito_idp)) ||
                             errMsg.contains(context.resources.getString(R.string.Unable_to_resolve_host))
                         ) {
-                            showLoading.value=false
+                            showLoading.value = false
 
                             callBackInterface!!.awsErrorResponse(context.resources.getString(R.string.Failed_to_connect_to_cognito_idp))
                         } else {
@@ -277,7 +286,7 @@ class EmailOTPViewModel : BaseViewModel() {
                         if (errMsg.contains(context.resources.getString(R.string.Unable_to_resolve_host)) ||
                             errMsg.contains(context.resources.getString(R.string.Failed_to_connect_to_cognito_idp))
                         ) {
-                          callBackInterface!!.awsErrorResponse(context.resources.getString(R.string.Failed_to_connect_to_cognito_idp))
+                            callBackInterface!!.awsErrorResponse(context.resources.getString(R.string.Failed_to_connect_to_cognito_idp))
                         } else if (errMsg.contains(context.resources.getString(R.string.Operation_requires_a_signed_in_state))) {
                             callBackInterface!!.awsErrorResponse(context.resources.getString(R.string.Operation_requires_a_signed_in_state))
                         }
