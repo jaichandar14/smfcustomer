@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseActivity
 import com.smf.customer.app.base.MyApplication
+import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.view.dashboard.model.EventStatusDTO
@@ -89,7 +90,8 @@ class MyEventsActivity : BaseActivity<MyEventsViewModel>(),
         if(viewModel.eventClickedPos?.value != null){
             mDataBinding.appCompatButton.setOnClickListener {
                 val intent = Intent(this, EventDetailsActivity::class.java)
-                intent.putExtra(eventTypeList[viewModel.eventClickedPos?.value!!].title, eventTypeList[viewModel.eventClickedPos?.value!!].numberText)
+                intent.putExtra(AppConstant.TITLE, eventTypeList[viewModel.eventClickedPos?.value!!].title)
+                intent.putExtra(AppConstant.TEMPLATE_ID, eventTypeList[viewModel.eventClickedPos?.value!!].numberText)
                 startActivity(intent)
             }
         }else{

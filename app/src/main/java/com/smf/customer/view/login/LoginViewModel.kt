@@ -71,12 +71,17 @@ class LoginViewModel : BaseViewModel() {
 
     override fun onSuccess(responseDTO: ResponseDTO) {
         super.onSuccess(responseDTO)
-        Log.d(TAG, "onSuccess: ${(responseDTO as GetUserDetails).data.userName}")
+        Log.d(TAG, "onSuccess coun: ${(responseDTO as GetUserDetails).data.countryCode}")
         userName = responseDTO.data.userName
         firstName = responseDTO.data.firstName
         emailId = responseDTO.data.email
         if (AppConstant.EVENT_ORGANIZER == responseDTO.data.role) {
             sharedPrefsHelper.put(SharedPrefConstant.USER_ID, responseDTO.data.userName)
+            sharedPrefsHelper.put(SharedPrefConstant.FIRST_NAME, responseDTO.data.firstName)
+            sharedPrefsHelper.put(SharedPrefConstant.LAST_NAME, responseDTO.data.lastName)
+            sharedPrefsHelper.put(SharedPrefConstant.EMAIL_ID, responseDTO.data.email)
+            sharedPrefsHelper.put(SharedPrefConstant.MOBILE_NUMBER, responseDTO.data.mobileNumber)
+            sharedPrefsHelper.put(SharedPrefConstant.COUNTRY_CODE, responseDTO.data.countryCode)
             showLoading.value = true
             signIn(responseDTO.data.userName)
         } else {

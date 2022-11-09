@@ -10,51 +10,53 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseDialogFragment
+import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.app.listener.AdapterOneClickListener
 import com.smf.customer.data.model.dto.QuestionListItem
 import com.smf.customer.databinding.DialogEventQuestionsListBinding
 import com.smf.customer.listener.DialogThreeButtonListener
-import com.smf.customer.view.eventDetails.EventDetailsActivity
 
 class EventQuestionsDialog : BaseDialogFragment(), AdapterOneClickListener {
-
+    var TAG: String = this.javaClass.simpleName
     private lateinit var threeButtonListener: DialogThreeButtonListener
+    private lateinit var eventQuestionsCallback: EventQuestionsCallback
     private lateinit var dataBinding: DialogEventQuestionsListBinding
 
-    var questionList = ArrayList<QuestionListItem>()
-    var listItemAdapter = EventQusListAdapter(this)
+    private var questionList = ArrayList<QuestionListItem>()
+    private var selectedAnswerPositionMap = HashMap<Int, Int>()
+    private var listItemAdapter = EventQusListAdapter(this)
     private var questionNumber: Int = 0
 
     companion object {
         private const val QUS_LIST_ITEM = "QUS_LIST_ITEM"
-
+        private const val SELECTED_ANS_LIST = "SELECTED_ANS_LIST"
+        private const val QUESTION_NUMBER = "QUESTION_NUMBER"
         fun newInstance(
             questionListItem: ArrayList<QuestionListItem>,
-            threeButtonListener: DialogThreeButtonListener
+            selectedAnswerPositionMap: HashMap<Int, Int>,
+            questionNumber: Int,
+            threeButtonListener: DialogThreeButtonListener,
+            eventQuestionsCallback: EventQuestionsCallback
         ): EventQuestionsDialog {
             val args = Bundle()
             args.putSerializable(QUS_LIST_ITEM, questionListItem)
+            args.putSerializable(SELECTED_ANS_LIST, selectedAnswerPositionMap)
+            args.putSerializable(QUESTION_NUMBER, questionNumber)
             val eventQuestionsDialog = EventQuestionsDialog()
             eventQuestionsDialog.arguments = args
             eventQuestionsDialog.isCancelable = false
             eventQuestionsDialog.threeButtonListener = threeButtonListener
-            eventQuestionsDialog.dialogDismissListener = threeButtonListener
+            eventQuestionsDialog.eventQuestionsCallback = eventQuestionsCallback
             return eventQuestionsDialog
         }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        dataBinding =
-            DataBindingUtil.inflate(
-                inflater,
-                R.layout.dialog_event_questions_list,
-                container,
-                false
-            )
+        dataBinding = DataBindingUtil.inflate(
+            inflater, R.layout.dialog_event_questions_list, container, false
+        )
         return dataBinding.root
     }
 
@@ -69,15 +71,18 @@ class EventQuestionsDialog : BaseDialogFragment(), AdapterOneClickListener {
         dataBinding.optionsRecyclerView.layoutManager =
             LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         dataBinding.optionsRecyclerView.adapter = listItemAdapter
-
+        // Setting data for local variables
         questionList =
             requireArguments().getSerializable(QUS_LIST_ITEM) as ArrayList<QuestionListItem>
+        selectedAnswerPositionMap =
+            requireArguments().getSerializable(SELECTED_ANS_LIST) as HashMap<Int, Int>
+        questionNumber = requireArguments().getSerializable(QUESTION_NUMBER) as Int
 
         // Display Initial questions
         // Verify answer selected or not
-        if (EventDetailsActivity.selectedAnswerPositionMap.containsKey(questionNumber)) {
+        if (selectedAnswerPositionMap.containsKey(questionNumber)) {
             // If already answered then send specific position
-            showQuestions(EventDetailsActivity.selectedAnswerPositionMap[questionNumber])
+            showQuestions(selectedAnswerPositionMap[questionNumber])
         } else {
             // display initial question
             showQuestions(null)
@@ -95,7 +100,8 @@ class EventQuestionsDialog : BaseDialogFragment(), AdapterOneClickListener {
             dataBinding.question.text = questionList[questionNumber].question
             listItemAdapter.setDialogListItemList(
                 questionList[questionNumber].choice,
-                selectedPosition
+                selectedPosition,
+                questionList[questionNumber].questionType
             )
             break
         }
@@ -103,17 +109,16 @@ class EventQuestionsDialog : BaseDialogFragment(), AdapterOneClickListener {
 
     override fun setupClickListeners() {
         dataBinding.nextBtn.setOnClickListener {
-            threeButtonListener.onPositiveClick(this)
             // Verify answer selected or not
-            if (EventDetailsActivity.selectedAnswerPositionMap.containsKey(questionNumber)) {
+            if (selectedAnswerPositionMap.containsKey(questionNumber)) {
                 // Increase question number
                 questionNumber += 1
                 // Verify questionNumber is not greater than questionList
                 if (questionNumber < questionList.size) {
                     // Verify question answered or not for send position value
-                    if (EventDetailsActivity.selectedAnswerPositionMap.containsKey(questionNumber)) {
+                    if (selectedAnswerPositionMap.containsKey(questionNumber)) {
                         // If already answered then send specific position
-                        showQuestions(EventDetailsActivity.selectedAnswerPositionMap[questionNumber])
+                        showQuestions(selectedAnswerPositionMap[questionNumber])
                     } else {
                         // If not selected then send null position value
                         showQuestions(null)
@@ -128,13 +133,12 @@ class EventQuestionsDialog : BaseDialogFragment(), AdapterOneClickListener {
         }
 
         dataBinding.previousBtn.setOnClickListener {
-            threeButtonListener.onNegativeClick(this)
             // Decrease question number
             questionNumber -= 1
             if (questionNumber < questionList.size && questionNumber >= 0) {
                 // Send previous question answer position
-                if (EventDetailsActivity.selectedAnswerPositionMap.containsKey(questionNumber)) {
-                    showQuestions(EventDetailsActivity.selectedAnswerPositionMap[questionNumber])
+                if (selectedAnswerPositionMap.containsKey(questionNumber)) {
+                    showQuestions(selectedAnswerPositionMap[questionNumber])
                 }
             } else {
                 questionNumber += 1
@@ -142,22 +146,23 @@ class EventQuestionsDialog : BaseDialogFragment(), AdapterOneClickListener {
         }
 
         dataBinding.cancelBtn.setOnClickListener {
+            // Update button status and current question number
+            eventQuestionsCallback.dialogStatus(
+                dataBinding.cancelBtn.text.toString(),
+                questionNumber
+            )
+            // Update dialog flag
             threeButtonListener.onCancelClick(this)
             this.dismiss()
-//            // Verify answer selected or not
-//            if (EventDetailsActivity.selectedAnswerPositionMap.containsKey(questionNumber)) {
-//                this.dismiss()
-//            } else {
-//                this.dismiss()
-//            }
         }
     }
 
     override fun onOneClick(position: Int) {
-        Log.d("TAG", "onOneClick: $questionNumber $position")
-        // Update Selected answer to EventDetailsActivity
-        EventDetailsActivity.selectedAnswerPositionMap[questionNumber] = position
-
+        Log.d(TAG, "onOneClick: $questionNumber $position")
+        // Update Selected answer inside dialog
+        selectedAnswerPositionMap[questionNumber] = position
+        // Update Selected answer to Activity
+        eventQuestionsCallback.updateSelectedAnswer(questionNumber, position)
         // Method for changing cancel button text
         setCancelBtnText()
     }
@@ -186,13 +191,13 @@ class EventQuestionsDialog : BaseDialogFragment(), AdapterOneClickListener {
     private fun setCancelBtnText() {
         if (questionNumber == questionList.size - 1) {
             // Verify answer selected or not
-            if (EventDetailsActivity.selectedAnswerPositionMap.containsKey(questionNumber)) {
-                dataBinding.cancelBtn.text = "Submit"
+            if (selectedAnswerPositionMap.containsKey(questionNumber)) {
+                dataBinding.cancelBtn.text = AppConstant.SUBMIT
             } else {
-                dataBinding.cancelBtn.text = "Cancel"
+                dataBinding.cancelBtn.text = AppConstant.CANCEL
             }
         } else {
-            dataBinding.cancelBtn.text = "Cancel"
+            dataBinding.cancelBtn.text = AppConstant.CANCEL
         }
     }
 
@@ -204,5 +209,4 @@ class EventQuestionsDialog : BaseDialogFragment(), AdapterOneClickListener {
         window.attributes = params
         dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
-
 }

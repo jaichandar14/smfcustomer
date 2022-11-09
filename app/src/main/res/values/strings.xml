@@ -130,5 +130,7 @@
     <string name="order_requirements">Order requirements</string>
     <string name="want_cake_textview">Want cake? textview</string>
     <string name="cancel">Cancel</string>
+    // 3273
+    <string name="Event_Details">Event Details</string>
 
 </resources>

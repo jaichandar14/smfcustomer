@@ -21,7 +21,8 @@ data class GetUserData(
     var email: String,
     var mobileNumber: String,
     var userStatus: String,
-    var isActive: Boolean
+    var isActive: Boolean,
+    var countryCode: String
 ) : Parcelable
 
 @Parcelize

@@ -2,6 +2,7 @@ package com.smf.customer.view.eventDetails
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
@@ -13,7 +14,11 @@ import com.smf.customer.app.base.BaseActivity
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.data.model.dto.QuestionListItem
+import com.smf.customer.data.model.response.EventQuestionsResponseDTO
 import com.smf.customer.databinding.EventDetailsBinding
+import com.smf.customer.di.sharedpreference.SharedPrefConstant
+import com.smf.customer.di.sharedpreference.SharedPrefsHelper
+import com.smf.customer.dialog.EventQuestionsCallback
 import com.smf.customer.dialog.EventQuestionsDialog
 import com.smf.customer.listener.DialogThreeButtonListener
 import com.smf.customer.utility.DatePicker
@@ -21,14 +26,19 @@ import com.smf.customer.utility.Util
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
-class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeButtonListener {
+class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeButtonListener,
+    EventDetailsViewModel.CallBackInterface, EventQuestionsCallback {
     lateinit var binding: EventDetailsBinding
     private var picker: MaterialDatePicker<Long> = DatePicker.newInstance
     var currentCountryName = ""
+    var token = ""
+
+    @Inject
+    lateinit var sharedPrefsHelper: SharedPrefsHelper
 
     companion object {
-        var selectedAnswerPositionMap = HashMap<Int, Int>()
         val questionListItem = ArrayList<QuestionListItem>()
     }
 
@@ -40,8 +50,10 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         binding.lifecycleOwner = this@EventDetailsActivity
         MyApplication.applicationComponent.inject(this)
         currentCountryName = binding.cppSignIn.defaultCountryName
+        viewModel.setCallBackInterface(this)
         init()
 
+//        viewModel.screenRotationStatus.value = true
 //        var local = (getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager).simCountryIso
 //        val locale = Locale.getDefault()
 //        locale.country
@@ -57,6 +69,16 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         // Verify date picker dialog isVisible
         if (viewModel.isDatePickerDialogVisible()) {
             showDatePickerDialog()
+        }
+        // Check screen rotating
+        if (viewModel.screenRotationStatus.value == false) {
+            // Event Questions Api call
+            viewModel.templateId?.let { viewModel.getEventDetailsQuestions(token, it) }
+        } else {
+            // Set start button visibility when rotating screen
+            if (questionListItem.isEmpty()) {
+                startQuestionsButtonVisibility(false)
+            }
         }
     }
 
@@ -79,78 +101,71 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         onClickStartQuestionBtn()
     }
 
+    override fun updateQuestions(eventQuestionsResponseDTO: EventQuestionsResponseDTO) {
+        if (eventQuestionsResponseDTO.data.questionnaireDtos.isEmpty()) {
+            questionListItem.clear()
+            startQuestionsButtonVisibility(false)
+        } else {
+            startQuestionsButtonVisibility(true)
+            questionListItem.clear()
+            eventQuestionsResponseDTO.data.questionnaireDtos.forEach {
+                questionListItem.add(
+                    QuestionListItem(
+                        it.questionMetadata.question,
+                        it.questionMetadata.choices as ArrayList<String>,
+                        it.questionMetadata.questionType
+                    )
+                )
+            }
+        }
+    }
+
+    override fun onClickNext() {
+//        TODO next grooming tasks
+//        startActivity(Intent(this, DashBoardActivity::class.java))
+    }
+
     private fun onClickStartQuestionBtn() {
         binding.startQusBtn.setOnClickListener {
-            val questions = ArrayList<String>()
-            questions.add("Want cake?")
-            questions.add("Want drink?")
-
-            val choiceList = ArrayList<String>()
-            choiceList.add("Yes")
-            choiceList.add("No")
-
-            val choice = ArrayList<ArrayList<String>>()
-            choice.add(choiceList)
-            choice.add(choiceList)
-
-            Log.d(TAG, "onClickStartQuestionBtn: $questions $choice")
-            questionListItem.clear()
-            questionListItem.add(
-                QuestionListItem("want cake?", choiceList)
-            )
-            questionListItem.add(
-                QuestionListItem("want drink?", choiceList)
-            )
-            questionListItem.add(
-                QuestionListItem("want decoration?", choiceList)
-            )
             showEventQuestionDialog()
         }
     }
 
     private fun showEventQuestionDialog() {
+        Log.d(TAG, "setData: questionNumber ${viewModel.questionNumber}")
         // set dialog flag true
         viewModel.showEventQuestionDialogFlag()
-        EventQuestionsDialog.newInstance(questionListItem, this)
+        EventQuestionsDialog.newInstance(
+            questionListItem,
+            viewModel.selectedAnswerPositionMap, viewModel.questionNumber,
+            this, this
+        )
             .show(supportFragmentManager, AppConstant.EVENT_QUESTIONS_DIALOG)
     }
 
-    override fun onPositiveClick(dialogFragment: DialogFragment) {
-        super.onPositiveClick(dialogFragment)
-        when {
-            dialogFragment.tag.equals(AppConstant.EVENT_QUESTIONS_DIALOG) -> {
-
-            }
-        }
+    override fun updateSelectedAnswer(questionNumber: Int, position: Int) {
+        // Update Selected answer viewModel selectedAnswerPositionMap
+        viewModel.selectedAnswerPositionMap[questionNumber] = position
     }
 
-    override fun onNegativeClick(dialogFragment: DialogFragment) {
-        super.onNegativeClick(dialogFragment)
-        when {
-            dialogFragment.tag.equals(AppConstant.EVENT_QUESTIONS_DIALOG) -> {
-
-            }
+    override fun dialogStatus(status: String, questionNumber: Int) {
+        if (status == AppConstant.SUBMIT) {
+            viewModel.questionStatus = AppConstant.SUBMIT
+        } else {
+            viewModel.questionStatus = AppConstant.CANCEL
         }
+        viewModel.questionNumber = questionNumber
     }
 
     override fun onCancelClick(dialogFragment: DialogFragment) {
-        Log.d(TAG, "eventQuestionDialogLiveData: called onCancelClick")
+        // Update Flag status
         viewModel.hideEventQuestionDialogFlag()
     }
 
-    override fun onDialogDismissed() {
-        Log.d(TAG, "eventQuestionDialogLiveData: called onDialogDismissed")
-        super.onDialogDismissed()
-//        viewModel.hideEventQuestionDialogFlag()
-    }
-
     private fun initializeCurrencyType() {
-        val arrayAdapterCurrency =
-            ArrayAdapter(
-                applicationContext,
-                R.layout.spinner_text_view,
-                viewModel.currencyTypeList
-            )
+        val arrayAdapterCurrency = ArrayAdapter(
+            applicationContext, R.layout.spinner_text_view, viewModel.currencyTypeList
+        )
         binding.currencyType.adapter = arrayAdapterCurrency
     }
 
@@ -182,20 +197,16 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         viewModel.stateList[position].forEach {
             stateListForSpinner.add(it)
         }
-        val arrayAdapterStatesSpinner =
-            ArrayAdapter(
-                applicationContext,
-                R.layout.spinner_text_view,
-                stateListForSpinner
-            )
+        val arrayAdapterStatesSpinner = ArrayAdapter(
+            applicationContext, R.layout.spinner_text_view, stateListForSpinner
+        )
         binding.state.adapter = arrayAdapterStatesSpinner
     }
 
     private fun getCountryAndStateList() {
         val obj = JSONObject(
             Util.getCountriesAndStatesList(
-                this,
-                "countriesAndStateList.json"
+                this, "countriesAndStateList.json"
             )
         )
         val jsonArray = obj.getJSONArray(AppConstant.COUNTRIES)
@@ -281,11 +292,20 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         })
     }
 
+    // Setting Initial User Details to the UI
     private fun setUserDetails() {
-        viewModel.name.value = "vigneshwaran"
-        viewModel.mobileNumber.value = "8667636458"
-        viewModel.emailId.value = "vigneshwaran@gmail.com"
-        binding.cppSignIn.setCountryForPhoneCode(+91)
+        binding.pageTitleText.text =
+            intent.getStringExtra(AppConstant.TITLE) + " " + getString(R.string.Event_Details)
+        token = sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""]
+        viewModel.templateId = intent.getStringExtra(AppConstant.TEMPLATE_ID)?.toInt()
+        viewModel.name.value =
+            sharedPrefsHelper[SharedPrefConstant.FIRST_NAME, ""] + " " +
+                    sharedPrefsHelper[SharedPrefConstant.LAST_NAME, ""]
+        viewModel.emailId.value = sharedPrefsHelper[SharedPrefConstant.EMAIL_ID, ""]
+        val countryCode = sharedPrefsHelper[SharedPrefConstant.COUNTRY_CODE, ""]
+        val mobileNumber = sharedPrefsHelper[SharedPrefConstant.MOBILE_NUMBER, ""]
+        viewModel.mobileNumber.value = mobileNumber.substringAfter(countryCode)
+        binding.cppSignIn.setCountryForPhoneCode(sharedPrefsHelper[SharedPrefConstant.COUNTRY_CODE, 0])
     }
 
     override fun onPause() {
@@ -297,6 +317,27 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         if (picker.isVisible) {
             // Date picker dialog state loss
             picker.dismissAllowingStateLoss()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Update screen rotation status
+        viewModel.screenRotationStatus.value = true
+        Log.d(TAG, "called onDestroy: called")
+    }
+
+    private fun startQuestionsButtonVisibility(status: Boolean) {
+        if (status) {
+            binding.startQusBtn.visibility = View.VISIBLE
+            binding.provideEventDetailsText.visibility = View.VISIBLE
+            binding.hostDetailsSeparator.visibility = View.VISIBLE
+        } else {
+            // Update question answer status
+            viewModel.questionStatus = AppConstant.SUBMIT
+            binding.startQusBtn.visibility = View.GONE
+            binding.provideEventDetailsText.visibility = View.GONE
+            binding.hostDetailsSeparator.visibility = View.GONE
         }
     }
 

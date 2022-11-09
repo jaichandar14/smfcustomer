@@ -12,880 +12,898 @@
             type="com.smf.customer.view.eventDetails.EventDetailsViewModel" />
     </data>
 
-    <ScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:context=".view.eventDetails.EventDetailsActivity">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_10sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:layout_marginEnd="@dimen/_10sdp">
+            android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/page_title_text"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/mulish_bold"
-                android:text="@string/birthday_event_details"
-                android:textColor="@color/gray_text"
-                android:textSize="@dimen/_15ssp"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <TextView
-                android:id="@+id/event_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:fontFamily="@font/mulish_medium"
-                android:text="@string/event"
-                android:textColor="@color/gray_text"
-                android:textSize="@dimen/_12ssp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/page_title_text"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <EditText
-                android:id="@+id/event_name"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_30sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:background="@drawable/event_details_et_background"
-                android:fontFamily="@font/mulish_medium"
-                android:hint="@string/event_name"
-                android:maxLength="32"
-                android:text="@={eventDetailsViewModel.eventName}"
-                android:textCursorDrawable="@drawable/text_cursor"
-                android:textSize="@dimen/_14ssp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/event_text"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <TextView
-                android:id="@+id/event_error"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/mulish_regular"
-                android:text="@string/event_name_is_required"
-                android:textColor="@color/thumbs_down_red"
-                android:textSize="@dimen/_12ssp"
-                android:visibility="@{eventDetailsViewModel.eventNameError.booleanValue ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/event_name"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <TextView
-                android:id="@+id/event_date_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:fontFamily="@font/mulish_medium"
-                android:text="@string/event_date"
-                android:textColor="@color/gray_text"
-                android:textSize="@dimen/_12ssp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/event_error"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/date_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:background="@drawable/event_details_et_background"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/event_date_text"
-                app:layout_constraintVertical_bias="0.0">
-
-                <EditText
-                    android:id="@+id/event_date"
-                    android:layout_width="@dimen/_250sdp"
-                    android:layout_height="@dimen/_30sdp"
-                    android:background="@drawable/event_details_et_background"
-                    android:focusable="false"
-                    android:fontFamily="@font/mulish_medium"
-                    android:hint="@string/choose_here"
-                    android:text="@={eventDetailsViewModel.eventDate}"
-                    android:textCursorDrawable="@drawable/text_cursor"
-                    android:textSize="@dimen/_14ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <ImageView
-                    android:id="@+id/calendar_image"
-                    android:layout_width="@dimen/_28sdp"
-                    android:layout_height="@dimen/_22sdp"
-                    android:src="@drawable/calendar_selector"
-                    app:layout_constraintBottom_toBottomOf="@+id/event_date"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.95"
-                    app:layout_constraintStart_toEndOf="@+id/event_date"
-                    app:layout_constraintTop_toTopOf="@+id/event_date" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <TextView
-                android:id="@+id/event_date_error"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/mulish_regular"
-                android:text="@string/event_the_valid_date"
-                android:textColor="@color/thumbs_down_red"
-                android:textSize="@dimen/_12ssp"
-                android:visibility="@{eventDetailsViewModel.eventDateError.booleanValue ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/date_layout"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <TextView
-                android:id="@+id/Number_of_attendees_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:fontFamily="@font/mulish_medium"
-                android:text="@string/number_of_attendees"
-                android:textColor="@color/gray_text"
-                android:textSize="@dimen/_12ssp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/event_date_error"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <EditText
-                android:id="@+id/number_of_attendees"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_30sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:background="@drawable/event_details_et_background"
-                android:fontFamily="@font/mulish_medium"
-                android:hint="@string/number_of_attendees"
-                android:text="@={eventDetailsViewModel.noOfAttendees}"
-                android:textCursorDrawable="@drawable/text_cursor"
-                android:textSize="@dimen/_14ssp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/Number_of_attendees_text"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <TextView
-                android:id="@+id/number_of_attendees_error"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/mulish_regular"
-                android:text="@string/number_of_attendees_is_required"
-                android:textColor="@color/thumbs_down_red"
-                android:textSize="@dimen/_12ssp"
-                android:visibility="@{eventDetailsViewModel.noOfAttendeesError.booleanValue ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/number_of_attendees"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/estimation_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/number_of_attendees_error">
-
-                <TextView
-                    android:id="@+id/estimated_total_budget_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/mulish_medium"
-                    android:text="@string/estimated_total_budget"
-                    android:textColor="@color/gray_text"
-                    android:textSize="@dimen/_12ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <Spinner
-                    android:id="@+id/currency_type"
-                    android:layout_width="@dimen/_90sdp"
-                    android:layout_height="@dimen/_35sdp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:background="@drawable/corner_radius_spinner"
-                    android:gravity="center"
-                    android:padding="@dimen/_3sdp"
-                    android:popupBackground="@color/white"
-                    android:selectedItemPosition="@={eventDetailsViewModel.currencyPosition}"
-                    android:spinnerMode="dropdown"
-                    android:textSize="@dimen/_12ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/estimated_total_budget_text"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <EditText
-                    android:id="@+id/estimated_total_budget"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/_35sdp"
-                    android:layout_marginStart="@dimen/_10sdp"
-                    android:background="@drawable/event_details_et_background"
-                    android:fontFamily="@font/mulish_medium"
-                    android:hint="@string/amount"
-                    android:inputType="number"
-                    android:text="@={eventDetailsViewModel.totalBudget}"
-                    android:textCursorDrawable="@drawable/text_cursor"
-                    android:textSize="@dimen/_14ssp"
-                    app:layout_constraintBottom_toBottomOf="@+id/currency_type"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/currency_type"
-                    app:layout_constraintTop_toTopOf="@+id/currency_type" />
-
-                <TextView
-                    android:id="@+id/budget_error"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/mulish_regular"
-                    android:gravity="end"
-                    android:text="@string/estimated_budget_is_required"
-                    android:textColor="@color/thumbs_down_red"
-                    android:textSize="@dimen/_12ssp"
-                    android:visibility="@{eventDetailsViewModel.totalBudgetError.booleanValue ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/currency_type"
-                    app:layout_constraintTop_toBottomOf="@+id/estimated_total_budget" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <View
-                android:id="@+id/event_separator"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_2sdp"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:background="@color/black"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/estimation_layout"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <TextView
-                android:id="@+id/venue_details_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:fontFamily="@font/mulish_medium"
-                android:text="@string/venue_details"
-                android:textColor="@color/gray_text"
-                android:textSize="@dimen/_12ssp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/event_separator"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <RadioGroup
-                android:id="@+id/radio_btn_grp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/venue_details_text"
-                app:layout_constraintVertical_bias="0.0">
-
-                <RadioButton
-                    android:id="@+id/i_know_venue_btn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="@color/black"
-                    android:checked="@={eventDetailsViewModel.iKnowVenue}"
-                    android:fontFamily="@font/mulish_medium"
-                    android:text="@string/i_know_my_venue_details"
-                    android:textColor="@color/gray_text"
-                    android:textSize="@dimen/_13ssp" />
-
-                <RadioButton
-                    android:id="@+id/i_select_venue_btn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="@color/black"
-                    android:fontFamily="@font/mulish_medium"
-                    android:text="@string/i_will_be_selecting_venue_in_service_location"
-                    android:textColor="@color/gray_text"
-                    android:textSize="@dimen/_13ssp" />
-
-            </RadioGroup>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/i_know_venue_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="@{eventDetailsViewModel.iKnowVenueLayoutVisibility.booleanValue ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/radio_btn_grp"
                 app:layout_constraintVertical_bias="0.0">
 
                 <TextView
-                    android:id="@+id/address1_text"
+                    android:id="@+id/page_title_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/mulish_medium"
-                    android:text="@string/address_1"
-                    android:textColor="@color/gray_text"
-                    android:textSize="@dimen/_12ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <EditText
-                    android:id="@+id/address_1"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_30sdp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:background="@drawable/event_details_et_background"
-                    android:fontFamily="@font/mulish_medium"
-                    android:hint="@string/address1"
-                    android:text="@={eventDetailsViewModel.address1}"
-                    android:textCursorDrawable="@drawable/text_cursor"
-                    android:textSize="@dimen/_14ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/address1_text"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <TextView
-                    android:id="@+id/address_1_error"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/mulish_regular"
-                    android:text="@string/address_line_1_is_required"
-                    android:textColor="@color/thumbs_down_red"
-                    android:textSize="@dimen/_12ssp"
-                    android:visibility="@{eventDetailsViewModel.address1Error.booleanValue ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/address_1"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <TextView
-                    android:id="@+id/address2_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:fontFamily="@font/mulish_medium"
-                    android:text="@string/address_2"
-                    android:textColor="@color/gray_text"
-                    android:textSize="@dimen/_12ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/address_1_error"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <EditText
-                    android:id="@+id/address_2"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_30sdp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:background="@drawable/event_details_et_background"
-                    android:fontFamily="@font/mulish_medium"
-                    android:hint="@string/address_2"
-                    android:text="@={eventDetailsViewModel.address2}"
-                    android:textCursorDrawable="@drawable/text_cursor"
-                    android:textSize="@dimen/_14ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/address2_text"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <TextView
-                    android:id="@+id/address_2_error"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/mulish_regular"
-                    android:text="@string/address_line_2_is_required"
-                    android:textColor="@color/thumbs_down_red"
-                    android:textSize="@dimen/_12ssp"
-                    android:visibility="@{eventDetailsViewModel.address2Error.booleanValue ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/address_2"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <TextView
-                    android:id="@+id/country_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:fontFamily="@font/mulish_medium"
-                    android:text="@string/country"
-                    android:textColor="@color/gray_text"
-                    android:textSize="@dimen/_12ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/address_2_error"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <Spinner
-                    android:id="@+id/country"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_35sdp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:background="@drawable/corner_radius_spinner"
-                    android:selectedItemPosition="@={eventDetailsViewModel.countryPosition}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/country_text"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <TextView
-                    android:id="@+id/country_error"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/mulish_regular"
-                    android:gravity="end"
-                    android:text="@string/select_the_country"
-                    android:textColor="@color/thumbs_down_red"
-                    android:textSize="@dimen/_12ssp"
-                    android:visibility="@{eventDetailsViewModel.countryPositionError.booleanValue ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/country"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <TextView
-                    android:id="@+id/state_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:fontFamily="@font/mulish_medium"
-                    android:text="@string/state"
-                    android:textColor="@color/gray_text"
-                    android:textSize="@dimen/_12ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/country_error"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <Spinner
-                    android:id="@+id/state"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_35sdp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:background="@drawable/corner_radius_spinner"
-                    android:selectedItemPosition="@={eventDetailsViewModel.statePosition}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/state_text"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <TextView
-                    android:id="@+id/state_error"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/mulish_regular"
-                    android:gravity="end"
-                    android:text="@string/select_the_state"
-                    android:textColor="@color/thumbs_down_red"
-                    android:textSize="@dimen/_12ssp"
-                    android:visibility="@{eventDetailsViewModel.statePositionError.booleanValue ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/state"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <TextView
-                    android:id="@+id/city_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:fontFamily="@font/mulish_medium"
-                    android:text="@string/city"
-                    android:textColor="@color/gray_text"
-                    android:textSize="@dimen/_12ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/state_error"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <EditText
-                    android:id="@+id/city"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_30sdp"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:background="@drawable/event_details_et_background"
-                    android:fontFamily="@font/mulish_medium"
-                    android:hint="@string/city"
-                    android:text="@={eventDetailsViewModel.city}"
-                    android:textCursorDrawable="@drawable/text_cursor"
-                    android:textSize="@dimen/_14ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/city_text"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <TextView
-                    android:id="@+id/city_error"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/mulish_regular"
-                    android:text="@string/city_is_required"
-                    android:textColor="@color/thumbs_down_red"
-                    android:textSize="@dimen/_12ssp"
-                    android:visibility="@{eventDetailsViewModel.cityError.booleanValue ? View.VISIBLE : View.GONE}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/city"
-                    app:layout_constraintVertical_bias="0.0" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <TextView
-                android:id="@+id/zip_code_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:fontFamily="@font/mulish_medium"
-                android:text="@string/zip_code"
-                android:textColor="@color/gray_text"
-                android:textSize="@dimen/_12ssp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/i_know_venue_layout"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <EditText
-                android:id="@+id/zip_code"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_30sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:background="@drawable/event_details_et_background"
-                android:fontFamily="@font/mulish_medium"
-                android:hint="@string/zip_code"
-                android:text="@={eventDetailsViewModel.zipCode}"
-                android:textCursorDrawable="@drawable/text_cursor"
-                android:textSize="@dimen/_14ssp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/zip_code_text"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <TextView
-                android:id="@+id/zip_code_error"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/mulish_regular"
-                android:text="@string/zip_code_is_required"
-                android:textColor="@color/thumbs_down_red"
-                android:textSize="@dimen/_12ssp"
-                android:visibility="@{eventDetailsViewModel.zipCodeError.booleanValue ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/zip_code"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <View
-                android:id="@+id/venue_separator"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_2sdp"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:background="@color/black"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/zip_code_error"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <TextView
-                android:id="@+id/host_details_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:fontFamily="@font/mulish_medium"
-                android:text="@string/host_details"
-                android:textColor="@color/gray_text"
-                android:textSize="@dimen/_12ssp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/venue_separator"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <TextView
-                android:id="@+id/name_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:fontFamily="@font/mulish_medium"
-                android:text="@string/name"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/host_details_text"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <EditText
-                android:id="@+id/name"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_30sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:background="@drawable/event_details_et_background"
-                android:fontFamily="@font/mulish_medium"
-                android:text="@={eventDetailsViewModel.name}"
-                android:textCursorDrawable="@drawable/text_cursor"
-                android:textSize="@dimen/_14ssp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/name_text"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <TextView
-                android:id="@+id/name_error"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/mulish_regular"
-                android:text="@string/name_is_required"
-                android:textColor="@color/thumbs_down_red"
-                android:textSize="@dimen/_12ssp"
-                android:visibility="@{eventDetailsViewModel.nameError.booleanValue ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/name"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <TextView
-                android:id="@+id/mobile_number_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:fontFamily="@font/mulish_medium"
-                android:text="@string/mobile_number"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/name_error"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/mobile_number_layout"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_30sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:background="@drawable/event_details_et_background"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/mobile_number_text"
-                app:layout_constraintVertical_bias="0.0">
-
-                <com.hbb20.CountryCodePicker
-                    android:id="@+id/cppSignIn"
-                    android:layout_width="@dimen/_120sdp"
-                    android:layout_height="match_parent"
                     android:fontFamily="@font/mulish_bold"
-                    android:gravity="center"
-                    app:ccpDialog_backgroundColor="@color/white"
-                    app:ccpDialog_textColor="@color/fade_black"
-                    app:ccp_arrowColor="@color/black"
-                    app:ccp_arrowSize="@dimen/_80sdp"
-                    app:ccp_autoDetectCountry="true"
-                    app:ccp_showNameCode="true"
-                    app:ccp_textSize="@dimen/_12ssp"
+                    android:text="@string/birthday_event_details"
+                    android:textColor="@color/gray_text"
+                    android:textSize="@dimen/_15ssp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="parent"
-                    app:layout_constraintVertical_bias="0.0"
-                    tools:ignore="MissingClass" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/event_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="@font/mulish_medium"
+                    android:text="@string/event"
+                    android:textColor="@color/gray_text"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/page_title_text"
+                    app:layout_constraintVertical_bias="0.0" />
 
                 <EditText
-                    android:id="@+id/mobile_number"
-                    android:layout_width="0dp"
+                    android:id="@+id/event_name"
+                    android:layout_width="match_parent"
                     android:layout_height="@dimen/_30sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
                     android:background="@drawable/event_details_et_background"
                     android:fontFamily="@font/mulish_medium"
-                    android:inputType="number"
-                    android:maxLength="12"
-                    android:text="@={eventDetailsViewModel.mobileNumber}"
+                    android:hint="@string/event_name"
+                    android:maxLength="32"
+                    android:text="@={eventDetailsViewModel.eventName}"
                     android:textCursorDrawable="@drawable/text_cursor"
                     android:textSize="@dimen/_14ssp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/event_text"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/event_error"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/mulish_regular"
+                    android:text="@string/event_name_is_required"
+                    android:textColor="@color/thumbs_down_red"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="@{eventDetailsViewModel.eventNameError.booleanValue ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/event_name"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/event_date_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="@font/mulish_medium"
+                    android:text="@string/event_date"
+                    android:textColor="@color/gray_text"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/event_error"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/date_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="@drawable/event_details_et_background"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/event_date_text"
+                    app:layout_constraintVertical_bias="0.0">
+
+                    <EditText
+                        android:id="@+id/event_date"
+                        android:layout_width="@dimen/_250sdp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:background="@drawable/event_details_et_background"
+                        android:focusable="false"
+                        android:fontFamily="@font/mulish_medium"
+                        android:hint="@string/choose_here"
+                        android:text="@={eventDetailsViewModel.eventDate}"
+                        android:textCursorDrawable="@drawable/text_cursor"
+                        android:textSize="@dimen/_14ssp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <ImageView
+                        android:id="@+id/calendar_image"
+                        android:layout_width="@dimen/_28sdp"
+                        android:layout_height="@dimen/_22sdp"
+                        android:src="@drawable/calendar_selector"
+                        app:layout_constraintBottom_toBottomOf="@+id/event_date"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.95"
+                        app:layout_constraintStart_toEndOf="@+id/event_date"
+                        app:layout_constraintTop_toTopOf="@+id/event_date" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/event_date_error"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/mulish_regular"
+                    android:text="@string/event_the_valid_date"
+                    android:textColor="@color/thumbs_down_red"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="@{eventDetailsViewModel.eventDateError.booleanValue ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/date_layout"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/Number_of_attendees_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="@font/mulish_medium"
+                    android:text="@string/number_of_attendees"
+                    android:textColor="@color/gray_text"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/event_date_error"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <EditText
+                    android:id="@+id/number_of_attendees"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="@drawable/event_details_et_background"
+                    android:fontFamily="@font/mulish_medium"
+                    android:hint="@string/number_of_attendees"
+                    android:text="@={eventDetailsViewModel.noOfAttendees}"
+                    android:textCursorDrawable="@drawable/text_cursor"
+                    android:textSize="@dimen/_14ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/Number_of_attendees_text"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/number_of_attendees_error"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/mulish_regular"
+                    android:text="@string/number_of_attendees_is_required"
+                    android:textColor="@color/thumbs_down_red"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="@{eventDetailsViewModel.noOfAttendeesError.booleanValue ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/number_of_attendees"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/estimation_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/number_of_attendees_error">
+
+                    <TextView
+                        android:id="@+id/estimated_total_budget_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/mulish_medium"
+                        android:text="@string/estimated_total_budget"
+                        android:textColor="@color/gray_text"
+                        android:textSize="@dimen/_12ssp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <Spinner
+                        android:id="@+id/currency_type"
+                        android:layout_width="@dimen/_90sdp"
+                        android:layout_height="@dimen/_35sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:background="@drawable/corner_radius_spinner"
+                        android:gravity="center"
+                        android:padding="@dimen/_3sdp"
+                        android:popupBackground="@color/white"
+                        android:selectedItemPosition="@={eventDetailsViewModel.currencyPosition}"
+                        android:spinnerMode="dropdown"
+                        android:textSize="@dimen/_12ssp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/estimated_total_budget_text"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <EditText
+                        android:id="@+id/estimated_total_budget"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_35sdp"
+                        android:layout_marginStart="@dimen/_10sdp"
+                        android:background="@drawable/event_details_et_background"
+                        android:fontFamily="@font/mulish_medium"
+                        android:hint="@string/amount"
+                        android:inputType="number"
+                        android:text="@={eventDetailsViewModel.totalBudget}"
+                        android:textCursorDrawable="@drawable/text_cursor"
+                        android:textSize="@dimen/_14ssp"
+                        app:layout_constraintBottom_toBottomOf="@+id/currency_type"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/currency_type"
+                        app:layout_constraintTop_toTopOf="@+id/currency_type" />
+
+                    <TextView
+                        android:id="@+id/budget_error"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/mulish_regular"
+                        android:gravity="end"
+                        android:text="@string/estimated_budget_is_required"
+                        android:textColor="@color/thumbs_down_red"
+                        android:textSize="@dimen/_12ssp"
+                        android:visibility="@{eventDetailsViewModel.totalBudgetError.booleanValue ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/currency_type"
+                        app:layout_constraintTop_toBottomOf="@+id/estimated_total_budget" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:id="@+id/event_separator"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_2sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@color/black"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/estimation_layout"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/venue_details_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:fontFamily="@font/mulish_medium"
+                    android:text="@string/venue_details"
+                    android:textColor="@color/gray_text"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/event_separator"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <RadioGroup
+                    android:id="@+id/radio_btn_grp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/venue_details_text"
+                    app:layout_constraintVertical_bias="0.0">
+
+                    <RadioButton
+                        android:id="@+id/i_know_venue_btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/black"
+                        android:checked="@={eventDetailsViewModel.iKnowVenue}"
+                        android:fontFamily="@font/mulish_medium"
+                        android:text="@string/i_know_my_venue_details"
+                        android:textColor="@color/gray_text"
+                        android:textSize="@dimen/_13ssp" />
+
+                    <RadioButton
+                        android:id="@+id/i_select_venue_btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/black"
+                        android:fontFamily="@font/mulish_medium"
+                        android:text="@string/i_will_be_selecting_venue_in_service_location"
+                        android:textColor="@color/gray_text"
+                        android:textSize="@dimen/_13ssp" />
+
+                </RadioGroup>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/i_know_venue_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="@{eventDetailsViewModel.iKnowVenueLayoutVisibility.booleanValue ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/radio_btn_grp"
+                    app:layout_constraintVertical_bias="0.0">
+
+                    <TextView
+                        android:id="@+id/address1_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/mulish_medium"
+                        android:text="@string/address_1"
+                        android:textColor="@color/gray_text"
+                        android:textSize="@dimen/_12ssp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <EditText
+                        android:id="@+id/address_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:background="@drawable/event_details_et_background"
+                        android:fontFamily="@font/mulish_medium"
+                        android:hint="@string/address1"
+                        android:text="@={eventDetailsViewModel.address1}"
+                        android:textCursorDrawable="@drawable/text_cursor"
+                        android:textSize="@dimen/_14ssp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/address1_text"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/address_1_error"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/mulish_regular"
+                        android:text="@string/address_line_1_is_required"
+                        android:textColor="@color/thumbs_down_red"
+                        android:textSize="@dimen/_12ssp"
+                        android:visibility="@{eventDetailsViewModel.address1Error.booleanValue ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/address_1"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/address2_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:fontFamily="@font/mulish_medium"
+                        android:text="@string/address_2"
+                        android:textColor="@color/gray_text"
+                        android:textSize="@dimen/_12ssp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/address_1_error"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <EditText
+                        android:id="@+id/address_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:background="@drawable/event_details_et_background"
+                        android:fontFamily="@font/mulish_medium"
+                        android:hint="@string/address_2"
+                        android:text="@={eventDetailsViewModel.address2}"
+                        android:textCursorDrawable="@drawable/text_cursor"
+                        android:textSize="@dimen/_14ssp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/address2_text"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/address_2_error"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/mulish_regular"
+                        android:text="@string/address_line_2_is_required"
+                        android:textColor="@color/thumbs_down_red"
+                        android:textSize="@dimen/_12ssp"
+                        android:visibility="@{eventDetailsViewModel.address2Error.booleanValue ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/address_2"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/country_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:fontFamily="@font/mulish_medium"
+                        android:text="@string/country"
+                        android:textColor="@color/gray_text"
+                        android:textSize="@dimen/_12ssp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/address_2_error"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <Spinner
+                        android:id="@+id/country"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_35sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:background="@drawable/corner_radius_spinner"
+                        android:selectedItemPosition="@={eventDetailsViewModel.countryPosition}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/country_text"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/country_error"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/mulish_regular"
+                        android:gravity="end"
+                        android:text="@string/select_the_country"
+                        android:textColor="@color/thumbs_down_red"
+                        android:textSize="@dimen/_12ssp"
+                        android:visibility="@{eventDetailsViewModel.countryPositionError.booleanValue ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/country"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/state_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:fontFamily="@font/mulish_medium"
+                        android:text="@string/state"
+                        android:textColor="@color/gray_text"
+                        android:textSize="@dimen/_12ssp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/country_error"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <Spinner
+                        android:id="@+id/state"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_35sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:background="@drawable/corner_radius_spinner"
+                        android:selectedItemPosition="@={eventDetailsViewModel.statePosition}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/state_text"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/state_error"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/mulish_regular"
+                        android:gravity="end"
+                        android:text="@string/select_the_state"
+                        android:textColor="@color/thumbs_down_red"
+                        android:textSize="@dimen/_12ssp"
+                        android:visibility="@{eventDetailsViewModel.statePositionError.booleanValue ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/state"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/city_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:fontFamily="@font/mulish_medium"
+                        android:text="@string/city"
+                        android:textColor="@color/gray_text"
+                        android:textSize="@dimen/_12ssp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/state_error"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <EditText
+                        android:id="@+id/city"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:background="@drawable/event_details_et_background"
+                        android:fontFamily="@font/mulish_medium"
+                        android:hint="@string/city"
+                        android:text="@={eventDetailsViewModel.city}"
+                        android:textCursorDrawable="@drawable/text_cursor"
+                        android:textSize="@dimen/_14ssp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/city_text"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/city_error"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/mulish_regular"
+                        android:text="@string/city_is_required"
+                        android:textColor="@color/thumbs_down_red"
+                        android:textSize="@dimen/_12ssp"
+                        android:visibility="@{eventDetailsViewModel.cityError.booleanValue ? View.VISIBLE : View.GONE}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/city"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/zip_code_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="@font/mulish_medium"
+                    android:text="@string/zip_code"
+                    android:textColor="@color/gray_text"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/i_know_venue_layout"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <EditText
+                    android:id="@+id/zip_code"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="@drawable/event_details_et_background"
+                    android:fontFamily="@font/mulish_medium"
+                    android:hint="@string/zip_code"
+                    android:text="@={eventDetailsViewModel.zipCode}"
+                    android:textCursorDrawable="@drawable/text_cursor"
+                    android:textSize="@dimen/_14ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/zip_code_text"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/zip_code_error"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/mulish_regular"
+                    android:text="@string/zip_code_is_required"
+                    android:textColor="@color/thumbs_down_red"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="@{eventDetailsViewModel.zipCodeError.booleanValue ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/zip_code"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <View
+                    android:id="@+id/venue_separator"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_2sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@color/black"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/zip_code_error"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/host_details_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="@font/mulish_medium"
+                    android:text="@string/host_details"
+                    android:textColor="@color/gray_text"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/venue_separator"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/name_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="@font/mulish_medium"
+                    android:text="@string/name"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/host_details_text"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <EditText
+                    android:id="@+id/name"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="@drawable/event_details_et_background"
+                    android:fontFamily="@font/mulish_medium"
+                    android:text="@={eventDetailsViewModel.name}"
+                    android:textCursorDrawable="@drawable/text_cursor"
+                    android:textSize="@dimen/_14ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/name_text"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/name_error"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/mulish_regular"
+                    android:text="@string/name_is_required"
+                    android:textColor="@color/thumbs_down_red"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="@{eventDetailsViewModel.nameError.booleanValue ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/name"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/mobile_number_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="@font/mulish_medium"
+                    android:text="@string/mobile_number"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/name_error"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/mobile_number_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="@drawable/event_details_et_background"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/mobile_number_text"
+                    app:layout_constraintVertical_bias="0.0">
+
+                    <com.hbb20.CountryCodePicker
+                        android:id="@+id/cppSignIn"
+                        android:layout_width="@dimen/_120sdp"
+                        android:layout_height="match_parent"
+                        android:fontFamily="@font/mulish_bold"
+                        android:gravity="center"
+                        app:ccpDialog_backgroundColor="@color/white"
+                        app:ccpDialog_textColor="@color/fade_black"
+                        app:ccp_arrowColor="@color/black"
+                        app:ccp_arrowSize="@dimen/_80sdp"
+                        app:ccp_autoDetectCountry="true"
+                        app:ccp_showNameCode="true"
+                        app:ccp_textSize="@dimen/_12ssp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="parent"
+                        app:layout_constraintVertical_bias="0.0"
+                        tools:ignore="MissingClass" />
+
+                    <EditText
+                        android:id="@+id/mobile_number"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:background="@drawable/event_details_et_background"
+                        android:fontFamily="@font/mulish_medium"
+                        android:inputType="number"
+                        android:maxLength="12"
+                        android:text="@={eventDetailsViewModel.mobileNumber}"
+                        android:textCursorDrawable="@drawable/text_cursor"
+                        android:textSize="@dimen/_14ssp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toEndOf="@+id/cppSignIn"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/mobile_number_error"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/mulish_regular"
+                    android:text="@string/mobile_number_is_required"
+                    android:textColor="@color/thumbs_down_red"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="@{eventDetailsViewModel.mobileNumberError.booleanValue ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/mobile_number_layout"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/email_id_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="@font/mulish_medium"
+                    android:text="@string/email_id"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/mobile_number_error"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <EditText
+                    android:id="@+id/email_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="@drawable/event_details_et_background"
+                    android:fontFamily="@font/mulish_medium"
+                    android:text="@={eventDetailsViewModel.emailId}"
+                    android:textCursorDrawable="@drawable/text_cursor"
+                    android:textSize="@dimen/_14ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/email_id_text"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/email_id_error"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/mulish_regular"
+                    android:text="@string/email_is_required"
+                    android:textColor="@color/thumbs_down_red"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="@{eventDetailsViewModel.emailIdError.booleanValue ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/email_id"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <View
+                    android:id="@+id/host_details_separator"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_2sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@color/black"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/email_id_error"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <TextView
+                    android:id="@+id/provide_event_details_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="@font/mulish_medium"
+                    android:text="@string/provide_event_details"
+                    android:textColor="@color/gray_text"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/host_details_separator"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/start_qus_btn"
+                    android:layout_width="@dimen/_130sdp"
+                    android:layout_height="@dimen/_35sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="@font/mulish_medium"
+                    android:text="@string/start_questions"
+                    android:textAllCaps="false"
+                    android:textColor="@color/gray_text"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toEndOf="@+id/cppSignIn"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/provide_event_details_text"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/next_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_31sdp"
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:layout_marginBottom="@dimen/_20sdp"
+                    android:background="@drawable/custom_button_corner_ok"
+                    android:fontFamily="@font/mulish_bold"
+                    android:onClick="@{() -> eventDetailsViewModel.onClickNextButton()}"
+                    android:text="@string/next"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/start_qus_btn" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/mobile_number_error"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/mulish_regular"
-                android:text="@string/mobile_number_is_required"
-                android:textColor="@color/thumbs_down_red"
-                android:textSize="@dimen/_12ssp"
-                android:visibility="@{eventDetailsViewModel.mobileNumberError.booleanValue ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/mobile_number_layout"
-                app:layout_constraintVertical_bias="0.0" />
+        </ScrollView>
 
-            <TextView
-                android:id="@+id/email_id_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:fontFamily="@font/mulish_medium"
-                android:text="@string/email_id"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/mobile_number_error"
-                app:layout_constraintVertical_bias="0.0" />
+        <include
+            layout="@layout/progressbar"
+            app:visibility="@{eventDetailsViewModel.showLoading.booleanValue ? View.VISIBLE : View.GONE}" />
 
-            <EditText
-                android:id="@+id/email_id"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_30sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:background="@drawable/event_details_et_background"
-                android:fontFamily="@font/mulish_medium"
-                android:text="@={eventDetailsViewModel.emailId}"
-                android:textCursorDrawable="@drawable/text_cursor"
-                android:textSize="@dimen/_14ssp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/email_id_text"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <TextView
-                android:id="@+id/email_id_error"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/mulish_regular"
-                android:text="@string/email_is_required"
-                android:textColor="@color/thumbs_down_red"
-                android:textSize="@dimen/_12ssp"
-                android:visibility="@{eventDetailsViewModel.emailIdError.booleanValue ? View.VISIBLE : View.GONE}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/email_id"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <View
-                android:id="@+id/host_details_separator"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_2sdp"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:background="@color/black"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/email_id_error"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <TextView
-                android:id="@+id/provide_event_details_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:fontFamily="@font/mulish_medium"
-                android:text="@string/provide_event_details"
-                android:textColor="@color/gray_text"
-                android:textSize="@dimen/_12ssp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/host_details_separator"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/start_qus_btn"
-                android:layout_width="@dimen/_130sdp"
-                android:layout_height="@dimen/_35sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:fontFamily="@font/mulish_medium"
-                android:text="@string/start_questions"
-                android:textAllCaps="false"
-                android:textColor="@color/gray_text"
-                android:textSize="@dimen/_12ssp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/provide_event_details_text"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/next_btn"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_35sdp"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginBottom="@dimen/_20sdp"
-                android:fontFamily="@font/mulish_medium"
-                android:onClick="@{() -> eventDetailsViewModel.onClickNextButton()}"
-                android:text="@string/next"
-                android:textAllCaps="false"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_15ssp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/start_qus_btn" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
