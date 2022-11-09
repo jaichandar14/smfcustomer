@@ -15,7 +15,9 @@ class EventQusListAdapter(var adapterOneClickListener: AdapterOneClickListener) 
     private lateinit var choiceList: ArrayList<String>
     var selectedPosition = -1
 
-    fun setDialogListItemList(choiceList: ArrayList<String>, selectedPosition: Int?) {
+    fun setDialogListItemList(
+        choiceList: ArrayList<String>, selectedPosition: Int?, questionType: String
+    ) {
         this.choiceList = choiceList
         Log.d("TAG", "setData: ${choiceList.size} $selectedPosition")
         if (selectedPosition != null) {
@@ -28,11 +30,9 @@ class EventQusListAdapter(var adapterOneClickListener: AdapterOneClickListener) 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListItemViewHolder {
         // Initialize view
-        val view: View =
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.radio_btn_list_item,
-                parent, false
-            )
+        val view: View = LayoutInflater.from(parent.context).inflate(
+            R.layout.radio_btn_list_item, parent, false
+        )
         // Pass holder view
         return ListItemViewHolder(view)
     }
@@ -84,7 +84,7 @@ class EventQusListAdapter(var adapterOneClickListener: AdapterOneClickListener) 
         var radioButton: RadioButton = view.findViewById(R.id.radio_button)
 
         fun setData(choice: String) {
-            Log.d("TAG", "setData: a ${choice}")
+            Log.d("TAG", "setData: choice $choice")
             radioButton.text = choice
         }
     }

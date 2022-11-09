@@ -35,7 +35,7 @@ object AppConstant {
     val OTP_EXPIRED = 20025
     val INVALID_OTP = 20026
     val OTP_MATCH_CODE = 20027
-    val NEGATIVE_CODE=500
+    val NEGATIVE_CODE = 500
 
     // 3245
     const val INITIAL_TIME = " 00:00"
@@ -48,15 +48,21 @@ object AppConstant {
     const val SIGN_IN_NOT_COMPLETED = "SignInNotCompleted"
     const val SIGN_IN_COMPLETED_GOTO_DASH_BOARD = "signInCompletedGoToDashBoard"
     const val BEARER = "Bearer"
-    const val ERROR_CODE_N="ER_022"
-    const val ERROR_CODE= "errorCode"
+    const val ERROR_CODE_N = "ER_022"
+    const val ERROR_CODE = "errorCode"
 
     // 3265
-    const val EVENT_QUESTIONS_DIALOG= "EventQuestionsDialog"
-    const val DATE_FORMAT= "MM/dd/yyyy"
-    const val MATERIAL_DATE_PICKER= "materialDatePicker"
-    const val COUNTRY= "country"
-    const val STATES= "states"
-    const val COUNTRIES= "countries"
+    const val EVENT_QUESTIONS_DIALOG = "EventQuestionsDialog"
+    const val DATE_FORMAT = "MM/dd/yyyy"
+    const val MATERIAL_DATE_PICKER = "materialDatePicker"
+    const val COUNTRY = "country"
+    const val STATES = "states"
+    const val COUNTRIES = "countries"
+
+    //3273
+    const val TITLE = "title"
+    const val TEMPLATE_ID = "templateId"
+    const val SUBMIT = "Submit"
+    const val CANCEL = "Cancel"
 
 }

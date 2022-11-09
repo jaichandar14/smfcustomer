@@ -4,7 +4,7 @@ data class EventQuestionsResponseDTO(
     val `data`: Data,
     val result: Result,
     val success: Boolean
-)
+) : ResponseDTO()
 
 data class QuestionMetadata(
     val answer: Any,

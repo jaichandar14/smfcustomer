@@ -1,9 +1,19 @@
 package com.smf.customer.view.eventDetails
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseViewModel
 import com.smf.customer.app.base.MyApplication
+import com.smf.customer.app.constant.AppConstant
+import com.smf.customer.data.model.request.*
+import com.smf.customer.data.model.response.EventInfoResponseDto
+import com.smf.customer.data.model.response.EventQuestionsResponseDTO
+import com.smf.customer.data.model.response.ResponseDTO
+import com.smf.customer.di.sharedpreference.SharedPrefConstant
+import com.smf.customer.di.sharedpreference.SharedPrefsHelper
+import io.reactivex.Observable
+import javax.inject.Inject
 
 class EventDetailsViewModel : BaseViewModel() {
     var countryList: ArrayList<String> = ArrayList()
@@ -12,20 +22,20 @@ class EventDetailsViewModel : BaseViewModel() {
     var iKnowVenue = MutableLiveData<Boolean>()
     var iKnowVenueLayoutVisibility = MutableLiveData<Boolean>()
 
-    var currencyPosition = MutableLiveData<Int>()
-    var eventName = MutableLiveData<String>()
-    var eventDate = MutableLiveData<String>()
-    var noOfAttendees = MutableLiveData<String>()
-    var totalBudget = MutableLiveData<String>()
-    var address1 = MutableLiveData<String>()
-    var address2 = MutableLiveData<String>()
-    var countryPosition = MutableLiveData<Int>()
-    var statePosition = MutableLiveData<Int>()
-    var city = MutableLiveData<String>()
-    var zipCode = MutableLiveData<String>()
-    var name = MutableLiveData<String>()
-    var mobileNumber = MutableLiveData<String>()
-    var emailId = MutableLiveData<String>()
+    var currencyPosition = MutableLiveData<Int>(0)
+    var eventName = MutableLiveData<String>("")
+    var eventDate = MutableLiveData<String>("")
+    var noOfAttendees = MutableLiveData<String>("")
+    var totalBudget = MutableLiveData<String>("")
+    var address1 = MutableLiveData<String>("")
+    var address2 = MutableLiveData<String>("")
+    var countryPosition = MutableLiveData<Int>(0)
+    var statePosition = MutableLiveData<Int>(0)
+    var city = MutableLiveData<String>("")
+    var zipCode = MutableLiveData<String>("")
+    var name = MutableLiveData<String>("")
+    var mobileNumber = MutableLiveData<String>("")
+    var emailId = MutableLiveData<String>("")
 
     var eventNameError = MutableLiveData<Boolean>()
     var eventDateError = MutableLiveData<Boolean>()
@@ -41,12 +51,27 @@ class EventDetailsViewModel : BaseViewModel() {
     var mobileNumberError = MutableLiveData<Boolean>()
     var emailIdError = MutableLiveData<Boolean>()
 
+    // Avoid screen rotation api call
+    var screenRotationStatus = MutableLiveData<Boolean>(false)
+
+    @Inject
+    lateinit var sharedPrefsHelper: SharedPrefsHelper
+
+    // Activity Variables
+    var eventQuestionsResponseDTO: EventQuestionsResponseDTO? = null
+    var templateId: Int? = 0
+    var selectedAnswerPositionMap = HashMap<Int, Int>()
+    var questionStatus: String = ""
+    var questionNumber: Int = 0
+
     init {
         MyApplication.applicationComponent.inject(this)
         // Update CurrencyType ArrayList
         currencyTypeList = MyApplication.appContext.resources.getStringArray(R.array.currency_type)
             .toList() as ArrayList<String>
         iKnowVenue.value = true
+        // set idToken value
+        idToken = sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""]
     }
 
     fun venueVisibility(value: Boolean) {
@@ -58,10 +83,16 @@ class EventDetailsViewModel : BaseViewModel() {
             if (!eventName.value.isNullOrEmpty() && !eventDate.value.isNullOrEmpty() &&
                 !noOfAttendees.value.isNullOrEmpty() && !totalBudget.value.isNullOrEmpty() &&
                 !zipCode.value.isNullOrEmpty() && !name.value.isNullOrEmpty() &&
-                !mobileNumber.value.isNullOrEmpty() &&
-                !emailId.value.isNullOrEmpty()
+                !mobileNumber.value.isNullOrEmpty() && !emailId.value.isNullOrEmpty()
             ) {
-//                TODO Move to next screen
+                if (questionStatus == AppConstant.SUBMIT) {
+                    // Post Event info details
+                    postEventInfo(idToken, createEventInfoDto())
+                    // Go to dashboard
+                    callBackInterface?.onClickNext()
+                } else {
+                    showToastMessage("Please submit all questions")
+                }
             } else {
                 // Set error
                 setIWillBeSelectingErrorVisible()
@@ -75,13 +106,29 @@ class EventDetailsViewModel : BaseViewModel() {
                 !emailId.value.isNullOrEmpty() && countryPosition.value != null &&
                 statePosition.value != null
             ) {
-//             TODO Move to next screen
+                if (questionStatus == AppConstant.SUBMIT) {
+                    // Post Event info details
+                    postEventInfo(idToken, createEventInfoDto())
+                    // Go to dashboard
+                    callBackInterface?.onClickNext()
+                } else {
+                    showToastMessage("Please submit all questions")
+                }
             } else {
                 // Set error
                 setIWillBeSelectingErrorVisible()
                 setIKnowVenueErrorVisible()
             }
         }
+    }
+
+    private fun postEventInfo(
+        idToken: String, eventInfo: EventInfoDTO
+    ) {
+        val observable: Observable<EventInfoResponseDto> =
+            retrofitHelper.getEventRepository().postEventInfo(idToken, eventInfo)
+        this.observable.value = observable as Observable<ResponseDTO>
+        doNetworkOperation()
     }
 
     private fun setIWillBeSelectingErrorVisible() {
@@ -155,6 +202,123 @@ class EventDetailsViewModel : BaseViewModel() {
 
     fun isDatePickerDialogVisible(): Boolean {
         return datePickerDialog.value!!
+    }
+
+    fun getEventDetailsQuestions(
+        idToken: String, eventTemplateId: Int
+    ) {
+        val observable: Observable<EventQuestionsResponseDTO> =
+            retrofitHelper.getEventRepository().getEventDetailQuestions(idToken, eventTemplateId)
+        this.observable.value = observable as Observable<ResponseDTO>
+        doNetworkOperation()
+    }
+
+    override fun onSuccess(responseDTO: ResponseDTO) {
+        super.onSuccess(responseDTO)
+        when (responseDTO) {
+            is EventQuestionsResponseDTO -> {
+                this.eventQuestionsResponseDTO = responseDTO as EventQuestionsResponseDTO
+                callBackInterface?.updateQuestions(responseDTO as EventQuestionsResponseDTO)
+            }
+            is EventInfoResponseDto -> {
+                Log.d(TAG, "onSuccess: event info called")
+            }
+        }
+    }
+
+    override fun onError(throwable: Throwable) {
+        super.onError(throwable)
+        Log.d(TAG, "onSuccess: event info error")
+    }
+
+    private var callBackInterface: CallBackInterface? = null
+
+    // Initializing CallBack Interface Method
+    fun setCallBackInterface(callback: CallBackInterface) {
+        callBackInterface = callback
+    }
+
+    // CallBack Interface
+    interface CallBackInterface {
+        fun updateQuestions(eventQuestionsResponseDTO: EventQuestionsResponseDTO)
+        fun onClickNext()
+    }
+
+    private fun createEventInfoDto(): EventInfoDTO {
+        val eventId: Int = 0
+        val eventMetaDataDto = createEventMetaDataDto()
+        val eventOrganizerId: String = sharedPrefsHelper[SharedPrefConstant.USER_ID, ""]
+        val eventQuestionMetaDataDto = createEventQuestionMetaDataDto()
+        val eventTypeId: Int = templateId!!
+        val id: String = ""
+        return EventInfoDTO(
+            eventId,
+            eventMetaDataDto,
+            eventOrganizerId,
+            eventQuestionMetaDataDto,
+            eventTypeId,
+            id
+        )
+    }
+
+    private fun createEventQuestionMetaDataDto(): EventQuestionMetaDataDto {
+        val noOfEventOrganizers: Int = eventQuestionsResponseDTO!!.data.noOfEventOrganizers
+        val noOfVendors: Int = eventQuestionsResponseDTO!!.data.noOfVendors
+        val questionnaireDtoList = ArrayList<QuestionnaireDto>()
+        eventQuestionsResponseDTO!!.data.questionnaireDtos.forEach {
+            val qusNumber = eventQuestionsResponseDTO!!.data.questionnaireDtos.indexOf(
+                it
+            )
+            val answerNumber = selectedAnswerPositionMap[qusNumber]
+            Log.d(
+                TAG,
+                "createEvent: answer ${it.questionMetadata.choices[answerNumber!!]}"
+            )
+            val questionMetadata = QuestionMetadata(
+                it.questionMetadata.choices[answerNumber!!], it.questionMetadata.choices,
+                it.questionMetadata.eventOrganizer, it.questionMetadata.filter,
+                it.questionMetadata.question, it.questionMetadata.questionType,
+                it.questionMetadata.vendor
+            )
+            questionnaireDtoList.add(
+                QuestionnaireDto(
+                    it.active,
+                    listOf<String>(),
+                    it.eventTemplateId,
+                    it.id,
+                    "questionFormat",
+                    questionMetadata,
+                    it.serviceCategoryId
+                )
+            )
+        }
+        return EventQuestionMetaDataDto(noOfEventOrganizers, noOfVendors, questionnaireDtoList)
+    }
+
+    private fun createEventMetaDataDto(): EventMetaDataDto {
+        val eventInformationDto = EventInformationDto(
+            "",
+            noOfAttendees.value!!,
+            currencyTypeList[currencyPosition.value!!],
+            totalBudget.value!!.toInt(),
+            eventDate.value!!,
+            eventName.value!!
+        )
+        val hostInformationDto =
+            HostInformationDto(emailId.value!!, mobileNumber.value!!, name.value!!)
+
+        val venueInformationDto = VenueInformationDto(
+            address1.value!!,
+            address2.value!!,
+            city.value!!,
+            countryList[countryPosition.value!!],
+            iKnowVenue.value!!,
+            stateList[countryPosition.value!!][statePosition.value!!],
+            zipCode.value!!
+        )
+        return EventMetaDataDto(
+            eventInformationDto, hostInformationDto, venueInformationDto
+        )
     }
 
 }
