@@ -4,8 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.smf.customer.R
 import com.smf.customer.app.constant.AppConstant
-import com.smf.customer.app.constant.AppConstant.INTERNAL_SERVER_ERROR_CODE
-import com.smf.customer.app.constant.AppConstant.NEGATIVE_CODE
 import com.smf.customer.app.constant.AppConstant.NOT_FOUND
 import com.smf.customer.app.constant.AppConstant.SERVICE_UNAVAILABLE
 import com.smf.customer.app.constant.AppConstant.SERVICE_UNAVAILABLE_2
@@ -31,7 +29,7 @@ import javax.inject.Inject
 
 abstract class BaseViewModel : ViewModel() {
     var showLoading = MutableLiveData<Boolean>()
-    var retryErrorMessage = MutableLiveData<Int>()
+    var retryErrorMessage = MutableLiveData<Int?>()
     var logout = MutableLiveData<Boolean>()
     var userToken = MutableLiveData<String>()
     val TAG: String = this.javaClass.simpleName
@@ -67,7 +65,7 @@ abstract class BaseViewModel : ViewModel() {
         return retryDialog.value!!
     }
 
-    var toastMessage = MutableLiveData<String>()
+    var toastMessage = MutableLiveData<String?>()
     var toast: String = ""
 
     init {
@@ -127,7 +125,7 @@ abstract class BaseViewModel : ViewModel() {
                 throwable is IOException -> {
                     when (throwable) {
                         is UnknownHostException -> {
-                            retryErrorMessage.value = R.string.Internet_error
+                            retryErrorMessage.value = R.string.internet_error
                         }
                         else -> {
                             retryErrorMessage.value = (R.string.time_out_error)
@@ -157,22 +155,31 @@ abstract class BaseViewModel : ViewModel() {
                     //getUserToken(preferenceHelper[SharedPrefConstant.USER_ID, ""])
                     logout.value = true
                 }
-                throwable.code() == NEGATIVE_CODE -> {
-                    negativeCode = true
-                    showToastMessage(customErrorAPI.errorMessageFromAPI(throwable))
-                }
+//                throwable.code() == NEGATIVE_CODE -> {
+//                    negativeCode = true
+////                    val errorMessage =customErrorAPI.errorMessageFromAPI(throwable)
+////                    showToastMessage(errorMessage)
+//                }
 
                 else -> {
                     try {
-                        val response = throwable.response()!!.errorBody()!!.string()
-                        val jObjError = JSONObject(response)
-                        if (jObjError[AppConstant.ERROR_MESSAGE] == AppConstant.INVALID_USER) {
-                            showToastMessage(AppConstant.INVALID_USER)
-                        } else if (jObjError[AppConstant.MESSAGE_CODE] == INTERNAL_SERVER_ERROR_CODE
+                        val response = throwable.response()?.errorBody()?.string()
+                        val jObjError = response?.let { JSONObject(it) }
+                        if ((jObjError?.get(AppConstant.ERROR_MESSAGE)
+                                ?: "") == AppConstant.INVALID_USER
                         ) {
-                            retryErrorMessage.value = (R.string.internal_server_error)
-                        } else {
-                            retryErrorMessage.value = (R.string.something_went_wrong)
+                            showToastMessage(AppConstant.INVALID_USER)
+                        }
+//                        else if ((jObjError?.get(AppConstant.MESSAGE_CODE)
+//                                ?: "") == INTERNAL_SERVER_ERROR_CODE
+//                        ) {
+//                            retryErrorMessage.value = (R.string.internal_server_error)
+//                        }
+                        else {
+                            val errorMessage = (jObjError?.get(AppConstant.ERROR_MESSAGE)
+                                ?: jObjError?.get(AppConstant.MESSAGE) ?: "") as String
+                            showToastMessage(errorMessage)
+//                            retryErrorMessage.value = (R.string.something_went_wrong)
                         }
                     } catch (e: Exception) {
                         retryErrorMessage.value = (R.string.something_went_wrong)
@@ -201,6 +208,16 @@ abstract class BaseViewModel : ViewModel() {
         showLoading.value = false
     }
 
+    // Clear Toast
+    fun clearToastData() {
+        toastMessage.value = null
+    }
+
+    // Clear Internet Dialog
+    fun clearInternetDialogData() {
+        retryErrorMessage.value = null
+    }
+
     override fun onCleared() {
         disposables.clear()
         showLoading.value = false
@@ -208,10 +225,11 @@ abstract class BaseViewModel : ViewModel() {
 
     open fun doNetworkOperation() {
         showLoading.value = true
-        disposables.add(
-            observable.value!!.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe(this::onSuccess, this::onError)
-        )
+        observable.value?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())?.subscribe(this::onSuccess, this::onError)
+            ?.let {
+                disposables.add(it)
+            }
     }
 
     data class ErrorResponse(

@@ -65,4 +65,9 @@ object AppConstant {
     const val SUBMIT = "Submit"
     const val CANCEL = "Cancel"
 
+    const val EDIT_BUTTON = "editButton"
+    const val CLOSE = "Close"
+    const val VIEW_QUESTIONS_DIALOG = "ViewQuestionsDialog"
+    const val MESSAGE = "message"
+
 }

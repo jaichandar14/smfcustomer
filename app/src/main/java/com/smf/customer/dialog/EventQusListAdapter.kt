@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.RadioButton
 import androidx.recyclerview.widget.RecyclerView
 import com.smf.customer.R
+import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.listener.AdapterOneClickListener
 
 class EventQusListAdapter(var adapterOneClickListener: AdapterOneClickListener) :
@@ -14,11 +15,16 @@ class EventQusListAdapter(var adapterOneClickListener: AdapterOneClickListener) 
 
     private lateinit var choiceList: ArrayList<String>
     var selectedPosition = -1
+    var questionBtnStatus = ""
 
     fun setDialogListItemList(
-        choiceList: ArrayList<String>, selectedPosition: Int?, questionType: String
+        choiceList: ArrayList<String>,
+        selectedPosition: Int?,
+        questionBtnStatus: String,
+        questionType: String
     ) {
         this.choiceList = choiceList
+        this.questionBtnStatus = questionBtnStatus
         Log.d("TAG", "setData: ${choiceList.size} $selectedPosition")
         if (selectedPosition != null) {
             this.selectedPosition = selectedPosition
@@ -42,27 +48,22 @@ class EventQusListAdapter(var adapterOneClickListener: AdapterOneClickListener) 
         holder.setData(choiceList[position])
         // Checked selected radio button
         holder.radioButton.isChecked = position == selectedPosition
+
         // set listener on radio button
         holder.radioButton.setOnClickListener {
-            // update selected position
-            selectedPosition = holder.absoluteAdapterPosition
-            // Call listener
-            adapterOneClickListener.onOneClick(position)
-            // Notify adapter to refresh the radio button
-            notifyDataSetChanged()
+            if (!questionBtnStatus.contains(
+                    MyApplication.appContext.resources.getString(R.string.view_order)
+                )
+            ) {
+                Log.d("TAG", "onBindViewHolder: contain")
+                // update selected position
+                selectedPosition = holder.absoluteAdapterPosition
+                // Call listener
+                adapterOneClickListener.onOneClick(position)
+                // Notify adapter to refresh the radio button
+                notifyDataSetChanged()
+            }
         }
-
-//        // set listener on radio button
-//        holder.radioButton.setOnCheckedChangeListener { compoundButton, b ->
-//            // check condition
-//            if (b) {
-//                // When checked
-//                // update selected position
-//                selectedPosition = holder.absoluteAdapterPosition
-//                // Call listener
-//                adapterOneClickListener.onOneClick(position)
-//            }
-//        }
     }
 
     override fun getItemId(position: Int): Long {
@@ -86,7 +87,12 @@ class EventQusListAdapter(var adapterOneClickListener: AdapterOneClickListener) 
         fun setData(choice: String) {
             Log.d("TAG", "setData: choice $choice")
             radioButton.text = choice
+            if (questionBtnStatus.contains(
+                    MyApplication.appContext.resources.getString(R.string.view_order)
+                )
+            ) {
+                radioButton.isEnabled = false
+            }
         }
     }
-
 }

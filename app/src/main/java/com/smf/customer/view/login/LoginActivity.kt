@@ -95,6 +95,7 @@ class LoginActivity : BaseActivity<LoginViewModel>(), LoginViewModel.CallBackInt
         super.onPositiveClick(dialogFragment)
         when {
             dialogFragment.tag.equals(DialogConstant.INTERNET_DIALOG) -> {
+                dialogFragment.dismiss()
                 viewModel.hideRetryDialogFlag()
                 signOut()
             }

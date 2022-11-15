@@ -24,6 +24,7 @@ class LoginViewModel : BaseViewModel() {
     private var emailId: String? = null
     var showPhnNumberError = MutableLiveData<Boolean>()
     var showEmailError = MutableLiveData<Boolean>()
+    var countryCode = MutableLiveData<String?>()
 
     init {
         MyApplication.applicationComponent.inject(this)
@@ -50,11 +51,11 @@ class LoginViewModel : BaseViewModel() {
                     true
                 }
             } else {
-                showToastMessage(MyApplication.appContext.getString(R.string.Please_Enter_Any_EMail_or_Phone_Number))
+                showToastMessage(MyApplication.appContext.getString(R.string.please_Enter_Any_EMail_or_Phone_Number))
                 return false
             }
         } else {
-            showToastMessage(MyApplication.appContext.getString(R.string.Please_Enter_Email_or_MobileNumber))
+            showToastMessage(MyApplication.appContext.getString(R.string.please_Enter_Email_or_MobileNumber))
         }
         return false
     }
@@ -115,7 +116,7 @@ class LoginViewModel : BaseViewModel() {
                 } else if (errMsg.contains(MyApplication.appContext.resources.getString(R.string.Failed_to_connect_to_cognito_idp)) ||
                     errMsg.contains(MyApplication.appContext.resources.getString(R.string.Unable_to_resolve_host))
                 ) {
-                    retryErrorMessage.value = R.string.Internet_error
+                    retryErrorMessage.value = R.string.internet_error
                 } else {
                     showToastMessage(errMsg)
                 }

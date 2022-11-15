@@ -117,7 +117,7 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
 
     override fun awsErrorResponse(num: String) {
         if (num == resources.getString(R.string.Failed_to_connect_to_cognito_idp)) {
-            viewModel.retryErrorMessage.value = R.string.Internet_error
+            viewModel.retryErrorMessage.value = R.string.internet_error
         } else {
             viewModel.loginUser(false, getUserID())
             if (num.toInt() >= 3) {

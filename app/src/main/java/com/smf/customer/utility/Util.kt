@@ -1,15 +1,12 @@
 package com.smf.customer.utility
 
 import android.content.Context
+import android.text.InputFilter
 import android.util.Log
-import com.google.android.material.datepicker.CalendarConstraints
-import com.google.android.material.datepicker.DateValidatorPointForward
-import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import java.io.IOException
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
@@ -31,6 +28,18 @@ class Util {
                 Log.d("TAG", "onCreate: ioException $ioException")
             }
             return jsonString
+        }
+
+        // Restrict number inside editText
+        fun filterText(): InputFilter {
+            return InputFilter { source, start, end, _, _, _ ->
+                for (i in start until end) {
+                    if (!Character.isLetter(source[i])) {
+                        return@InputFilter ""
+                    }
+                }
+                null
+            }
         }
 
         fun getNewFCMToken(preferenceHelper: SharedPrefsHelper) {
