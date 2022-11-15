@@ -1,6 +1,8 @@
 package com.smf.customer.view.dashboard
 
 import android.os.Bundle
+import android.os.PersistableBundle
+import android.util.Log
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -9,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseActivity
 import com.smf.customer.app.base.MyApplication
+import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.databinding.ActivityDashBoardBinding
 import com.smf.customer.view.dashboard.fragment.MainDashBoardFragment
 
@@ -17,11 +20,40 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
 
     private lateinit var mDataBinding: ActivityDashBoardBinding
     var fragment = Fragment()
-
+    var lastOrientation: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mInitialize()
-        //mMainDashboardUI()
+        if (savedInstanceState == null) {
+            lastOrientation = 1
+            mainFragment()
+        } else {
+            Log.d(TAG, "onCreate: else statement")
+        }
+    }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finishAffinity()
+    }
+
+    private fun mainFragment() {
+        val frg = MainDashBoardFragment() //create the fragment instance for the middle fragment
+        val manager: FragmentManager =
+            supportFragmentManager //create an instance of fragment manager
+        val transaction: FragmentTransaction =
+            manager.beginTransaction() //create an instance of Fragment-transaction
+        transaction.replace(R.id.main_dashboard_ui, frg, "Frag_Bottom_tag")
+        transaction.commit()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        outState.putInt("Rotated", lastOrientation)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        lastOrientation = savedInstanceState.getInt(AppConstant.ROTATED)
     }
 
     private fun mInitialize() {
@@ -30,26 +62,10 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
         mDataBinding.dashdoardviewmodel = viewModel
         mDataBinding.lifecycleOwner = this
         MyApplication.applicationComponent.inject(this)
-        val frg = MainDashBoardFragment() //create the fragment instance for the middle fragment
-        val manager: FragmentManager =
-            supportFragmentManager //create an instance of fragment manager
-        val transaction: FragmentTransaction =
-            manager.beginTransaction() //create an instance of Fragment-transaction
-        transaction.add(R.id.main_dashboard_ui, frg, "Frag_Bottom_tag")
-        transaction.commit()
 
-//        fragment = MainDashBoardFragment()
-//        loadFragment(fragment)
     }
 
-    private fun loadFragment(fragment: Fragment) {
-        // load fragment
-        val transaction = supportFragmentManager.beginTransaction()
-        //frame_container is your layout name in xml file
-        transaction.replace(com.smf.customer.R.id.main_dashboard_ui, fragment)
-        transaction.addToBackStack(null)
-        transaction.commit()
+    override fun onDestroy() {
+        super.onDestroy()
     }
-
-
 }

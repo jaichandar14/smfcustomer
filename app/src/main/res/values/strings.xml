@@ -137,4 +137,15 @@
     <string name="view_order">View order</string>
     <string name="please_select_the_answer">Please select the answer</string>
 
+    // 3285
+    <string name="pending">Pending</string>
+    <string name="active_counts">active counts</string>
+    <string name="pending_counts">pending counts</string>
+    <string name="draft_counts">draft counts</string>
+    <string name="reject_counts">reject counts</string>
+    <string name="closed_counts">closed counts</string>
+    <string name="move_to_Dashboard">Move_to_Dashboard</string>
+    <string name="move_to_sigin">MOVE_TO_SIGNING</string>
+    <string name="select_any_event">Select any Event to proceed</string>
+
 </resources>

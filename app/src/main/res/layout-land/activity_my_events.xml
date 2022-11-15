@@ -10,12 +10,12 @@
         <variable
             name="myEventViewModel"
             type="com.smf.customer.view.myevents.MyEventsViewModel" />
-
         <variable
             name="myEventActivity"
             type="com.smf.customer.view.myevents.MyEventsActivity" />
 
-    </data>
+         </data>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -42,14 +42,16 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/my_event_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_425sdp"
+            android:layout_height="@dimen/_180sdp"
             android:layout_marginStart="@dimen/_10sdp"
-            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_28sdp"
             android:layout_marginEnd="@dimen/_10sdp"
+            app:layout_constraintBottom_toTopOf="@+id/appCompatButton"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+            app:layout_constraintTop_toBottomOf="@+id/textView2"
+            app:layout_constraintVertical_bias="0.0" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/appCompatButton"
@@ -68,15 +70,16 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/my_event_recycler_view"
             app:layout_constraintStart_toStartOf="@+id/my_event_recycler_view"
-            app:layout_constraintTop_toBottomOf="@+id/my_event_recycler_view" />
-
-        <include
-            layout="@layout/progressbar"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:visibility="@{ myEventViewModel.showLoading.booleanValue ? View.VISIBLE : View.GONE}" />
+            app:layout_constraintVertical_bias="0.9" />
+
+<!--        <include-->
+<!--            layout="@layout/progressbar"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:visibility="@{ myEventViewModel.showLoading.booleanValue ? View.VISIBLE : View.GONE}" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

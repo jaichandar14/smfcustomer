@@ -70,4 +70,22 @@ object AppConstant {
     const val VIEW_QUESTIONS_DIALOG = "ViewQuestionsDialog"
     const val MESSAGE = "message"
 
+    // 3285
+    const val UNDER_REVIEW = "UNDER REVIEW"
+    const val REVOKED = "REVOKED"
+    const val REJECTED = "REJECTED"
+    const val PENDING_ADMIN_APPROVAL = "PENDING ADMIN APPROVAL"
+    const val NEW = "NEW"
+    const val DELETED = "DELETED"
+    const val CLOSED = "CLOSED"
+    const val APPROVED = "APPROVED"
+    const val ROTATED = "ROTATED"
+    const val MonthDate = "MMM dd"
+    const val ACTIVE = "Active"
+    const val PENDING = "Pending"
+    const val DRAFT = "Draft"
+    const val REJECT = "Reject"
+    const val CLOSED_TXT = "Closed"
+
+
 }

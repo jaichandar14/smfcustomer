@@ -2,8 +2,10 @@ package com.smf.customer.view.myevents
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.os.PersistableBundle
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,6 +16,7 @@ import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
+import com.smf.customer.utility.MyToast
 import com.smf.customer.view.dashboard.model.EventStatusDTO
 import com.smf.customer.view.eventDetails.EventDetailsActivity
 import com.smf.customer.view.myevents.Adaptor.MyEventListAdaptor
@@ -27,6 +30,7 @@ class MyEventsActivity : BaseActivity<MyEventsViewModel>(),
     private lateinit var mEventOverViewRecyclerView: RecyclerView
     var position: Int? = null
     private var eventTypeList = ArrayList<EventStatusDTO>()
+    var lastOrientation = 0
 
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
@@ -35,10 +39,39 @@ class MyEventsActivity : BaseActivity<MyEventsViewModel>(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mInitialize()
-        mEventOverviewRecycler()
+        viewModel.lastOrientation.value = resources.configuration.orientation
+        // currentOrientation()
         viewModel.showLoading.value = true
+        if (savedInstanceState == null) {
+            viewModel.lastOrientation.observe(this, Observer { it ->
+                lastOrientation = it
+                if (it == 1) {
+                    mEventOverviewRecycler(3)
+                } else {
+                    mEventOverviewRecycler(5)
+                }
+            })
+        } else {
+            viewModel.lastOrientation.observe(this, Observer { it ->
+                if (it == 1) {
+                    mEventOverviewRecycler(3)
+                    viewModel.showLoading.value = false
+                } else {
+                    mEventOverviewRecycler(4)
+                    viewModel.showLoading.value = false
+                }
+            })
+
+        }
         // 3275 My Event Api call
-        viewModel.getEventType(sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""])
+
+    }
+
+
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        //lastOrientation?.let { outState.putInt("Rotated", it) }
+        viewModel.eventClickedPos?.value?.let { outState.putInt("postion", it) }
     }
 
     // 3275
@@ -52,56 +85,84 @@ class MyEventsActivity : BaseActivity<MyEventsViewModel>(),
     }
 
     // 3275 onNextButtonClick
-    private fun onNextClick(){
-        if (viewModel.eventClickedPos?.value ==null) {
+    private fun onNextClick() {
+        if (viewModel.eventClickedPos?.value == null) {
             viewModel.onClicked.value = false
-        }else if (viewModel.eventClickedPos?.value !=null) {
+        } else if (viewModel.eventClickedPos?.value != null) {
             viewModel.onClicked.value = true
 
         }
     }
 
-    // 3275 on Back press click
+    // 3285 on Back press click
     override fun onBackPressed() {
         super.onBackPressed()
         finish()
     }
 
     // 3275 Recycler view for showing event type
-    private fun mEventOverviewRecycler() {
+    private fun mEventOverviewRecycler(i: Int) {
         mEventOverViewRecyclerView = mDataBinding.myEventRecyclerView
         mAdapterEvent = MyEventListAdaptor()
         mEventOverViewRecyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        val layoutManager = GridLayoutManager(this, 3)
+        val layoutManager = GridLayoutManager(this, i)
         mEventOverViewRecyclerView.layoutManager = layoutManager
         mEventOverViewRecyclerView.adapter = mAdapterEvent
         mAdapterEvent.setOnClickListener(this)
         viewModel.setOnClickListener(this)
+        viewModel.getEventType(sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""])
     }
 
     // 3275 on click recyclerview green tick
     override fun onclick(position: Int?) {
-        Log.d(TAG, "onclick: $position")
         viewModel.eventClickedPos?.value = position
         mAdapterEvent.refreshItems(eventTypeList, viewModel.eventClickedPos?.value)
         viewModel.onClicked.value = true
 
-        if(viewModel.eventClickedPos?.value != null){
+        if (viewModel.eventClickedPos?.value != null) {
             mDataBinding.appCompatButton.setOnClickListener {
                 val intent = Intent(this, EventDetailsActivity::class.java)
-                intent.putExtra(AppConstant.TITLE, eventTypeList[viewModel.eventClickedPos?.value!!].title)
-                intent.putExtra(AppConstant.TEMPLATE_ID, eventTypeList[viewModel.eventClickedPos?.value!!].numberText)
+                intent.putExtra(
+                    AppConstant.TITLE,
+                    eventTypeList[viewModel.eventClickedPos?.value!!].title
+                )
+                intent.putExtra(
+                    AppConstant.TEMPLATE_ID,
+                    eventTypeList[viewModel.eventClickedPos?.value!!].numberText
+                )
                 startActivity(intent)
             }
-        }else{
-            viewModel.showToastMessage("Select any Event to proceed")
+        } else {
+            MyToast.show(this, getString(R.string.select_any_event), Toast.LENGTH_LONG)
         }
     }
 
     override fun getMyevetList(listMyEvents: ArrayList<EventStatusDTO>) {
         viewModel.showLoading.value = false
         eventTypeList = listMyEvents
+        viewModel.eventTypeList.value = listMyEvents
+        if (viewModel.eventClickedPos?.value != null) {
+            mDataBinding.appCompatButton.setOnClickListener {
+                val intent = Intent(this, EventDetailsActivity::class.java)
+                intent.putExtra(
+                    AppConstant.TITLE,
+                    eventTypeList[viewModel.eventClickedPos?.value!!].title
+                )
+                intent.putExtra(
+                    AppConstant.TEMPLATE_ID,
+                    eventTypeList[viewModel.eventClickedPos?.value!!].numberText
+                )
+                startActivity(intent)
+            }
+        } else {
+            mDataBinding.appCompatButton.setOnClickListener {
+                MyToast.show(this, getString(R.string.select_any_event), Toast.LENGTH_LONG)
+            }
+        }
         mAdapterEvent.refreshItems(listMyEvents, viewModel.eventClickedPos?.value)
     }
 }
+
+
+
