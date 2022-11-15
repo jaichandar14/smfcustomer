@@ -31,8 +31,10 @@ class EventQuestionsDialog : BaseDialogFragment(), AdapterOneClickListener {
         private const val QUS_LIST_ITEM = "QUS_LIST_ITEM"
         private const val SELECTED_ANS_LIST = "SELECTED_ANS_LIST"
         private const val QUESTION_NUMBER = "QUESTION_NUMBER"
+        private const val QUESTION_BTN_STATUS = "QUESTION_BTN_STATUS"
         fun newInstance(
             questionListItem: ArrayList<QuestionListItem>,
+            questionBtnStatus: String,
             selectedAnswerPositionMap: HashMap<Int, Int>,
             questionNumber: Int,
             threeButtonListener: DialogThreeButtonListener,
@@ -40,6 +42,7 @@ class EventQuestionsDialog : BaseDialogFragment(), AdapterOneClickListener {
         ): EventQuestionsDialog {
             val args = Bundle()
             args.putSerializable(QUS_LIST_ITEM, questionListItem)
+            args.putSerializable(QUESTION_BTN_STATUS, questionBtnStatus)
             args.putSerializable(SELECTED_ANS_LIST, selectedAnswerPositionMap)
             args.putSerializable(QUESTION_NUMBER, questionNumber)
             val eventQuestionsDialog = EventQuestionsDialog()
@@ -101,6 +104,7 @@ class EventQuestionsDialog : BaseDialogFragment(), AdapterOneClickListener {
             listItemAdapter.setDialogListItemList(
                 questionList[questionNumber].choice,
                 selectedPosition,
+                requireArguments().getSerializable(QUESTION_BTN_STATUS) as String,
                 questionList[questionNumber].questionType
             )
             break
@@ -127,8 +131,11 @@ class EventQuestionsDialog : BaseDialogFragment(), AdapterOneClickListener {
                     questionNumber -= 1
                 }
             } else {
-                Toast.makeText(requireContext(), "Please select the answer", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.Please_select_the_answer),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
@@ -146,11 +153,12 @@ class EventQuestionsDialog : BaseDialogFragment(), AdapterOneClickListener {
         }
 
         dataBinding.cancelBtn.setOnClickListener {
-            // Update button status and current question number
-            eventQuestionsCallback.dialogStatus(
-                dataBinding.cancelBtn.text.toString(),
-                questionNumber
-            )
+            if (dataBinding.cancelBtn.text.toString() != AppConstant.CLOSE) {
+                // Update button status and current question number
+                eventQuestionsCallback.dialogStatus(
+                    dataBinding.cancelBtn.text.toString(), questionNumber
+                )
+            }
             // Update dialog flag
             threeButtonListener.onCancelClick(this)
             this.dismiss()
@@ -169,6 +177,8 @@ class EventQuestionsDialog : BaseDialogFragment(), AdapterOneClickListener {
 
     override fun onPause() {
         super.onPause()
+        // Update current question Number while dialog dismiss
+        eventQuestionsCallback.updateQusNumberOnScreenRotation(questionNumber, this)
         dismissAllowingStateLoss()
     }
 
@@ -189,15 +199,22 @@ class EventQuestionsDialog : BaseDialogFragment(), AdapterOneClickListener {
     }
 
     private fun setCancelBtnText() {
-        if (questionNumber == questionList.size - 1) {
-            // Verify answer selected or not
-            if (selectedAnswerPositionMap.containsKey(questionNumber)) {
-                dataBinding.cancelBtn.text = AppConstant.SUBMIT
+        if ((requireArguments()
+                .getSerializable(QUESTION_BTN_STATUS) as String)
+                .contains(getString(R.string.View_order))
+        ) {
+            dataBinding.cancelBtn.text = AppConstant.CLOSE
+        } else {
+            if (questionNumber == questionList.size - 1) {
+                // Verify answer selected or not
+                if (selectedAnswerPositionMap.containsKey(questionNumber)) {
+                    dataBinding.cancelBtn.text = AppConstant.SUBMIT
+                } else {
+                    dataBinding.cancelBtn.text = AppConstant.CANCEL
+                }
             } else {
                 dataBinding.cancelBtn.text = AppConstant.CANCEL
             }
-        } else {
-            dataBinding.cancelBtn.text = AppConstant.CANCEL
         }
     }
 

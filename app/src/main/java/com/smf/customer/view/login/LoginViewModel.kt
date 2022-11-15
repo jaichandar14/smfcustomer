@@ -24,6 +24,7 @@ class LoginViewModel : BaseViewModel() {
     private var emailId: String? = null
     var showPhnNumberError = MutableLiveData<Boolean>()
     var showEmailError = MutableLiveData<Boolean>()
+    var countryCode = MutableLiveData<String?>()
 
     init {
         MyApplication.applicationComponent.inject(this)

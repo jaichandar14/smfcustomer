@@ -54,6 +54,11 @@ class EventDetailsViewModel : BaseViewModel() {
     // Avoid screen rotation api call
     var screenRotationStatus = MutableLiveData<Boolean>(false)
 
+    // Start question btn text
+    var questionBtnText =
+        MutableLiveData(MyApplication.appContext.resources.getString(R.string.Start_questions))
+    var editImageVisibility = MutableLiveData<Boolean>(false)
+
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
 
@@ -63,6 +68,7 @@ class EventDetailsViewModel : BaseViewModel() {
     var selectedAnswerPositionMap = HashMap<Int, Int>()
     var questionStatus: String = ""
     var questionNumber: Int = 0
+    var viewOrderQuestionNumber: Int = 0
 
     init {
         MyApplication.applicationComponent.inject(this)

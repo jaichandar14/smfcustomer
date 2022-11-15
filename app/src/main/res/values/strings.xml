@@ -133,4 +133,9 @@
     // 3273
     <string name="Event_Details">Event Details</string>
 
+    <string name="Screen_rotation">Screen rotation</string>
+    <string name="Start_questions">Start questions</string>
+    <string name="View_order">View order</string>
+    <string name="Please_select_the_answer">Please select the answer</string>
+
 </resources>

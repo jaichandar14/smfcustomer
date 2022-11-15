@@ -26,10 +26,10 @@ abstract class BaseActivity<T : BaseViewModel> : AppActivity(), DialogTwoButtonL
 
     open fun observer() {
         viewModel.toastMessage.observe(this) { message ->
-            MyToast.show(this, message, Toast.LENGTH_LONG)
+            message?.let { MyToast.show(this, message, Toast.LENGTH_LONG) }
         }
-        viewModel.retryErrorMessage.observe(this) { _ ->
-            showRetryDialog()
+        viewModel.retryErrorMessage.observe(this) { retryErrorMessage ->
+            showRetryDialog(retryErrorMessage?.let { getString(it) })
         }
         viewModel.logout.observe(this) { logout ->
             if (logout) {
@@ -49,7 +49,11 @@ abstract class BaseActivity<T : BaseViewModel> : AppActivity(), DialogTwoButtonL
             when (isNetworkAvailable) {
                 true -> {
                     Log.d(TAG, "connect onAvailable: act available $isNetworkAvailable")
-                    networkDialog?.dismiss()
+                    if (networkDialog?.isVisible == true) {
+                        viewModel.hideRetryDialogFlag()
+                        viewModel.doNetworkOperation()
+                        networkDialog?.dismiss()
+                    }
                 }
                 false -> {
                     Log.d(TAG, "connect onAvailable: act not available $isNetworkAvailable")
@@ -65,18 +69,18 @@ abstract class BaseActivity<T : BaseViewModel> : AppActivity(), DialogTwoButtonL
         }
         if (::viewModel.isInitialized) {
             if (viewModel.isRetryDialogVisible()) {
-                showRetryDialog()
+                showRetryDialog(getString(R.string.Internet_error))
             }
         }
         connectionLiveData = ConnectionLiveData(this)
         observer()
     }
 
-    open fun showRetryDialog() {
-        viewModel.showRetryDialogFlag()
-        viewModel.retryErrorMessage.value?.let { getString(it) }?.let {
+    open fun showRetryDialog(retryErrorMessage: String?) {
+        retryErrorMessage?.let {
             when (it) {
                 getString(R.string.Internet_error) -> {
+                    viewModel.showRetryDialogFlag()
                     networkDialog = InternetErrorDialog.newInstance(this)
                     networkDialog!!.show(supportFragmentManager, DialogConstant.INTERNET_DIALOG)
                 }
@@ -113,6 +117,13 @@ abstract class BaseActivity<T : BaseViewModel> : AppActivity(), DialogTwoButtonL
 
     override fun onDialogDismissed() {
         viewModel.hideRetryDialogFlag()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Clear toast and Internet error dialog live data
+        viewModel.clearToastData()
+        viewModel.clearInternetDialogData()
     }
 
 }

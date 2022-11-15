@@ -64,7 +64,7 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         super.onPostCreate(savedInstanceState)
         // Verify event question dialog isVisible
         if (viewModel.isEventQuestionDialogVisible()) {
-            showEventQuestionDialog()
+            createDialog()
         }
         // Verify date picker dialog isVisible
         if (viewModel.isDatePickerDialogVisible()) {
@@ -74,6 +74,8 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         if (viewModel.screenRotationStatus.value == false) {
             // Event Questions Api call
             viewModel.templateId?.let { viewModel.getEventDetailsQuestions(token, it) }
+            // Update viewOrderQuestionNumber when activity not rotation
+            viewModel.viewOrderQuestionNumber = 0
         } else {
             // Set start button visibility when rotating screen
             if (questionListItem.isEmpty()) {
@@ -91,6 +93,8 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         initializeCountryAndStateSpinner()
         // Venue details observer
         venueDetailsObserver()
+        // Restrict number inside editText
+        setEditTextFilter()
         // Setting User Details
         setUserDetails()
         // Error details observer
@@ -98,7 +102,7 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         // Event date edittext Listener
         eventDateListener()
         // Start question button listener
-        onClickStartQuestionBtn()
+        onClickQuestionsBtn()
     }
 
     override fun updateQuestions(eventQuestionsResponseDTO: EventQuestionsResponseDTO) {
@@ -125,22 +129,47 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
 //        startActivity(Intent(this, DashBoardActivity::class.java))
     }
 
-    private fun onClickStartQuestionBtn() {
+    private fun onClickQuestionsBtn() {
         binding.startQusBtn.setOnClickListener {
-            showEventQuestionDialog()
+            createDialog()
+        }
+        binding.editImage.setOnClickListener {
+            showEventQuestionDialog(
+                AppConstant.EDIT_BUTTON,
+                AppConstant.EVENT_QUESTIONS_DIALOG,
+                viewModel.questionNumber
+            )
         }
     }
 
-    private fun showEventQuestionDialog() {
+    private fun createDialog() {
+        if (binding.startQusBtn.text.toString().contains(getString(R.string.View_order))) {
+            showEventQuestionDialog(
+                binding.startQusBtn.text.toString(),
+                AppConstant.VIEW_QUESTIONS_DIALOG, viewModel.viewOrderQuestionNumber
+            )
+        } else {
+            showEventQuestionDialog(
+                binding.startQusBtn.text.toString(),
+                AppConstant.EVENT_QUESTIONS_DIALOG, viewModel.questionNumber
+            )
+        }
+    }
+
+    private fun showEventQuestionDialog(
+        questionBtnStatus: String,
+        tag: String,
+        questionNumber: Int
+    ) {
         Log.d(TAG, "setData: questionNumber ${viewModel.questionNumber}")
         // set dialog flag true
         viewModel.showEventQuestionDialogFlag()
         EventQuestionsDialog.newInstance(
             questionListItem,
-            viewModel.selectedAnswerPositionMap, viewModel.questionNumber,
+            questionBtnStatus,
+            viewModel.selectedAnswerPositionMap, questionNumber,
             this, this
-        )
-            .show(supportFragmentManager, AppConstant.EVENT_QUESTIONS_DIALOG)
+        ).show(supportFragmentManager, tag)
     }
 
     override fun updateSelectedAnswer(questionNumber: Int, position: Int) {
@@ -151,10 +180,29 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
     override fun dialogStatus(status: String, questionNumber: Int) {
         if (status == AppConstant.SUBMIT) {
             viewModel.questionStatus = AppConstant.SUBMIT
+            viewModel.questionBtnText.value =
+                "${getString(R.string.View_order)} (${questionListItem.size})"
+            viewModel.editImageVisibility.value = true
         } else {
             viewModel.questionStatus = AppConstant.CANCEL
+            viewModel.questionBtnText.value = getString(R.string.Start_questions)
+            viewModel.editImageVisibility.value = false
         }
         viewModel.questionNumber = questionNumber
+    }
+
+    override fun updateQusNumberOnScreenRotation(
+        questionNumber: Int,
+        dialogFragment: DialogFragment
+    ) {
+        when {
+            dialogFragment.tag.equals(AppConstant.EVENT_QUESTIONS_DIALOG) -> {
+                viewModel.questionNumber = questionNumber
+            }
+            dialogFragment.tag.equals(AppConstant.VIEW_QUESTIONS_DIALOG) -> {
+                viewModel.viewOrderQuestionNumber = questionNumber
+            }
+        }
     }
 
     override fun onCancelClick(dialogFragment: DialogFragment) {
@@ -339,6 +387,11 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
             binding.provideEventDetailsText.visibility = View.GONE
             binding.hostDetailsSeparator.visibility = View.GONE
         }
+    }
+
+    private fun setEditTextFilter() {
+        binding.eventName.filters = arrayOf(Util.filterText())
+        binding.city.filters = arrayOf(Util.filterText())
     }
 
 }
