@@ -69,7 +69,7 @@ abstract class BaseActivity<T : BaseViewModel> : AppActivity(), DialogTwoButtonL
         }
         if (::viewModel.isInitialized) {
             if (viewModel.isRetryDialogVisible()) {
-                showRetryDialog(getString(R.string.Internet_error))
+                showRetryDialog(getString(R.string.internet_error))
             }
         }
         connectionLiveData = ConnectionLiveData(this)
@@ -79,7 +79,7 @@ abstract class BaseActivity<T : BaseViewModel> : AppActivity(), DialogTwoButtonL
     open fun showRetryDialog(retryErrorMessage: String?) {
         retryErrorMessage?.let {
             when (it) {
-                getString(R.string.Internet_error) -> {
+                getString(R.string.internet_error) -> {
                     viewModel.showRetryDialogFlag()
                     networkDialog = InternetErrorDialog.newInstance(this)
                     networkDialog!!.show(supportFragmentManager, DialogConstant.INTERNET_DIALOG)

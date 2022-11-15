@@ -56,7 +56,7 @@ class EventDetailsViewModel : BaseViewModel() {
 
     // Start question btn text
     var questionBtnText =
-        MutableLiveData(MyApplication.appContext.resources.getString(R.string.Start_questions))
+        MutableLiveData(MyApplication.appContext.resources.getString(R.string.start_questions))
     var editImageVisibility = MutableLiveData<Boolean>(false)
 
     @Inject

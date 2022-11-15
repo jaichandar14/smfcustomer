@@ -52,7 +52,7 @@ class EventQusListAdapter(var adapterOneClickListener: AdapterOneClickListener) 
         // set listener on radio button
         holder.radioButton.setOnClickListener {
             if (!questionBtnStatus.contains(
-                    MyApplication.appContext.resources.getString(R.string.View_order)
+                    MyApplication.appContext.resources.getString(R.string.view_order)
                 )
             ) {
                 Log.d("TAG", "onBindViewHolder: contain")
@@ -88,7 +88,7 @@ class EventQusListAdapter(var adapterOneClickListener: AdapterOneClickListener) 
             Log.d("TAG", "setData: choice $choice")
             radioButton.text = choice
             if (questionBtnStatus.contains(
-                    MyApplication.appContext.resources.getString(R.string.View_order)
+                    MyApplication.appContext.resources.getString(R.string.view_order)
                 )
             ) {
                 radioButton.isEnabled = false

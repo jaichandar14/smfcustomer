@@ -125,7 +125,7 @@ abstract class BaseViewModel : ViewModel() {
                 throwable is IOException -> {
                     when (throwable) {
                         is UnknownHostException -> {
-                            retryErrorMessage.value = R.string.Internet_error
+                            retryErrorMessage.value = R.string.internet_error
                         }
                         else -> {
                             retryErrorMessage.value = (R.string.time_out_error)

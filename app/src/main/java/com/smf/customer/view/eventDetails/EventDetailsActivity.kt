@@ -143,7 +143,7 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
     }
 
     private fun createDialog() {
-        if (binding.startQusBtn.text.toString().contains(getString(R.string.View_order))) {
+        if (binding.startQusBtn.text.toString().contains(getString(R.string.view_order))) {
             showEventQuestionDialog(
                 binding.startQusBtn.text.toString(),
                 AppConstant.VIEW_QUESTIONS_DIALOG, viewModel.viewOrderQuestionNumber
@@ -181,11 +181,11 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         if (status == AppConstant.SUBMIT) {
             viewModel.questionStatus = AppConstant.SUBMIT
             viewModel.questionBtnText.value =
-                "${getString(R.string.View_order)} (${questionListItem.size})"
+                "${getString(R.string.view_order)} (${questionListItem.size})"
             viewModel.editImageVisibility.value = true
         } else {
             viewModel.questionStatus = AppConstant.CANCEL
-            viewModel.questionBtnText.value = getString(R.string.Start_questions)
+            viewModel.questionBtnText.value = getString(R.string.start_questions)
             viewModel.editImageVisibility.value = false
         }
         viewModel.questionNumber = questionNumber
@@ -258,8 +258,8 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
             )
         )
         val jsonArray = obj.getJSONArray(AppConstant.COUNTRIES)
-        viewModel.countryList.add(getString(R.string.Select_your_country))
-        viewModel.stateList.add(listOf(getString(R.string.Select_your_state)))
+        viewModel.countryList.add(getString(R.string.select_your_country))
+        viewModel.stateList.add(listOf(getString(R.string.select_your_state)))
         for (i in 0 until jsonArray.length() - 1) {
             val jsonObject = jsonArray[i] as JSONObject
             viewModel.countryList.add(jsonObject.getString(AppConstant.COUNTRY))
@@ -343,7 +343,7 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
     // Setting Initial User Details to the UI
     private fun setUserDetails() {
         binding.pageTitleText.text =
-            intent.getStringExtra(AppConstant.TITLE) + " " + getString(R.string.Event_Details)
+            intent.getStringExtra(AppConstant.TITLE) + " " + getString(R.string.event_Details)
         token = sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""]
         viewModel.templateId = intent.getStringExtra(AppConstant.TEMPLATE_ID)?.toInt()
         viewModel.name.value =

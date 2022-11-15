@@ -133,7 +133,7 @@ class EventQuestionsDialog : BaseDialogFragment(), AdapterOneClickListener {
             } else {
                 Toast.makeText(
                     requireContext(),
-                    getString(R.string.Please_select_the_answer),
+                    getString(R.string.please_select_the_answer),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -201,7 +201,7 @@ class EventQuestionsDialog : BaseDialogFragment(), AdapterOneClickListener {
     private fun setCancelBtnText() {
         if ((requireArguments()
                 .getSerializable(QUESTION_BTN_STATUS) as String)
-                .contains(getString(R.string.View_order))
+                .contains(getString(R.string.view_order))
         ) {
             dataBinding.cancelBtn.text = AppConstant.CLOSE
         } else {
