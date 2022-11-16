@@ -52,7 +52,7 @@ class DashBoardViewModel : BaseViewModel() {
 
     override fun onError(throwable: Throwable) {
         super.onError(throwable)
-
+        showLoading.value = false
         Log.d(TAG, "onError:${throwable} ")
     }
 

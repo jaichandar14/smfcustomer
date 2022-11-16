@@ -188,7 +188,7 @@ class MainDashBoardFragment : BaseFragment<DashBoardViewModel>(),
                     (tvTab1Value as TextView).text = listMyEvents.approvedEventsCount.toString()
                     (tvTab1Title as TextView).text = AppConstant.ACTIVE
                     mDataBinding.myEventsCountsTx.text =
-                        listMyEvents.approvedEventsCount.toString() + getString(
+                        listMyEvents.approvedEventsCount.toString() +" "+ getString(
                             R.string.active_counts
                         )
                 }
@@ -198,7 +198,7 @@ class MainDashBoardFragment : BaseFragment<DashBoardViewModel>(),
                     (tvTab1Value as TextView).text = listMyEvents.pendingEventsCount.toString()
                     (tvTab1Title as TextView).text = AppConstant.PENDING
                     mDataBinding.myEventsCountsTx.text =
-                        listMyEvents.approvedEventsCount.toString() + getString(
+                        listMyEvents.pendingEventsCount.toString() +" "+ getString(
                             R.string.pending_counts
                         )
                 }
@@ -209,7 +209,7 @@ class MainDashBoardFragment : BaseFragment<DashBoardViewModel>(),
                         listMyEvents.newEventsCount.plus(listMyEvents.revokedEventsCount).toString()
                     (tvTab1Title as TextView).text = AppConstant.DRAFT
                     mDataBinding.myEventsCountsTx.text =
-                        listMyEvents.approvedEventsCount.toString() + getString(
+                        listMyEvents.newEventsCount.plus(listMyEvents.revokedEventsCount).toString() +" "+ getString(
                             R.string.draft_counts
                         )
                 }
@@ -219,7 +219,7 @@ class MainDashBoardFragment : BaseFragment<DashBoardViewModel>(),
                     (tvTab1Value as TextView).text = listMyEvents.rejectedEventsCount.toString()
                     (tvTab1Title as TextView).text = AppConstant.REJECT
                     mDataBinding.myEventsCountsTx.text =
-                        listMyEvents.approvedEventsCount.toString() + getString(
+                        listMyEvents.rejectedEventsCount.toString() +" "+ getString(
                             R.string.reject_counts
                         )
                 }
@@ -229,7 +229,7 @@ class MainDashBoardFragment : BaseFragment<DashBoardViewModel>(),
                     (tvTab1Value as TextView).text = listMyEvents.closedEventsCount.toString()
                     (tvTab1Title as TextView).text = AppConstant.CLOSED_TXT
                     mDataBinding.myEventsCountsTx.text =
-                        listMyEvents.approvedEventsCount.toString() + getString(
+                        listMyEvents.closedEventsCount.toString() +" "+ getString(
                             R.string.closed_counts
                         )
                 }
