@@ -103,11 +103,13 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
                     userName
                 )
             }
-            "Move_to_Dashboard" -> {
+            getString(R.string.move_to_Dashboard) -> {
+                viewModel.showLoading.value = true
                 val intent = Intent(this, DashBoardActivity::class.java)
                 startActivity(intent)
+
             }
-            "MOVE_TO_SIGNING" -> {
+            getString(R.string.move_to_sigin) -> {
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
             }

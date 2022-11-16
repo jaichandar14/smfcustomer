@@ -32,9 +32,11 @@ class ServicesStatus: RecyclerView.Adapter<ServicesStatus.ServicesStatusViewHold
 
     inner class ServicesStatusViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private var titleText = view.findViewById<TextView>(R.id.actions_list)
+        private var numberText = view.findViewById<TextView>(R.id.action_numbers)
         // Method For Fixing xml views and Values
         fun onBind(myEvents: EventStatusDTO) {
             titleText.text = myEvents.title
+            numberText.text=myEvents.numberText
 
 
         }

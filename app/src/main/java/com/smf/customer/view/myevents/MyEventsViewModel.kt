@@ -12,11 +12,15 @@ import io.reactivex.Observable
 // 3262
 class MyEventsViewModel : BaseViewModel() {
 
-    var eventClickedPos:MutableLiveData<Int?>?= MutableLiveData<Int?>()
-    var onClicked= MutableLiveData<Boolean>()
+    var eventClickedPos: MutableLiveData<Int?>? = MutableLiveData<Int?>()
+    var onClicked = MutableLiveData<Boolean>()
+    var eventTypeList = MutableLiveData<ArrayList<EventStatusDTO>>()
+    var lastOrientation = MutableLiveData<Int>()
+
     init {
         MyApplication.applicationComponent.inject(this)
     }
+
     val listMyEvents = ArrayList<EventStatusDTO>()
 
 
@@ -47,7 +51,7 @@ class MyEventsViewModel : BaseViewModel() {
     override fun onError(throwable: Throwable) {
         super.onError(throwable)
         Log.d(TAG, "onError: ${throwable.message}")
-        showLoading.value=false
+        showLoading.value = false
     }
 
     private var callBackInterface: OnServiceClickListener? = null

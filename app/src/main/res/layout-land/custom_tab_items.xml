@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/action_card_view_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/_80sdp"
+    android:layout_marginStart="@dimen/_3sdp"
+    android:layout_marginTop="@dimen/_3sdp"
+    android:layout_marginEnd="@dimen/_8sdp"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/number_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="@font/mulish_bold"
+        android:gravity="center"
+        android:text="@string/_4"
+        android:textAlignment="center"
+        android:textColor="@color/darkblue_smf_font"
+        android:textSize="@dimen/_38sdp" />
+
+    <TextView
+        android:id="@+id/title_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/mulish_regular"
+        android:text="@string/pending"
+        android:textAlignment="center"
+        android:textColor="@color/darkblue_smf_font"
+        android:textSize="@dimen/_22ssp" />
+
+</LinearLayout>
