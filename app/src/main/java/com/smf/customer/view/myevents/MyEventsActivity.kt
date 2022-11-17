@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -16,6 +17,7 @@ import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
+import com.smf.customer.dialog.DialogConstant
 import com.smf.customer.utility.MyToast
 import com.smf.customer.view.dashboard.model.EventStatusDTO
 import com.smf.customer.view.eventDetails.EventDetailsActivity
@@ -31,6 +33,8 @@ class MyEventsActivity : BaseActivity<MyEventsViewModel>(),
     var position: Int? = null
     private var eventTypeList = ArrayList<EventStatusDTO>()
     var lastOrientation = 0
+    lateinit var title: String
+    var eventNo: Int = 0
 
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
@@ -50,19 +54,31 @@ class MyEventsActivity : BaseActivity<MyEventsViewModel>(),
                 } else {
                     mEventOverviewRecycler(5)
                 }
+                viewModel.getEventType(sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""])
             })
         } else {
+
+
             viewModel.lastOrientation.observe(this, Observer { it ->
                 if (it == 1) {
                     mEventOverviewRecycler(3)
-                    viewModel.showLoading.value = false
+                    viewModel.eventTypeList.observe(this, Observer {
+                        mAdapterEvent.refreshItems(it, viewModel.eventClickedPos?.value)
+                    })
                 } else {
-                    mEventOverviewRecycler(4)
-                    viewModel.showLoading.value = false
+                    mEventOverviewRecycler(5)
+                    viewModel.eventTypeList.observe(this, Observer {
+                        mAdapterEvent.refreshItems(it, viewModel.eventClickedPos?.value)
+                    })
                 }
+                viewModel.showLoading.value = false
             })
 
         }
+        viewModel.clickedEventDetails.observe(this, Observer {
+            title = it.title
+            eventNo = it.numberText!!.toInt()
+        })
         // 3275 My Event Api call
 
     }
@@ -86,11 +102,25 @@ class MyEventsActivity : BaseActivity<MyEventsViewModel>(),
 
     // 3275 onNextButtonClick
     private fun onNextClick() {
-        if (viewModel.eventClickedPos?.value == null) {
-            viewModel.onClicked.value = false
-        } else if (viewModel.eventClickedPos?.value != null) {
+        if (viewModel.eventClickedPos?.value != null) {
             viewModel.onClicked.value = true
-
+            mDataBinding.appCompatButton.setOnClickListener {
+                val intent = Intent(this, EventDetailsActivity::class.java)
+                intent.putExtra(
+                    AppConstant.TITLE,
+                    title
+                )
+                intent.putExtra(
+                    AppConstant.TEMPLATE_ID,
+                    eventNo
+                )
+                startActivity(intent)
+            }
+        } else {
+            viewModel.onClicked.value = false
+            mDataBinding.appCompatButton.setOnClickListener {
+                MyToast.show(this, getString(R.string.select_any_event), Toast.LENGTH_LONG)
+            }
         }
     }
 
@@ -111,56 +141,37 @@ class MyEventsActivity : BaseActivity<MyEventsViewModel>(),
         mEventOverViewRecyclerView.adapter = mAdapterEvent
         mAdapterEvent.setOnClickListener(this)
         viewModel.setOnClickListener(this)
-        viewModel.getEventType(sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""])
     }
 
     // 3275 on click recyclerview green tick
     override fun onclick(position: Int?) {
         viewModel.eventClickedPos?.value = position
-        mAdapterEvent.refreshItems(eventTypeList, viewModel.eventClickedPos?.value)
-        viewModel.onClicked.value = true
-
-        if (viewModel.eventClickedPos?.value != null) {
-            mDataBinding.appCompatButton.setOnClickListener {
-                val intent = Intent(this, EventDetailsActivity::class.java)
-                intent.putExtra(
-                    AppConstant.TITLE,
-                    eventTypeList[viewModel.eventClickedPos?.value!!].title
-                )
-                intent.putExtra(
-                    AppConstant.TEMPLATE_ID,
-                    eventTypeList[viewModel.eventClickedPos?.value!!].numberText
-                )
-                startActivity(intent)
-            }
-        } else {
-            MyToast.show(this, getString(R.string.select_any_event), Toast.LENGTH_LONG)
+        viewModel.eventTypeList.value?.let {
+            mAdapterEvent.refreshItems(
+                it,
+                viewModel.eventClickedPos?.value
+            )
         }
+        viewModel.onClicked.value = true
+        viewModel.clickedEventDetails.value = eventTypeList[viewModel.eventClickedPos?.value!!]
+
     }
 
     override fun getMyevetList(listMyEvents: ArrayList<EventStatusDTO>) {
         viewModel.showLoading.value = false
         eventTypeList = listMyEvents
         viewModel.eventTypeList.value = listMyEvents
-        if (viewModel.eventClickedPos?.value != null) {
-            mDataBinding.appCompatButton.setOnClickListener {
-                val intent = Intent(this, EventDetailsActivity::class.java)
-                intent.putExtra(
-                    AppConstant.TITLE,
-                    eventTypeList[viewModel.eventClickedPos?.value!!].title
-                )
-                intent.putExtra(
-                    AppConstant.TEMPLATE_ID,
-                    eventTypeList[viewModel.eventClickedPos?.value!!].numberText
-                )
-                startActivity(intent)
-            }
-        } else {
-            mDataBinding.appCompatButton.setOnClickListener {
-                MyToast.show(this, getString(R.string.select_any_event), Toast.LENGTH_LONG)
+        mAdapterEvent.refreshItems(listMyEvents, viewModel.eventClickedPos?.value)
+    }
+
+    override fun onPositiveClick(dialogFragment: DialogFragment) {
+        super.onPositiveClick(dialogFragment)
+        when {
+            dialogFragment.tag.equals(DialogConstant.INTERNET_DIALOG) -> {
+                dialogFragment.dismiss()
+                viewModel.hideRetryDialogFlag()
             }
         }
-        mAdapterEvent.refreshItems(listMyEvents, viewModel.eventClickedPos?.value)
     }
 }
 

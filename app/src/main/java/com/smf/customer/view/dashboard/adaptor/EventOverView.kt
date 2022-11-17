@@ -44,6 +44,7 @@ class EventOverView : RecyclerView.Adapter<EventOverView.EvenOverViewViewHolder>
             val formatter = DateTimeFormatter.ofPattern(AppConstant.DATE_FORMAT)
             val date = LocalDate.parse(myEvents.eventDate, formatter)
             val formatter2 = DateTimeFormatter.ofPattern(AppConstant.MonthDate)
+            titleText.text = myEvents.eventName
             dateText.text = date.format(formatter2)
         }
     }

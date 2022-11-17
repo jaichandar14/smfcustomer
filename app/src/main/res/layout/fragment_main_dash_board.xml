@@ -9,7 +9,7 @@
 
         <variable
             name="main_dashboard_view_model"
-            type="com.smf.customer.view.dashboard.DashBoardViewModel" />
+            type="com.smf.customer.view.dashboard.fragment.MainDashBoardViewModel" />
 
     </data>
 
@@ -214,6 +214,25 @@
                         app:layout_constraintTop_toBottomOf="@+id/my_events_counts_tx"
                         app:layout_constraintVertical_bias="0.0" />
 
+                    <TextView
+                        android:id="@+id/no_events"
+                        android:visibility="@{main_dashboard_view_model.noEventVisible.booleanValue ? View.VISIBLE : View.INVISIBLE}"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_15sdp"
+                        android:layout_marginEnd="@dimen/_15sdp"
+                        android:layout_marginTop="@dimen/_30sdp"
+                        android:textSize="@dimen/_14ssp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        android:text="@string/no_events"
+                        android:gravity="center"
+                        android:fontFamily="@font/mulish_bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/my_events_counts_tx"
+                        app:layout_constraintVertical_bias="0.0"
+                        />
                     <TextView
                         android:id="@+id/service_status_tx"
                         android:layout_width="match_parent"

@@ -49,6 +49,7 @@ abstract class BaseActivity<T : BaseViewModel> : AppActivity(), DialogTwoButtonL
             when (isNetworkAvailable) {
                 true -> {
                     Log.d(TAG, "connect onAvailable: act available $isNetworkAvailable")
+                    Log.d(TAG, "connect onAvailable hashcode: ${networkDialog.hashCode()}")
                     if (networkDialog?.isVisible == true) {
                         viewModel.hideRetryDialogFlag()
                         viewModel.doNetworkOperation()
@@ -58,6 +59,7 @@ abstract class BaseActivity<T : BaseViewModel> : AppActivity(), DialogTwoButtonL
                 false -> {
                     Log.d(TAG, "connect onAvailable: act not available $isNetworkAvailable")
                 }
+
             }
         }
     }

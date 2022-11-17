@@ -5,6 +5,7 @@ import com.smf.customer.di.sharedpreference.SharedPreferencesModule
 import com.smf.customer.view.dashboard.DashBoardActivity
 import com.smf.customer.view.dashboard.DashBoardViewModel
 import com.smf.customer.view.dashboard.fragment.MainDashBoardFragment
+import com.smf.customer.view.dashboard.fragment.MainDashBoardViewModel
 import com.smf.customer.view.emailotp.EmailOTPActivity
 import com.smf.customer.view.emailotp.EmailOTPViewModel
 import com.smf.customer.view.eventDetails.EventDetailsActivity
@@ -29,6 +30,7 @@ interface AppComponent {
     fun inject(activity: DashBoardActivity)
     fun inject(viewModel: DashBoardViewModel)
     fun inject(fragment: MainDashBoardFragment)
+    fun inject(viewModel: MainDashBoardViewModel)
     fun inject(activity: MyEventsActivity)
     fun inject(viewModel: MyEventsViewModel)
     fun inject(activity: EventDetailsActivity)
