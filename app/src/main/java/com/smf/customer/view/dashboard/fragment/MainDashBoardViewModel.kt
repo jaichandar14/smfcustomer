@@ -5,16 +5,22 @@ import androidx.lifecycle.MutableLiveData
 import com.smf.customer.app.base.BaseFragmentViewModel
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.data.model.response.ResponseDTO
+import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.view.dashboard.responsedto.EventCountDto
 import com.smf.customer.view.dashboard.responsedto.EventStatusData
 import com.smf.customer.view.dashboard.responsedto.EventStatusResponse
 import com.smf.customer.view.dashboard.responsedto.MyEventData
 import io.reactivex.Observable
+import javax.inject.Inject
 
 class MainDashBoardViewModel : BaseFragmentViewModel() {
     var listMyEvents = MutableLiveData<MyEventData>()
     var eventStatusData = MutableLiveData<EventStatusData>()
     var noEventVisible = MutableLiveData<Boolean>()
+    var screenRotationValue = MutableLiveData<Boolean>(false)
+
+    @Inject
+    lateinit var sharedPrefsHelper: SharedPrefsHelper
 
     init {
         MyApplication.applicationComponent.inject(this)
@@ -28,7 +34,10 @@ class MainDashBoardViewModel : BaseFragmentViewModel() {
         doNetworkOperation()
     }
 
+
     fun getEventStatus(idToken: String, username: String, status: ArrayList<String>) {
+        Log.d(TAG, "doNetworkOperation viewModel: called ")
+
         val observable: Observable<EventStatusResponse> =
             retrofitHelper.getDashBoardRepository().getEventStatus(idToken, username, status)
         this.observable.value = observable as Observable<ResponseDTO>
@@ -37,14 +46,10 @@ class MainDashBoardViewModel : BaseFragmentViewModel() {
 
     override fun onSuccess(responseDTO: ResponseDTO) {
         super.onSuccess(responseDTO)
-        Log.d(TAG, "onSuccess in Dashboard: ${(responseDTO)}")
         when (responseDTO) {
             is EventCountDto -> {
-                Log.d(TAG, "onSuccess in Dashboard: ${(responseDTO.data.approvedEventsCount)}")
                 var response = responseDTO.data
-                showLoading.value = true
                 callBackInterface?.getMyevetList(response)
-
             }
             is EventStatusResponse -> {
                 var response = responseDTO.data
@@ -53,12 +58,6 @@ class MainDashBoardViewModel : BaseFragmentViewModel() {
         }
     }
 
-
-    override fun onError(throwable: Throwable) {
-        super.onError(throwable)
-        showLoading.value = false
-        Log.d(TAG, "onError:${throwable} ")
-    }
 
     private var callBackInterface: OnServiceClickListener? = null
 

@@ -3,6 +3,7 @@ package com.smf.customer.view.myevents
 import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.util.Log
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
@@ -34,7 +35,7 @@ class MyEventsActivity : BaseActivity<MyEventsViewModel>(),
     private var eventTypeList = ArrayList<EventStatusDTO>()
     var lastOrientation = 0
     lateinit var title: String
-    var eventNo: Int = 0
+    lateinit var eventNo: String
 
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
@@ -45,7 +46,7 @@ class MyEventsActivity : BaseActivity<MyEventsViewModel>(),
         mInitialize()
         viewModel.lastOrientation.value = resources.configuration.orientation
         // currentOrientation()
-        viewModel.showLoading.value = true
+        //2974  viewModel.showLoading.value = true
         if (savedInstanceState == null) {
             viewModel.lastOrientation.observe(this, Observer { it ->
                 lastOrientation = it
@@ -71,18 +72,26 @@ class MyEventsActivity : BaseActivity<MyEventsViewModel>(),
                         mAdapterEvent.refreshItems(it, viewModel.eventClickedPos?.value)
                     })
                 }
-                viewModel.showLoading.value = false
+                //viewModel.showLoading.value = false
             })
 
         }
-        viewModel.clickedEventDetails.observe(this, Observer {
-            title = it.title
-            eventNo = it.numberText!!.toInt()
+        viewModel.clickedEventTitle.observe(this, Observer {
+            title = it.toString()
+
         })
+        viewModel.clickedEventNo.observe(this, Observer {
+            eventNo = it.toString()
+
+        })
+
         // 3275 My Event Api call
 
     }
 
+    override fun onStart() {
+        super.onStart()
+    }
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
@@ -124,12 +133,6 @@ class MyEventsActivity : BaseActivity<MyEventsViewModel>(),
         }
     }
 
-    // 3285 on Back press click
-    override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
-    }
-
     // 3275 Recycler view for showing event type
     private fun mEventOverviewRecycler(i: Int) {
         mEventOverViewRecyclerView = mDataBinding.myEventRecyclerView
@@ -152,9 +155,16 @@ class MyEventsActivity : BaseActivity<MyEventsViewModel>(),
                 viewModel.eventClickedPos?.value
             )
         }
+        onNextClick()
+        Log.d(
+            TAG,
+            "onclick clciekd pos: ${position?.let { viewModel.eventTypeList.value?.get(it)?.title }}"
+        )
         viewModel.onClicked.value = true
-        viewModel.clickedEventDetails.value = eventTypeList[viewModel.eventClickedPos?.value!!]
-
+        viewModel.clickedEventTitle.value =
+            position?.let { viewModel.eventTypeList.value?.get(it)?.title }
+        viewModel.clickedEventNo.value =
+            position?.let { viewModel.eventTypeList.value?.get(it)?.numberText }
     }
 
     override fun getMyevetList(listMyEvents: ArrayList<EventStatusDTO>) {
@@ -173,6 +183,8 @@ class MyEventsActivity : BaseActivity<MyEventsViewModel>(),
             }
         }
     }
+
+
 }
 
 

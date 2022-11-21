@@ -14,7 +14,6 @@ import com.smf.customer.listener.DialogTwoButtonListener
 import com.smf.customer.utility.ConnectionLiveData
 import com.smf.customer.utility.MyToast
 import com.smf.customer.utility.Util
-import com.smf.customer.view.splash.SplashActivity
 import javax.inject.Inject
 
 // 3262
@@ -25,12 +24,13 @@ abstract class BaseFragment<T : BaseFragmentViewModel> : Fragment(), DialogTwoBu
     lateinit var viewModel: T
     private lateinit var connectionLiveData: ConnectionLiveData
     private var networkDialog: InternetErrorDialog? = null
-
+    var isAvailable = false
     open fun observer() {
         viewModel.toastMessage.observe(this) { message ->
             message?.let { MyToast.show(requireActivity(), message, Toast.LENGTH_LONG) }
         }
         viewModel.retryErrorMessage.observe(this) { retryErrorMessage ->
+            Log.d(TAG, "showRetryDialog: ${retryErrorMessage}")
             showRetryDialog(retryErrorMessage?.let { getString(it) })
         }
         viewModel.logout.observe(this) { logout ->
@@ -53,10 +53,12 @@ abstract class BaseFragment<T : BaseFragmentViewModel> : Fragment(), DialogTwoBu
                     if (networkDialog?.isVisible == true) {
                         viewModel.hideRetryDialogFlag()
                         viewModel.doNetworkOperation()
+                        isAvailable = true
                         networkDialog?.dismiss()
                     }
                 }
                 false -> {
+                    isAvailable = false
                     Log.d(TAG, "connect onAvailable: frag not available $isNetworkAvailable")
                 }
             }
@@ -81,20 +83,31 @@ abstract class BaseFragment<T : BaseFragmentViewModel> : Fragment(), DialogTwoBu
         }
         if (::viewModel.isInitialized) {
             if (viewModel.isRetryDialogVisible()) {
-            showRetryDialog(getString(R.string.internet_error))
+                showRetryDialog(getString(R.string.internet_error))
             }
         }
         connectionLiveData = ConnectionLiveData(requireActivity())
         observer()
     }
+
     open fun showRetryDialog(retryErrorMessage: String?) {
         retryErrorMessage?.let {
             when (it) {
                 getString(R.string.internet_error) -> {
-                    viewModel.showRetryDialogFlag()
-                    networkDialog = InternetErrorDialog.newInstance(this)
-                    networkDialog!!.show(requireActivity().supportFragmentManager, DialogConstant.INTERNET_DIALOG)
-                    Log.d(TAG, "connect onAvailable hashcode frag: ${networkDialog.hashCode()}")
+                    Log.d(TAG, "showRetryDialog: ${networkDialog?.tag}")
+                    if (networkDialog?.tag.toString() != DialogConstant.INTERNET_DIALOG) {
+                        viewModel.showRetryDialogFlag()
+                        networkDialog = InternetErrorDialog.newInstance(this)
+                        networkDialog!!.show(
+                            requireActivity().supportFragmentManager,
+                            DialogConstant.INTERNET_DIALOG
+                        )
+                        Log.d(
+                            TAG,
+                            "connect onAvailable hashcode frag: ${networkDialog.hashCode()}"
+                        )
+                    }
+
 
                 }
                 else -> {
@@ -106,6 +119,7 @@ abstract class BaseFragment<T : BaseFragmentViewModel> : Fragment(), DialogTwoBu
 //                    ).show(supportFragmentManager, DialogConstant.RETRY_DIALOG)
                 }
             }
+
         }
     }
 

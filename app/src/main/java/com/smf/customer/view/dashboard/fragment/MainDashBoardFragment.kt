@@ -36,7 +36,7 @@ import javax.inject.Inject
 
 
 // 3262
-class MainDashBoardFragment : BaseFragment<MainDashBoardViewModel>(),
+class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
     MainDashBoardViewModel.OnServiceClickListener {
     private lateinit var mAdapterEvent: EventOverView
     private lateinit var mAdapterService: ServicesStatus
@@ -48,30 +48,37 @@ class MainDashBoardFragment : BaseFragment<MainDashBoardViewModel>(),
     private var mEventStatusList = ArrayList<String>()
     private var lastOrientation = 0
 
+
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
 
     private var eventStatus: Any = 0
-
+    var count = 0
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_main_dash_board, container, false)
+        mDataBinding =
+            DataBindingUtil.inflate(inflater, R.layout.fragment_main_dash_board, container, false)
+        viewModel = ViewModelProvider(this)[MainDashBoardViewModel::class.java]
+        mDataBinding.mainDashboardViewModel = viewModel
+        mDataBinding.lifecycleOwner = this
+        MyApplication.applicationComponent.inject(this)
+        viewModel.noEventVisible.value = false
+        return mDataBinding.root
     }
-
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt(AppConstant.ROTATED, lastOrientation)
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // 3285 Method to initialize the Di
-        mInitialize()
+        //  mInitialize()
+        Log.d(TAG, "onViewCreated: MainFragment")
         // 3285 Method for setting Recycler view
         mRecyclerViewIntializer()
         // 3285 Initialize the call back listeners
@@ -80,16 +87,26 @@ class MainDashBoardFragment : BaseFragment<MainDashBoardViewModel>(),
         currentOrientation()
         // 3285 Method for Screen Rotation Validation
         onScreenRotation(savedInstanceState)
-
         mDataBinding.myEventIcon.setOnClickListener {
             val intent = Intent(requireContext().applicationContext, MyEventsActivity::class.java)
             startActivity(intent)
         }
+        if (isAvailable == true) {
+            viewModel.getEventCount(
+                sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""],
+                sharedPrefsHelper[SharedPrefConstant.USER_ID, ""]
+            )
+        }
+    }
 
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.screenRotationValue.value = true
     }
 
     private fun onScreenRotation(savedInstanceState: Bundle?) {
-        if (savedInstanceState == null) {
+        if (viewModel.screenRotationValue.value == false) {
             // 3285 Method for get api call
             dashBoardGetApiCall()
             viewModel.listMyEvents.observe(requireActivity(), Observer {
@@ -98,6 +115,7 @@ class MainDashBoardFragment : BaseFragment<MainDashBoardViewModel>(),
             })
         } else {
             viewModel.listMyEvents.observe(requireActivity(), Observer {
+                Log.d(TAG, "doNetworkOperation OnScreenRotation api : called ")
                 mEventStatusRecycler(it)
                 mDataBinding.myEventsCountsTx.text =
                     it.approvedEventsCount.toString() + " " + getString(R.string.active_counts)
@@ -110,16 +128,17 @@ class MainDashBoardFragment : BaseFragment<MainDashBoardViewModel>(),
 
 
     private fun dashBoardGetApiCall() {
+        Log.d(TAG, "dashBoardGetApiCall: call")
         viewModel.getEventCount(
             sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""],
             sharedPrefsHelper[SharedPrefConstant.USER_ID, ""]
         )
         mEventStatusList.add(AppConstant.APPROVED)
+        Log.d(TAG, "doNetworkOperation Dashboard api : called ")
         viewModel.getEventStatus(
             sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""],
             sharedPrefsHelper[SharedPrefConstant.USER_ID, ""], mEventStatusList
         )
-        viewModel.showLoading.value = true
     }
 
     private fun currentOrientation() {
@@ -153,9 +172,15 @@ class MainDashBoardFragment : BaseFragment<MainDashBoardViewModel>(),
     private fun mEventStatusRecycler(listMyEvents: MyEventData) {
         val tabLayout = mDataBinding.eventStatusTab
         setTab(tabLayout, listMyEvents)
+
         tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                onTabClick(tab, listMyEvents)
+                count += 1
+                if (count == 1) {
+                    onTabClick(tab, listMyEvents)
+                    count = 0
+                }
+
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -169,7 +194,7 @@ class MainDashBoardFragment : BaseFragment<MainDashBoardViewModel>(),
     fun onTabClick(tab: TabLayout.Tab, listMyEvents: MyEventData) {
         val position = tab.position
         val mEventStatusList = ArrayList<String>()
-        Log.d(TAG, "onTabSelected: $position")
+        Log.d(TAG, ": $position")
         when (position) {
             0 -> {
                 mEventStatusList.clear()
@@ -238,7 +263,6 @@ class MainDashBoardFragment : BaseFragment<MainDashBoardViewModel>(),
                     var tvTab1Value = tab1.customView!!.findViewById<View>(R.id.number_text)
                     (tvTab1Value as TextView).text = listMyEvents.approvedEventsCount.toString()
                     (tvTab1Title as TextView).text = AppConstant.ACTIVE
-
                 }
                 1 -> {
                     var tvTab1Title = tab1.customView!!.findViewById<View>(R.id.title_text)
@@ -350,6 +374,7 @@ class MainDashBoardFragment : BaseFragment<MainDashBoardViewModel>(),
     override fun getMyevetList(listMyEvents: MyEventData) {
         eventStatus = listMyEvents
         viewModel.listMyEvents.value = listMyEvents
+        Log.d(TAG, "doNetworkOperation getMyevetList : called ")
         mEventStatusRecycler(listMyEvents)
 
     }
@@ -368,6 +393,11 @@ class MainDashBoardFragment : BaseFragment<MainDashBoardViewModel>(),
             viewModel.eventStatusData.value = response
             mAdapterEvent.refreshItems(response.eventDtos)
         }
+        viewModel.getEventCount(
+            sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""],
+            sharedPrefsHelper[SharedPrefConstant.USER_ID, ""]
+        )
+
 
     }
 
@@ -377,7 +407,6 @@ class MainDashBoardFragment : BaseFragment<MainDashBoardViewModel>(),
             dialogFragment.tag.equals(DialogConstant.INTERNET_DIALOG) -> {
                 dialogFragment.dismiss()
                 viewModel.hideRetryDialogFlag()
-                viewModel.doNetworkOperation()
             }
         }
     }
