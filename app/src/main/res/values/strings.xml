@@ -149,4 +149,12 @@
     <string name="select_any_event">Select any Event to proceed</string>
     <string name="no_events">No Events Available</string>
 
+    <string name="todo">TODO</string>
+    <string name="_12am_3am">12am - 3am</string>
+    <string-array name="mile_distance">
+        <item>0–50 Miles</item>
+        <item>50–100 Miles</item>
+        <item>100–150 Miles</item>
+    </string-array>
+    <string name="please_select_valid_date">Please Select Valid Date</string>
 </resources>
