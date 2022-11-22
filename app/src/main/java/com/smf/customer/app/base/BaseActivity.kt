@@ -48,16 +48,17 @@ abstract class BaseActivity<T : BaseViewModel> : AppActivity(), DialogTwoButtonL
         connectionLiveData.observe(this) { isNetworkAvailable ->
             when (isNetworkAvailable) {
                 true -> {
-                    Log.d(TAG, "connect onAvailable: act available $isNetworkAvailable")
                     if (networkDialog?.isVisible == true) {
                         viewModel.hideRetryDialogFlag()
                         viewModel.doNetworkOperation()
                         networkDialog?.dismiss()
                     }
+
                 }
                 false -> {
                     Log.d(TAG, "connect onAvailable: act not available $isNetworkAvailable")
                 }
+
             }
         }
     }

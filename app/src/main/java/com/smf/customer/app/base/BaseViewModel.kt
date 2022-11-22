@@ -1,5 +1,8 @@
 package com.smf.customer.app.base
 
+import android.util.Log
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.smf.customer.R
@@ -52,6 +55,7 @@ abstract class BaseViewModel : ViewModel() {
     lateinit var customErrorAPI: CustomErrorAPI
 
     private var retryDialog = MutableLiveData<Boolean>(false)
+
 
     fun showRetryDialogFlag() {
         retryDialog.value = true
@@ -225,6 +229,8 @@ abstract class BaseViewModel : ViewModel() {
 
     open fun doNetworkOperation() {
         showLoading.value = true
+        Log.d(TAG, "doNetworkOperation: ${TAG}")
+        
         observable.value?.subscribeOn(Schedulers.io())
             ?.observeOn(AndroidSchedulers.mainThread())?.subscribe(this::onSuccess, this::onError)
             ?.let {

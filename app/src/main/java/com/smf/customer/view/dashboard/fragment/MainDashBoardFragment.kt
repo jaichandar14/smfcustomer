@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,7 +24,7 @@ import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.databinding.FragmentMainDashBoardBinding
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
-import com.smf.customer.view.dashboard.DashBoardViewModel
+import com.smf.customer.dialog.DialogConstant
 import com.smf.customer.view.dashboard.adaptor.EventOverView
 import com.smf.customer.view.dashboard.adaptor.ServicesStatus
 import com.smf.customer.view.dashboard.adaptor.Upcomingevent
@@ -34,8 +36,8 @@ import javax.inject.Inject
 
 
 // 3262
-class MainDashBoardFragment : BaseFragment<DashBoardViewModel>(),
-    DashBoardViewModel.OnServiceClickListener {
+class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
+    MainDashBoardViewModel.OnServiceClickListener {
     private lateinit var mAdapterEvent: EventOverView
     private lateinit var mAdapterService: ServicesStatus
     private lateinit var mAdapterUpcoming: Upcomingevent
@@ -46,57 +48,97 @@ class MainDashBoardFragment : BaseFragment<DashBoardViewModel>(),
     private var mEventStatusList = ArrayList<String>()
     private var lastOrientation = 0
 
+
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
 
     private var eventStatus: Any = 0
-
+    var count = 0
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_main_dash_board, container, false)
+        mDataBinding =
+            DataBindingUtil.inflate(inflater, R.layout.fragment_main_dash_board, container, false)
+        viewModel = ViewModelProvider(this)[MainDashBoardViewModel::class.java]
+        mDataBinding.mainDashboardViewModel = viewModel
+        mDataBinding.lifecycleOwner = this
+        MyApplication.applicationComponent.inject(this)
+        viewModel.noEventVisible.value = false
+        return mDataBinding.root
     }
-
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt(AppConstant.ROTATED, lastOrientation)
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // 3285 Method to initialize the Di
-        mInitialize()
+        //  mInitialize()
+        Log.d(TAG, "onViewCreated: MainFragment")
         // 3285 Method for setting Recycler view
         mRecyclerViewIntializer()
         // 3285 Initialize the call back listeners
         viewModel.setOnClickListener(this)
         // 3285 Method to get he screen orientation
         currentOrientation()
-        // 3285 Method for get api call
-        dashBoardGetApiCall()
-
+        // 3285 Method for Screen Rotation Validation
+        onScreenRotation(savedInstanceState)
         mDataBinding.myEventIcon.setOnClickListener {
             val intent = Intent(requireContext().applicationContext, MyEventsActivity::class.java)
             startActivity(intent)
         }
-
+        if (isAvailable == true) {
+            viewModel.getEventCount(
+                sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""],
+                sharedPrefsHelper[SharedPrefConstant.USER_ID, ""]
+            )
+        }
     }
 
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.screenRotationValue.value = true
+    }
+
+    private fun onScreenRotation(savedInstanceState: Bundle?) {
+        if (viewModel.screenRotationValue.value == false) {
+            // 3285 Method for get api call
+            dashBoardGetApiCall()
+            viewModel.listMyEvents.observe(requireActivity(), Observer {
+                mDataBinding.myEventsCountsTx.text =
+                    it.approvedEventsCount.toString() + " " + getString(R.string.active_counts)
+            })
+        } else {
+            viewModel.listMyEvents.observe(requireActivity(), Observer {
+                Log.d(TAG, "doNetworkOperation OnScreenRotation api : called ")
+                mEventStatusRecycler(it)
+                mDataBinding.myEventsCountsTx.text =
+                    it.approvedEventsCount.toString() + " " + getString(R.string.active_counts)
+            })
+            viewModel.eventStatusData.observe(requireActivity(), Observer {
+                mAdapterEvent.refreshItems(it.eventDtos)
+            })
+        }
+    }
+
+
     private fun dashBoardGetApiCall() {
+        Log.d(TAG, "dashBoardGetApiCall: call")
         viewModel.getEventCount(
             sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""],
             sharedPrefsHelper[SharedPrefConstant.USER_ID, ""]
         )
         mEventStatusList.add(AppConstant.APPROVED)
+        Log.d(TAG, "doNetworkOperation Dashboard api : called ")
         viewModel.getEventStatus(
             sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""],
             sharedPrefsHelper[SharedPrefConstant.USER_ID, ""], mEventStatusList
         )
-        viewModel.showLoading.value = true
     }
 
     private fun currentOrientation() {
@@ -130,45 +172,79 @@ class MainDashBoardFragment : BaseFragment<DashBoardViewModel>(),
     private fun mEventStatusRecycler(listMyEvents: MyEventData) {
         val tabLayout = mDataBinding.eventStatusTab
         setTab(tabLayout, listMyEvents)
+
         tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                val position = tab.position
-                val mEventStatusList = ArrayList<String>()
-                Log.d(TAG, "onTabSelected: $position")
-                when (position) {
-                    0 -> {
-                        mEventStatusList.clear()
-                        mEventStatusList.add(AppConstant.APPROVED)
-                        getEventStatusApi(mEventStatusList)
-                    }
-                    1 -> {
-                        mEventStatusList.clear()
-                        mEventStatusList.add(AppConstant.UNDER_REVIEW)
-                        mEventStatusList.add(AppConstant.PENDING_ADMIN_APPROVAL)
-                        getEventStatusApi(mEventStatusList)
-                    }
-                    2 -> {
-                        mEventStatusList.clear()
-                        mEventStatusList.add(AppConstant.NEW)
-                        mEventStatusList.add(AppConstant.REVOKED)
-                        getEventStatusApi(mEventStatusList)
-                    }
-                    3 -> {
-                        mEventStatusList.clear()
-                        mEventStatusList.add(AppConstant.REJECTED)
-                        getEventStatusApi(mEventStatusList)
-                    }
-                    4 -> {
-                        mEventStatusList.clear()
-                        mEventStatusList.add(AppConstant.CLOSED)
-                        getEventStatusApi(mEventStatusList)
-                    }
+                count += 1
+                if (count == 1) {
+                    onTabClick(tab, listMyEvents)
+                    count = 0
                 }
+
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {}
-            override fun onTabReselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {
+                onTabClick(tab, listMyEvents)
+            }
         })
+    }
+
+    // 3285 On Tab view clicked
+    fun onTabClick(tab: TabLayout.Tab, listMyEvents: MyEventData) {
+        val position = tab.position
+        val mEventStatusList = ArrayList<String>()
+        Log.d(TAG, ": $position")
+        when (position) {
+            0 -> {
+                mEventStatusList.clear()
+                mEventStatusList.add(AppConstant.APPROVED)
+                getEventStatusApi(mEventStatusList)
+                mDataBinding.myEventsCountsTx.text =
+                    listMyEvents.approvedEventsCount.toString() + " " + getString(
+                        R.string.active_counts
+                    )
+            }
+            1 -> {
+                mEventStatusList.clear()
+                mEventStatusList.add(AppConstant.UNDER_REVIEW)
+                mEventStatusList.add(AppConstant.PENDING_ADMIN_APPROVAL)
+                getEventStatusApi(mEventStatusList)
+                mDataBinding.myEventsCountsTx.text =
+                    listMyEvents.pendingEventsCount.toString() + " " + getString(
+                        R.string.pending_counts
+                    )
+            }
+            2 -> {
+                mEventStatusList.clear()
+                mEventStatusList.add(AppConstant.NEW)
+                mEventStatusList.add(AppConstant.REVOKED)
+                getEventStatusApi(mEventStatusList)
+                mDataBinding.myEventsCountsTx.text =
+                    listMyEvents.newEventsCount.plus(listMyEvents.revokedEventsCount)
+                        .toString() + " " + getString(
+                        R.string.draft_counts
+                    )
+            }
+            3 -> {
+                mEventStatusList.clear()
+                mEventStatusList.add(AppConstant.REJECTED)
+                getEventStatusApi(mEventStatusList)
+                mDataBinding.myEventsCountsTx.text =
+                    listMyEvents.rejectedEventsCount.toString() + " " + getString(
+                        R.string.reject_counts
+                    )
+            }
+            4 -> {
+                mEventStatusList.clear()
+                mEventStatusList.add(AppConstant.CLOSED)
+                getEventStatusApi(mEventStatusList)
+                mDataBinding.myEventsCountsTx.text =
+                    listMyEvents.closedEventsCount.toString() + " " + getString(
+                        R.string.closed_counts
+                    )
+            }
+        }
     }
 
     private fun getEventStatusApi(mEventStatusList: ArrayList<String>) {
@@ -187,20 +263,13 @@ class MainDashBoardFragment : BaseFragment<DashBoardViewModel>(),
                     var tvTab1Value = tab1.customView!!.findViewById<View>(R.id.number_text)
                     (tvTab1Value as TextView).text = listMyEvents.approvedEventsCount.toString()
                     (tvTab1Title as TextView).text = AppConstant.ACTIVE
-                    mDataBinding.myEventsCountsTx.text =
-                        listMyEvents.approvedEventsCount.toString() +" "+ getString(
-                            R.string.active_counts
-                        )
                 }
                 1 -> {
                     var tvTab1Title = tab1.customView!!.findViewById<View>(R.id.title_text)
                     var tvTab1Value = tab1.customView!!.findViewById<View>(R.id.number_text)
                     (tvTab1Value as TextView).text = listMyEvents.pendingEventsCount.toString()
                     (tvTab1Title as TextView).text = AppConstant.PENDING
-                    mDataBinding.myEventsCountsTx.text =
-                        listMyEvents.pendingEventsCount.toString() +" "+ getString(
-                            R.string.pending_counts
-                        )
+
                 }
                 2 -> {
                     var tvTab1Title = tab1.customView!!.findViewById<View>(R.id.title_text)
@@ -208,30 +277,21 @@ class MainDashBoardFragment : BaseFragment<DashBoardViewModel>(),
                     (tvTab1Value as TextView).text =
                         listMyEvents.newEventsCount.plus(listMyEvents.revokedEventsCount).toString()
                     (tvTab1Title as TextView).text = AppConstant.DRAFT
-                    mDataBinding.myEventsCountsTx.text =
-                        listMyEvents.newEventsCount.plus(listMyEvents.revokedEventsCount).toString() +" "+ getString(
-                            R.string.draft_counts
-                        )
+
                 }
                 3 -> {
                     var tvTab1Title = tab1.customView!!.findViewById<View>(R.id.title_text)
                     var tvTab1Value = tab1.customView!!.findViewById<View>(R.id.number_text)
                     (tvTab1Value as TextView).text = listMyEvents.rejectedEventsCount.toString()
                     (tvTab1Title as TextView).text = AppConstant.REJECT
-                    mDataBinding.myEventsCountsTx.text =
-                        listMyEvents.rejectedEventsCount.toString() +" "+ getString(
-                            R.string.reject_counts
-                        )
+
                 }
                 4 -> {
                     var tvTab1Title = tab1.customView!!.findViewById<View>(R.id.title_text)
                     var tvTab1Value = tab1.customView!!.findViewById<View>(R.id.number_text)
                     (tvTab1Value as TextView).text = listMyEvents.closedEventsCount.toString()
                     (tvTab1Title as TextView).text = AppConstant.CLOSED_TXT
-                    mDataBinding.myEventsCountsTx.text =
-                        listMyEvents.closedEventsCount.toString() +" "+ getString(
-                            R.string.closed_counts
-                        )
+
                 }
             }
         }
@@ -242,11 +302,11 @@ class MainDashBoardFragment : BaseFragment<DashBoardViewModel>(),
     private fun mInitialize() {
         mDataBinding =
             DataBindingUtil.setContentView(requireActivity(), R.layout.fragment_main_dash_board)
-        viewModel = ViewModelProvider(this)[DashBoardViewModel::class.java]
+        viewModel = ViewModelProvider(this)[MainDashBoardViewModel::class.java]
         mDataBinding.mainDashboardViewModel = viewModel
         mDataBinding.lifecycleOwner = this
         MyApplication.applicationComponent.inject(this)
-
+        viewModel.noEventVisible.value = false
     }
 
     private fun mEventOverviewRecycler(i: Int) {
@@ -313,17 +373,41 @@ class MainDashBoardFragment : BaseFragment<DashBoardViewModel>(),
 
     override fun getMyevetList(listMyEvents: MyEventData) {
         eventStatus = listMyEvents
+        viewModel.listMyEvents.value = listMyEvents
+        Log.d(TAG, "doNetworkOperation getMyevetList : called ")
         mEventStatusRecycler(listMyEvents)
-        mDataBinding.myEventsCountsTx.text =
-            listMyEvents.approvedEventsCount.toString() + getString(R.string.active_counts)
+
     }
 
     override fun getEventStatus(response: EventStatusData) {
+        var cutOrientation = resources.configuration.orientation
         if (response.eventDtos == null) {
-            mEventOverviewRecycler(3)
+            viewModel.noEventVisible.value = true
+            if (cutOrientation == 1) {
+                mEventOverviewRecycler(3)
+            } else {
+                mEventOverviewRecycler(5)
+            }
         } else {
+            viewModel.noEventVisible.value = false
+            viewModel.eventStatusData.value = response
             mAdapterEvent.refreshItems(response.eventDtos)
         }
+        viewModel.getEventCount(
+            sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""],
+            sharedPrefsHelper[SharedPrefConstant.USER_ID, ""]
+        )
 
+
+    }
+
+    override fun onPositiveClick(dialogFragment: DialogFragment) {
+        super.onPositiveClick(dialogFragment)
+        when {
+            dialogFragment.tag.equals(DialogConstant.INTERNET_DIALOG) -> {
+                dialogFragment.dismiss()
+                viewModel.hideRetryDialogFlag()
+            }
+        }
     }
 }

@@ -16,7 +16,8 @@ class MyEventsViewModel : BaseViewModel() {
     var onClicked = MutableLiveData<Boolean>()
     var eventTypeList = MutableLiveData<ArrayList<EventStatusDTO>>()
     var lastOrientation = MutableLiveData<Int>()
-
+    var clickedEventTitle = MutableLiveData<String?>()
+    var clickedEventNo = MutableLiveData<String?>()
     init {
         MyApplication.applicationComponent.inject(this)
     }
