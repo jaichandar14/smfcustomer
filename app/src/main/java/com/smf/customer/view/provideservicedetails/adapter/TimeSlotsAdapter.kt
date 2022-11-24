@@ -61,12 +61,12 @@ class TimeSlotsAdapter :
                 timeSlotText.text = timeSlot
             }
             // Initialize onClick listener
-            timeSlotIcon.setOnClickListener {
+            itemView.setOnClickListener {
                 updateData(position)
             }
-            timeSlotText.setOnClickListener {
-                updateData(position)
-            }
+//            timeSlotText.setOnClickListener {
+//                updateData(position)
+//            }
         }
 
         // Method for update image after onClick

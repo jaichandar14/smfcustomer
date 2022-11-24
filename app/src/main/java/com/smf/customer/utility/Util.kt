@@ -1,8 +1,11 @@
 package com.smf.customer.utility
 
 import android.content.Context
+import android.content.res.Resources
+import android.graphics.Rect
 import android.text.InputFilter
 import android.util.Log
+import androidx.fragment.app.DialogFragment
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import java.io.IOException
@@ -40,6 +43,17 @@ class Util {
                 }
                 null
             }
+        }
+
+        // Setting Dialog Fragment Size
+        fun DialogFragment.setWidthPercent(widthPercentage: Int, heightPercentage: Int) {
+            val percentWidth = widthPercentage.toFloat() / 100
+            val dm = Resources.getSystem().displayMetrics
+            val rect = dm.run { Rect(0, 0, widthPixels, heightPixels) }
+            val width = rect.width() * percentWidth
+            val percentHeight = heightPercentage.toFloat() / 100
+            val height = rect.height() * percentHeight
+            dialog?.window?.setLayout(width.toInt(), height.toInt())
         }
 
         fun getNewFCMToken(preferenceHelper: SharedPrefsHelper) {
