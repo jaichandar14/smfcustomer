@@ -1,6 +1,7 @@
 package com.smf.customer.data.model.dto
 
-class DialogListItem {
-    var id = ""
-    var name = ""
-}
+data class DialogListItem(
+    var serviceIcon: String = "",
+    var serviceName: String = "",
+    var selectedSlotsPositionMap: HashMap<Int, Boolean> = HashMap()
+)

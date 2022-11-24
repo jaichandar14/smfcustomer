@@ -157,4 +157,7 @@
         <item>100–150 Miles</item>
     </string-array>
     <string name="please_select_valid_date">Please Select Valid Date</string>
+    <string name="save_services">Save services</string>
+    <string name="save">Save</string>
+    <string name="service_list">Service list</string>
 </resources>
