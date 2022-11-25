@@ -94,8 +94,7 @@ class EventDetailsViewModel : BaseViewModel() {
                 if (questionStatus == AppConstant.SUBMIT) {
                     // Post Event info details
                     postEventInfo(idToken, createEventInfoDto())
-                    // Go to dashboard
-                    callBackInterface?.onClickNext()
+
                 } else {
                     showToastMessage("Please submit all questions")
                 }
@@ -115,8 +114,7 @@ class EventDetailsViewModel : BaseViewModel() {
                 if (questionStatus == AppConstant.SUBMIT) {
                     // Post Event info details
                     postEventInfo(idToken, createEventInfoDto())
-                    // Go to dashboard
-                    callBackInterface?.onClickNext()
+
                 } else {
                     showToastMessage("Please submit all questions")
                 }
@@ -227,7 +225,8 @@ class EventDetailsViewModel : BaseViewModel() {
                 callBackInterface?.updateQuestions(responseDTO as EventQuestionsResponseDTO)
             }
             is EventInfoResponseDto -> {
-                Log.d(TAG, "onSuccess: event info called")
+                // Go to dashboard
+                callBackInterface?.onClickNext()
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.smf.customer.view.eventDetails
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -23,6 +24,7 @@ import com.smf.customer.dialog.EventQuestionsDialog
 import com.smf.customer.listener.DialogThreeButtonListener
 import com.smf.customer.utility.DatePicker
 import com.smf.customer.utility.Util
+import com.smf.customer.view.dashboard.DashBoardActivity
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
@@ -125,8 +127,9 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
     }
 
     override fun onClickNext() {
-//        TODO next grooming tasks
-//        startActivity(Intent(this, DashBoardActivity::class.java))
+        val intent=Intent(this, DashBoardActivity::class.java)
+        intent.putExtra(AppConstant.ON_EVENT,getString(R.string.event_dt))
+       startActivity(intent)
     }
 
     private fun onClickQuestionsBtn() {

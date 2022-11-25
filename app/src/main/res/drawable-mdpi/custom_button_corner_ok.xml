@@ -5,5 +5,5 @@
     <corners android:radius="@dimen/_8sdp" />
     <stroke
         android:width="@dimen/_1sdp"
-        android:color="@color/pairing_theme" />
+        android:color="@color/semi_transparent" />
 </shape>
