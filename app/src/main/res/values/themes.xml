@@ -233,4 +233,10 @@
         <item name="android:windowIsFloating">false</item>
     </style>
 
+    <style name="CircularDeterminateProgressBar">
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:progressDrawable">@drawable/custom_event_progress_bar</item>
+    </style>
+
+
 </resources>

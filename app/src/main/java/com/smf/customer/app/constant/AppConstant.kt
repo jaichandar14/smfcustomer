@@ -87,5 +87,7 @@ object AppConstant {
     const val REJECT = "Reject"
     const val CLOSED_TXT = "Closed"
 
+    // 3306
+    const val ON_EVENT="onEvent"
 
 }
