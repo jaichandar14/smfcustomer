@@ -164,7 +164,7 @@
     //3306
     <string name="event_dates">Event date:</string>
     <string name="_12_02_2022">12/02/2022</string>
-    <string name="view_event_details">View event details</string>
+    <string name="view_event_details">View/Modify event details</string>
     <string name="add_or_remove_services">Add or remove services</string>
     <string name="admin_approval">Admin approval</string>
     <string name="order_details">Order details</string>

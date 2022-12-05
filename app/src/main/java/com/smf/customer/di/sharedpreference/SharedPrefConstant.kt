@@ -38,4 +38,40 @@ object SharedPrefConstant {
 
     val COUNTRY_CODE: String
         get() = "countryCode"
+
+    val EVENT_NAME: String
+        get() = "Event Name"
+
+    val EVENT_DATE: String
+        get() = "Event Date"
+
+    val NO_OF_ATTENDEES: String
+        get() = "No Of Attendees"
+
+    val BUDGET: String
+        get() ="Budget"
+
+    val ZIPCODE: String
+        get() ="ZipCode"
+
+    val VENUE: String
+        get() = "Venue"
+
+    val CURRENCY_TYPE: String
+        get() = "Currency Type"
+
+    val ADDRESS_1: String
+        get() = "address1"
+
+    val ADDRESS_2: String
+        get() = "address2"
+
+    val COUNTRY: String
+        get() = "country"
+
+    val STATE: String
+        get() = "state"
+
+    val CITY: String
+        get() = "city"
 }

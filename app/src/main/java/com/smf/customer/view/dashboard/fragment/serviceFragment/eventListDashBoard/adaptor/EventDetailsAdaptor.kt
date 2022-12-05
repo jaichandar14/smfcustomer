@@ -2,11 +2,11 @@ package com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBo
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.smf.customer.R
+import com.smf.customer.databinding.DetailscardviewBinding
 import com.smf.customer.view.dashboard.model.EventStatusDTO
 
 class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetailsViewHolder>() {
@@ -14,11 +14,15 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
     private var myEventsList = ArrayList<EventStatusDTO>()
     private var onClickListener: OnServiceClickListener? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventDetailsViewHolder {
-        val itemView =
-            LayoutInflater.from(parent.context).inflate(R.layout.detailscardview, parent, false)
-        return EventDetailsViewHolder(itemView)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventDetailsViewHolder
+    =
+    EventDetailsViewHolder(DetailscardviewBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+//    {
+////        val itemView =
+////            LayoutInflater.from(parent.context).inflate(R.layout.detailscardview, parent, false)
+////        return EventDetailsViewHolder(itemView)
+//    }
+
 
     override fun onBindViewHolder(holder: EventDetailsViewHolder, position: Int) {
         holder.onBind(myEventsList[position])
@@ -29,13 +33,13 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
         return myEventsList.size
     }
 
-    inner class EventDetailsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private var titleText = view.findViewById<TextView>(R.id.event_title_text)
+    inner class EventDetailsViewHolder( var binding: DetailscardviewBinding) : RecyclerView.ViewHolder(binding.root) {
+       // private var titleText = view.findViewById<TextView>(R.id.event_title_text)
 
         // Method For Fixing xml views and Values
         fun onBind(myEvents: EventStatusDTO) {
-            titleText.text = myEvents.title
-
+          //  titleText.text = myEvents.title
+binding.details=myEvents
 
         }
     }

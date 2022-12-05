@@ -29,6 +29,7 @@ import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.set
 
 class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeButtonListener,
     EventDetailsViewModel.CallBackInterface, EventQuestionsCallback {
@@ -87,8 +88,6 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
     }
 
     private fun init() {
-        // Initialize currency type
-        initializeCurrencyType()
         // Get country and state list
         getCountryAndStateList()
         // Initialize country and state list
@@ -105,7 +104,45 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         eventDateListener()
         // Start question button listener
         onClickQuestionsBtn()
+        // Method for modify and view
+        onClickModifyDetails()
+        // Initialize currency type
+        initializeCurrencyType()
     }
+
+    private fun onClickModifyDetails() {
+        if (intent.extras?.get(AppConstant.EVENT_DASH_BOARD) == AppConstant.EVENT_DASH_BOARD) {
+            viewModel.eventName.value =
+                sharedPrefsHelper[SharedPrefConstant.EVENT_NAME, ""].toString()
+            viewModel.eventDate.value =
+                sharedPrefsHelper[SharedPrefConstant.EVENT_DATE, ""].toString()
+            viewModel.noOfAttendees.value =
+                sharedPrefsHelper[SharedPrefConstant.NO_OF_ATTENDEES, ""].toString()
+            Log.d(TAG, "onClickModifyDetails: ${sharedPrefsHelper[SharedPrefConstant.COUNTRY, ""]}")
+            viewModel.totalBudget.value = sharedPrefsHelper[SharedPrefConstant.BUDGET, ""]
+            viewModel.zipCode.value = sharedPrefsHelper[SharedPrefConstant.ZIPCODE, ""].toString()
+            viewModel.iKnowVenue2.value =
+                sharedPrefsHelper[SharedPrefConstant.VENUE, false] == false
+//            viewModel.questionBtnText.value =
+//                "${getString(R.string.view_order)} (${questionListItem.size})"
+//            viewModel.editImageVisibility.value = true
+            Log.d(TAG, "onClickModifyDetails: ${sharedPrefsHelper[SharedPrefConstant.COUNTRY, ""]}")
+            viewModel.currencyPosition.value =
+                sharedPrefsHelper[SharedPrefConstant.CURRENCY_TYPE, 0]
+            viewModel.address1.value = sharedPrefsHelper[SharedPrefConstant.ADDRESS_1, ""]
+            viewModel.address2.value = sharedPrefsHelper[SharedPrefConstant.ADDRESS_2, ""]
+            viewModel.stateName.value = sharedPrefsHelper[SharedPrefConstant.STATE, ""]
+            viewModel.city.value = sharedPrefsHelper[SharedPrefConstant.CITY, ""]
+            viewModel.countryPosition.value = sharedPrefsHelper[SharedPrefConstant.COUNTRY, 0]
+            viewModel.countryState.value = false
+            binding.stateTxt.setOnClickListener {
+                viewModel.countryState.value = true
+                binding.state.performClick()
+            }
+        }
+
+    }
+
 
     override fun updateQuestions(eventQuestionsResponseDTO: EventQuestionsResponseDTO) {
         if (eventQuestionsResponseDTO.data.questionnaireDtos.isEmpty()) {
@@ -127,9 +164,9 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
     }
 
     override fun onClickNext() {
-        val intent=Intent(this, DashBoardActivity::class.java)
-        intent.putExtra(AppConstant.ON_EVENT,getString(R.string.event_dt))
-       startActivity(intent)
+        val intent = Intent(this, DashBoardActivity::class.java)
+        intent.putExtra(AppConstant.ON_EVENT, getString(R.string.event_dt))
+        startActivity(intent)
     }
 
     private fun onClickQuestionsBtn() {
@@ -149,20 +186,20 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         if (binding.startQusBtn.text.toString().contains(getString(R.string.view_order))) {
             showEventQuestionDialog(
                 binding.startQusBtn.text.toString(),
-                AppConstant.VIEW_QUESTIONS_DIALOG, viewModel.viewOrderQuestionNumber
+                AppConstant.VIEW_QUESTIONS_DIALOG,
+                viewModel.viewOrderQuestionNumber
             )
         } else {
             showEventQuestionDialog(
                 binding.startQusBtn.text.toString(),
-                AppConstant.EVENT_QUESTIONS_DIALOG, viewModel.questionNumber
+                AppConstant.EVENT_QUESTIONS_DIALOG,
+                viewModel.questionNumber
             )
         }
     }
 
     private fun showEventQuestionDialog(
-        questionBtnStatus: String,
-        tag: String,
-        questionNumber: Int
+        questionBtnStatus: String, tag: String, questionNumber: Int
     ) {
         Log.d(TAG, "setData: questionNumber ${viewModel.questionNumber}")
         // set dialog flag true
@@ -170,8 +207,10 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         EventQuestionsDialog.newInstance(
             questionListItem,
             questionBtnStatus,
-            viewModel.selectedAnswerPositionMap, questionNumber,
-            this, this
+            viewModel.selectedAnswerPositionMap,
+            questionNumber,
+            this,
+            this
         ).show(supportFragmentManager, tag)
     }
 
@@ -195,8 +234,7 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
     }
 
     override fun updateQusNumberOnScreenRotation(
-        questionNumber: Int,
-        dialogFragment: DialogFragment
+        questionNumber: Int, dialogFragment: DialogFragment
     ) {
         when {
             dialogFragment.tag.equals(AppConstant.EVENT_QUESTIONS_DIALOG) -> {
@@ -350,8 +388,7 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         token = sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""]
         viewModel.templateId = intent.getStringExtra(AppConstant.TEMPLATE_ID)?.toInt()
         viewModel.name.value =
-            sharedPrefsHelper[SharedPrefConstant.FIRST_NAME, ""] + " " +
-                    sharedPrefsHelper[SharedPrefConstant.LAST_NAME, ""]
+            sharedPrefsHelper[SharedPrefConstant.FIRST_NAME, ""] + " " + sharedPrefsHelper[SharedPrefConstant.LAST_NAME, ""]
         viewModel.emailId.value = sharedPrefsHelper[SharedPrefConstant.EMAIL_ID, ""]
         val countryCode = sharedPrefsHelper[SharedPrefConstant.COUNTRY_CODE, ""]
         val mobileNumber = sharedPrefsHelper[SharedPrefConstant.MOBILE_NUMBER, ""]
@@ -396,5 +433,6 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         binding.eventName.filters = arrayOf(Util.filterText())
         binding.city.filters = arrayOf(Util.filterText())
     }
+
 
 }

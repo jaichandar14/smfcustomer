@@ -20,6 +20,7 @@ class EventDetailsViewModel : BaseViewModel() {
     var stateList: ArrayList<List<String>> = ArrayList()
     var currencyTypeList = ArrayList<String>()
     var iKnowVenue = MutableLiveData<Boolean>()
+    var iKnowVenue2 = MutableLiveData<Boolean>(false)
     var iKnowVenueLayoutVisibility = MutableLiveData<Boolean>()
 
     var currencyPosition = MutableLiveData<Int>(0)
@@ -36,6 +37,9 @@ class EventDetailsViewModel : BaseViewModel() {
     var name = MutableLiveData<String>("")
     var mobileNumber = MutableLiveData<String>("")
     var emailId = MutableLiveData<String>("")
+    var countryName = MutableLiveData<String>("")
+    var stateName = MutableLiveData<String>("")
+    var countryState = MutableLiveData<Boolean>(true)
 
     var eventNameError = MutableLiveData<Boolean>()
     var eventDateError = MutableLiveData<Boolean>()
@@ -226,9 +230,65 @@ class EventDetailsViewModel : BaseViewModel() {
             }
             is EventInfoResponseDto -> {
                 // Go to dashboard
+                setSharedPreference()
                 callBackInterface?.onClickNext()
             }
         }
+    }
+
+    private fun setSharedPreference() {
+        sharedPrefsHelper.put(
+            SharedPrefConstant.EVENT_NAME,
+            createEventInfoDto().eventMetaDataDto.eventInformationDto.eventName
+        )
+        sharedPrefsHelper.put(
+            SharedPrefConstant.EVENT_DATE,
+            createEventInfoDto().eventMetaDataDto.eventInformationDto.eventDate
+        )
+        sharedPrefsHelper.put(
+            SharedPrefConstant.NO_OF_ATTENDEES,
+            createEventInfoDto().eventMetaDataDto.eventInformationDto.attendeesCount
+        )
+        sharedPrefsHelper.put(SharedPrefConstant.BUDGET, totalBudget.value.toString())
+        sharedPrefsHelper.put(
+            SharedPrefConstant.ZIPCODE,
+            createEventInfoDto().eventMetaDataDto.venueInformationDto.zipCode
+        )
+        sharedPrefsHelper.put(
+            SharedPrefConstant.VENUE,
+            createEventInfoDto().eventMetaDataDto.venueInformationDto.knownVenue
+        )
+        currencyPosition.value?.let {
+            sharedPrefsHelper.put(
+                SharedPrefConstant.CURRENCY_TYPE,
+                it
+            )
+        }
+        sharedPrefsHelper.put(SharedPrefConstant.ADDRESS_1, address1.value.toString())
+        sharedPrefsHelper.put(SharedPrefConstant.ADDRESS_2, address2.value.toString())
+        Log.d(
+            TAG,
+            "setSharedPreference: ${
+                countryPosition.value?.let {
+                    sharedPrefsHelper.put(
+                        SharedPrefConstant.COUNTRY,
+                        it
+                    )
+                }
+            }"
+        )
+        countryPosition.value?.let {
+            sharedPrefsHelper.put(
+                SharedPrefConstant.COUNTRY, it
+            )
+        }
+        sharedPrefsHelper.put(
+            SharedPrefConstant.STATE,
+            createEventInfoDto().eventMetaDataDto.venueInformationDto.state
+        )
+        sharedPrefsHelper.put(SharedPrefConstant.CITY, city.value.toString())
+
+
     }
 
     override fun onError(throwable: Throwable) {
