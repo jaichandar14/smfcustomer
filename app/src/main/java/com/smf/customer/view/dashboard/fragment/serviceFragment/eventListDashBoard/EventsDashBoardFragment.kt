@@ -1,5 +1,6 @@
 package com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,12 +13,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseFragment
 import com.smf.customer.app.base.MyApplication
+import com.smf.customer.app.constant.AppConstant
+import com.smf.customer.data.model.dto.DialogListItem
 import com.smf.customer.databinding.FragmentEventsDashBoardBinding
-import com.smf.customer.databinding.MyEventStatusDashboardBinding
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
-import com.smf.customer.view.dashboard.adaptor.Upcomingevent
+import com.smf.customer.dialog.MultipleSelectionListDialog
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.adaptor.EventDetailsAdaptor
 import com.smf.customer.view.dashboard.model.EventStatusDTO
+import com.smf.customer.view.eventDetails.EventDetailsActivity
 import javax.inject.Inject
 
 class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>() {
@@ -46,19 +49,53 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.onPending()
         mRecyclerViewIntializer()
- mDataBinding.statusLayout.myEventIcon.setOnClickListener {
+        mDataBinding.statusLayout.myEventIcon.setOnClickListener {
             Log.d(TAG, "onViewCreated: ${mDataBinding.statusLayout.horizontalScroll.width}")
-            Log.d(TAG, "onViewCreated: ${mDataBinding.statusLayout.horizontalScroll.measuredWidth/2}")
+            Log.d(
+                TAG,
+                "onViewCreated: ${mDataBinding.statusLayout.horizontalScroll.measuredWidth / 2}"
+            )
 
-      mDataBinding.statusLayout.horizontalScroll.smoothScrollTo((mDataBinding.statusLayout.horizontalScroll.width/3).toInt(),0)
+            mDataBinding.statusLayout.horizontalScroll.smoothScrollTo(
+                (mDataBinding.statusLayout.horizontalScroll.width / 3).toInt(),
+                0
+            )
         }
+        mDataBinding.addServiceIcon.setOnClickListener {
+            val list =
+                ArrayList<DialogListItem>()
+            list.add(DialogListItem("1", "Venue"))
+            list.add(DialogListItem("1", "Venue"))
+            list.add(DialogListItem("1", "Venue"))
+            list.add(DialogListItem("1", "Venue"))
 
+            MultipleSelectionListDialog.newInstance(
+                getString(R.string.service_list),
+                list, this, true, R.string.save_services,
+                R.string.cancel
+            )
+                .show(requireActivity().supportFragmentManager, "MultipleSelectionListDialog")
+
+
+        }
+        onClickViewDetails()
     }
+
+    private fun onClickViewDetails() {
+        mDataBinding.statusLayout.eventViewDetails.setOnClickListener {
+            val intent =
+                Intent(requireContext().applicationContext, EventDetailsActivity::class.java)
+            intent.putExtra(AppConstant.EVENT_DASH_BOARD, AppConstant.EVENT_DASH_BOARD)
+            startActivity(intent)
+        }
+    }
+
     private fun mRecyclerViewIntializer() {
         mEventDetailsRecycler()
         mAdapterEventDetails.refreshItems(getServiceCountList())
 
     }
+
     private fun mEventDetailsRecycler() {
         mEventDetailsRecyclerView = mDataBinding.eventDetailsRecyclerview
         mAdapterEventDetails = EventDetailsAdaptor()
@@ -66,6 +103,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>() {
             LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
         mEventDetailsRecyclerView.adapter = mAdapterEventDetails
     }
+
     // Static data for demo need to implement in future
     private fun getServiceCountList(): ArrayList<EventStatusDTO> {
         val list = ArrayList<EventStatusDTO>()

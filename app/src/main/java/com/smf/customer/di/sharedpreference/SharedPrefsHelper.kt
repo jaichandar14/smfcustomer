@@ -1,6 +1,7 @@
 package com.smf.customer.di.sharedpreference
 
 import android.content.SharedPreferences
+import com.smf.customer.data.model.request.EventInfoDTO
 import javax.inject.Inject
 import javax.inject.Singleton
 
