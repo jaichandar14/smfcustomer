@@ -29,6 +29,12 @@ object SharedPrefConstant {
     val USER_ID: String
         get() = "userId"
 
+    val EVENT_TITLE: String
+        get() = "eventTitle"
+
+    val TEMPLATE_ID: String
+        get() = "templateId"
+
     // 3273
     val EMAIL_ID: String
         get() = "emailId"

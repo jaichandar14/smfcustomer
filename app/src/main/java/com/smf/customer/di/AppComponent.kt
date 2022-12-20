@@ -18,6 +18,8 @@ import com.smf.customer.view.myevents.MyEventsActivity
 import com.smf.customer.view.myevents.MyEventsViewModel
 import com.smf.customer.view.provideservicedetails.ProvideServiceDetailsActivity
 import com.smf.customer.view.provideservicedetails.ProvideServiceViewModel
+import com.smf.customer.view.questions.QuestionsActivity
+import com.smf.customer.view.questions.QuestionsViewModel
 import com.smf.customer.view.splash.SplashActivity
 import dagger.Component
 import javax.inject.Singleton
@@ -43,4 +45,6 @@ interface AppComponent {
     fun inject(viewModel: ProvideServiceViewModel)
     fun inject(activity: EventsDashBoardFragment)
     fun inject(viewModel: EventsDashBoardViewModel)
+    fun inject(activity: QuestionsActivity)
+    fun inject(viewModel: QuestionsViewModel)
 }

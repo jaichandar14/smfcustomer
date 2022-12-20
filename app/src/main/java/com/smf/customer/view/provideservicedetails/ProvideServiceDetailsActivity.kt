@@ -1,5 +1,6 @@
 package com.smf.customer.view.provideservicedetails
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
@@ -12,6 +13,7 @@ import com.smf.customer.R
 import com.smf.customer.app.base.BaseActivity
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
+import com.smf.customer.data.model.dto.QuestionListItem
 import com.smf.customer.databinding.ActivityProvideServiceDetailsBinding
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.utility.DatePicker
@@ -35,6 +37,8 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
 
     companion object {
         private val timeSlotList = ArrayList<String>()
+        var questionListItem = ArrayList<QuestionListItem>()
+        var questionNumberList = ArrayList<Int>()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,10 +68,30 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         setTimeSlotsRecycler()
         // Event date edittext Listener
         dateOnClickListeners()
+        // Start question button listener
+        onClickQuestionsBtn()
         // Initialize Mile Distance
         initializeMileDistance()
         // Error details observer
         errorDetailsObserver()
+    }
+
+    private fun onClickQuestionsBtn() {
+        updateListData()
+
+        binding.startQusBtn.setOnClickListener {
+//            navigateQuestionsPage()
+        }
+        binding.editImage.setOnClickListener {
+
+        }
+    }
+
+    private fun navigateQuestionsPage() {
+//        val intent = Intent(this, QuestionsActivity::class.java)
+//        intent.putExtra("questionListItem", questionListItem)
+//        intent.putIntegerArrayListExtra("questionNumberList", questionNumberList)
+//        startActivity(intent)
     }
 
     private fun setTimeSlotsRecycler() {
@@ -175,6 +199,61 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         Log.d(TAG, "onSlotClicked: called $status")
         // Update selected time slots
         viewModel.selectedSlotsPositionMap[listPosition] = status
+    }
+
+    private fun updateListData() {
+        val choiceList = ArrayList<String>()
+        choiceList.add("Answer1")
+        choiceList.add("Answer2")
+        val choiceList1 = ArrayList<String>()
+        choiceList1.add("Answer1")
+        choiceList1.add("Answer2")
+        choiceList1.add("Answer3")
+        choiceList1.add("Answer4")
+        choiceList1.add("Answer5")
+        choiceList1.add("Answer6")
+
+        questionListItem.clear()
+        questionListItem.add(
+            QuestionListItem("Want cake?", choiceList, "Radio Button", true)
+        )
+        questionListItem.add(
+            QuestionListItem("Want decoration?", choiceList1, "Check Box",true)
+        )
+        questionListItem.add(
+            QuestionListItem("Want drink?", null, "Edit Text", true)
+        )
+        questionListItem.add(
+            QuestionListItem("Want decoration?", choiceList1, "Check Box",true)
+        )
+        questionListItem.add(
+            QuestionListItem("Select date?", null, "Date",true)
+        )
+        questionListItem.add(
+            QuestionListItem("Select date?", null, "Date",true)
+        )
+        questionListItem.add(
+            QuestionListItem("Want drink?", null, "Edit Text",true)
+        )
+        questionListItem.add(
+            QuestionListItem("Select date?", null, "Date",true)
+        )
+        questionListItem.add(
+            QuestionListItem("Want decoration?", choiceList1, "Check Box",true)
+        )
+        questionListItem.add(
+            QuestionListItem("Select date?", null, "Date",true)
+        )
+        questionListItem.add(
+            QuestionListItem("Want cake?", choiceList, "Radio Button",true)
+        )
+        // Update Question Number
+        questionNumberList.clear()
+        for (i in 0 until questionListItem.size) {
+            questionNumberList.add(i)
+        }
+
+        Log.d(TAG, "updateListData: ${questionListItem.size} $questionNumberList")
     }
 
 }

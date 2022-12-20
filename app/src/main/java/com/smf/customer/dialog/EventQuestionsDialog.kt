@@ -99,16 +99,16 @@ class EventQuestionsDialog : BaseDialogFragment(), AdapterOneClickListener {
         nextBtnVisibility()
         // Method for cancel button text
         setCancelBtnText()
-        while (questionNumber < questionList.size) {
-            dataBinding.question.text = questionList[questionNumber].question
-            listItemAdapter.setDialogListItemList(
-                questionList[questionNumber].choice,
-                selectedPosition,
-                requireArguments().getSerializable(QUESTION_BTN_STATUS) as String,
-                questionList[questionNumber].questionType
-            )
-            break
-        }
+//        while (questionNumber < questionList.size) {
+//            dataBinding.question.text = questionList[questionNumber].question
+//            listItemAdapter.setDialogListItemList(
+//                questionList[questionNumber].choice,
+//                selectedPosition,
+//                requireArguments().getSerializable(QUESTION_BTN_STATUS) as String,
+//                questionList[questionNumber].questionType
+//            )
+//            break
+//        }
     }
 
     override fun setupClickListeners() {
