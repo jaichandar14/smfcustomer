@@ -83,10 +83,10 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>() {
 
     private fun onClickViewDetails() {
         mDataBinding.statusLayout.eventViewDetails.setOnClickListener {
-            val intent =
-                Intent(requireContext().applicationContext, EventDetailsActivity::class.java)
-            intent.putExtra(AppConstant.EVENT_DASH_BOARD, AppConstant.EVENT_DASH_BOARD)
-            startActivity(intent)
+//            val intent =
+//                Intent(requireContext().applicationContext, EventDetailsActivity::class.java)
+//            intent.putExtra(AppConstant.EVENT_DASH_BOARD, AppConstant.EVENT_DASH_BOARD)
+//            startActivity(intent)
         }
     }
 

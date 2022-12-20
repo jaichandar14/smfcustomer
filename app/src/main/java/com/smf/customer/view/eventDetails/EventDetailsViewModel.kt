@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseViewModel
 import com.smf.customer.app.base.MyApplication
-import com.smf.customer.app.constant.AppConstant
+import com.smf.customer.data.model.dto.QuestionListItem
 import com.smf.customer.data.model.request.*
 import com.smf.customer.data.model.response.EventInfoResponseDto
 import com.smf.customer.data.model.response.EventQuestionsResponseDTO
@@ -30,16 +30,11 @@ class EventDetailsViewModel : BaseViewModel() {
     var totalBudget = MutableLiveData<String>("")
     var address1 = MutableLiveData<String>("")
     var address2 = MutableLiveData<String>("")
-    var countryPosition = MutableLiveData<Int>(0)
-    var statePosition = MutableLiveData<Int>(0)
     var city = MutableLiveData<String>("")
     var zipCode = MutableLiveData<String>("")
     var name = MutableLiveData<String>("")
     var mobileNumber = MutableLiveData<String>("")
     var emailId = MutableLiveData<String>("")
-    var countryName = MutableLiveData<String>("")
-    var stateName = MutableLiveData<String>("")
-    var countryState = MutableLiveData<Boolean>(true)
 
     var eventNameError = MutableLiveData<Boolean>()
     var eventDateError = MutableLiveData<Boolean>()
@@ -58,6 +53,10 @@ class EventDetailsViewModel : BaseViewModel() {
     // Avoid screen rotation api call
     var screenRotationStatus = MutableLiveData<Boolean>(false)
 
+    // Variable for update country and state position
+    var selectedCountryPosition: Int = 0
+    var selectedStatePosition: Int = 0
+
     // Start question btn text
     var questionBtnText =
         MutableLiveData(MyApplication.appContext.resources.getString(R.string.start_questions))
@@ -69,10 +68,11 @@ class EventDetailsViewModel : BaseViewModel() {
     // Activity Variables
     var eventQuestionsResponseDTO: EventQuestionsResponseDTO? = null
     var templateId: Int? = 0
-    var selectedAnswerPositionMap = HashMap<Int, Int>()
-    var questionStatus: String = ""
-    var questionNumber: Int = 0
+    var eventSelectedAnswerMap = HashMap<Int, ArrayList<String>>()
     var viewOrderQuestionNumber: Int = 0
+
+    var questionListItem = ArrayList<QuestionListItem>()
+    var questionNumberList = ArrayList<Int>()
 
     init {
         MyApplication.applicationComponent.inject(this)
@@ -88,6 +88,12 @@ class EventDetailsViewModel : BaseViewModel() {
         iKnowVenueLayoutVisibility.value = value
     }
 
+    fun onClickQuestionsBtn() {
+        // Update entered values to shared preference
+        setSharedPreference()
+        callBackInterface?.onClickQuestionsBtn()
+    }
+
     fun onClickNextButton() {
         if (iKnowVenue.value != true) {
             if (!eventName.value.isNullOrEmpty() && !eventDate.value.isNullOrEmpty() &&
@@ -95,10 +101,9 @@ class EventDetailsViewModel : BaseViewModel() {
                 !zipCode.value.isNullOrEmpty() && !name.value.isNullOrEmpty() &&
                 !mobileNumber.value.isNullOrEmpty() && !emailId.value.isNullOrEmpty()
             ) {
-                if (questionStatus == AppConstant.SUBMIT) {
+                if (questionListItem.size == eventSelectedAnswerMap.keys.size) {
                     // Post Event info details
                     postEventInfo(idToken, createEventInfoDto())
-
                 } else {
                     showToastMessage("Please submit all questions")
                 }
@@ -110,15 +115,13 @@ class EventDetailsViewModel : BaseViewModel() {
             if (!eventName.value.isNullOrEmpty() && !eventDate.value.isNullOrEmpty() &&
                 !noOfAttendees.value.isNullOrEmpty() && !totalBudget.value.isNullOrEmpty() &&
                 !address1.value.isNullOrEmpty() && !address2.value.isNullOrEmpty() &&
-                countryPosition.value != 0 && !city.value.isNullOrEmpty() &&
+                selectedCountryPosition != 0 && !city.value.isNullOrEmpty() &&
                 !name.value.isNullOrEmpty() && !mobileNumber.value.isNullOrEmpty() &&
-                !emailId.value.isNullOrEmpty() && countryPosition.value != null &&
-                statePosition.value != null
+                !emailId.value.isNullOrEmpty() && selectedStatePosition != 0
             ) {
-                if (questionStatus == AppConstant.SUBMIT) {
+                if (questionListItem.size == eventSelectedAnswerMap.keys.size) {
                     // Post Event info details
                     postEventInfo(idToken, createEventInfoDto())
-
                 } else {
                     showToastMessage("Please submit all questions")
                 }
@@ -173,29 +176,17 @@ class EventDetailsViewModel : BaseViewModel() {
         if (address2.value.isNullOrEmpty()) {
             address2Error.value = true
         }
-        if (countryPosition.value == 0) {
+        if (selectedCountryPosition == 0) {
             countryPositionError.value = true
         }
-        if (stateList[countryPosition.value!!][statePosition.value!!] == "Select your state") {
+        if (stateList[selectedCountryPosition][selectedStatePosition] ==
+            MyApplication.appContext.resources.getString(R.string.select_your_state)
+        ) {
             statePositionError.value = true
         }
         if (city.value.isNullOrEmpty()) {
             cityError.value = true
         }
-    }
-
-    private var eventQuestionDialog = MutableLiveData<Boolean>(false)
-
-    fun showEventQuestionDialogFlag() {
-        eventQuestionDialog.value = true
-    }
-
-    fun hideEventQuestionDialogFlag() {
-        eventQuestionDialog.value = false
-    }
-
-    fun isEventQuestionDialogVisible(): Boolean {
-        return eventQuestionDialog.value!!
     }
 
     private var datePickerDialog = MutableLiveData<Boolean>(false)
@@ -229,66 +220,39 @@ class EventDetailsViewModel : BaseViewModel() {
                 callBackInterface?.updateQuestions(responseDTO as EventQuestionsResponseDTO)
             }
             is EventInfoResponseDto -> {
-                // Go to dashboard
+                // Update entered values to shared preference
                 setSharedPreference()
+                // Go to dashboard
                 callBackInterface?.onClickNext()
             }
         }
     }
 
     private fun setSharedPreference() {
-        sharedPrefsHelper.put(
-            SharedPrefConstant.EVENT_NAME,
-            createEventInfoDto().eventMetaDataDto.eventInformationDto.eventName
-        )
-        sharedPrefsHelper.put(
-            SharedPrefConstant.EVENT_DATE,
-            createEventInfoDto().eventMetaDataDto.eventInformationDto.eventDate
-        )
-        sharedPrefsHelper.put(
-            SharedPrefConstant.NO_OF_ATTENDEES,
-            createEventInfoDto().eventMetaDataDto.eventInformationDto.attendeesCount
-        )
-        sharedPrefsHelper.put(SharedPrefConstant.BUDGET, totalBudget.value.toString())
-        sharedPrefsHelper.put(
-            SharedPrefConstant.ZIPCODE,
-            createEventInfoDto().eventMetaDataDto.venueInformationDto.zipCode
-        )
-        sharedPrefsHelper.put(
-            SharedPrefConstant.VENUE,
-            createEventInfoDto().eventMetaDataDto.venueInformationDto.knownVenue
-        )
+        eventName.value?.let {
+            sharedPrefsHelper.put(SharedPrefConstant.EVENT_NAME, it)
+        }
+        eventDate.value?.let {
+            sharedPrefsHelper.put(SharedPrefConstant.EVENT_DATE, it)
+        }
+        noOfAttendees.value?.let {
+            sharedPrefsHelper.put(SharedPrefConstant.NO_OF_ATTENDEES, it)
+        }
         currencyPosition.value?.let {
-            sharedPrefsHelper.put(
-                SharedPrefConstant.CURRENCY_TYPE,
-                it
-            )
+            sharedPrefsHelper.put(SharedPrefConstant.CURRENCY_TYPE, it)
         }
-        sharedPrefsHelper.put(SharedPrefConstant.ADDRESS_1, address1.value.toString())
-        sharedPrefsHelper.put(SharedPrefConstant.ADDRESS_2, address2.value.toString())
-        Log.d(
-            TAG,
-            "setSharedPreference: ${
-                countryPosition.value?.let {
-                    sharedPrefsHelper.put(
-                        SharedPrefConstant.COUNTRY,
-                        it
-                    )
-                }
-            }"
-        )
-        countryPosition.value?.let {
-            sharedPrefsHelper.put(
-                SharedPrefConstant.COUNTRY, it
-            )
+        totalBudget.value?.let { sharedPrefsHelper.put(SharedPrefConstant.BUDGET, it) }
+        iKnowVenue.value?.let {
+            sharedPrefsHelper.put(SharedPrefConstant.VENUE, it)
         }
-        sharedPrefsHelper.put(
-            SharedPrefConstant.STATE,
-            createEventInfoDto().eventMetaDataDto.venueInformationDto.state
-        )
-        sharedPrefsHelper.put(SharedPrefConstant.CITY, city.value.toString())
-
-
+        address1.value?.let { sharedPrefsHelper.put(SharedPrefConstant.ADDRESS_1, it) }
+        address2.value?.let { sharedPrefsHelper.put(SharedPrefConstant.ADDRESS_2, it) }
+        sharedPrefsHelper.put(SharedPrefConstant.COUNTRY, selectedCountryPosition)
+        sharedPrefsHelper.put(SharedPrefConstant.STATE, selectedStatePosition)
+        city.value?.let { sharedPrefsHelper.put(SharedPrefConstant.CITY, it) }
+        zipCode.value?.let {
+            sharedPrefsHelper.put(SharedPrefConstant.ZIPCODE, it)
+        }
     }
 
     override fun onError(throwable: Throwable) {
@@ -307,6 +271,7 @@ class EventDetailsViewModel : BaseViewModel() {
     interface CallBackInterface {
         fun updateQuestions(eventQuestionsResponseDTO: EventQuestionsResponseDTO)
         fun onClickNext()
+        fun onClickQuestionsBtn()
     }
 
     private fun createEventInfoDto(): EventInfoDTO {
@@ -317,12 +282,7 @@ class EventDetailsViewModel : BaseViewModel() {
         val eventTypeId: Int = templateId!!
         val id: String = ""
         return EventInfoDTO(
-            eventId,
-            eventMetaDataDto,
-            eventOrganizerId,
-            eventQuestionMetaDataDto,
-            eventTypeId,
-            id
+            eventId, eventMetaDataDto, eventOrganizerId, eventQuestionMetaDataDto, eventTypeId, id
         )
     }
 
@@ -331,18 +291,15 @@ class EventDetailsViewModel : BaseViewModel() {
         val noOfVendors: Int = eventQuestionsResponseDTO!!.data.noOfVendors
         val questionnaireDtoList = ArrayList<QuestionnaireDto>()
         eventQuestionsResponseDTO!!.data.questionnaireDtos.forEach {
-            val qusNumber = eventQuestionsResponseDTO!!.data.questionnaireDtos.indexOf(
-                it
-            )
-            val answerNumber = selectedAnswerPositionMap[qusNumber]
-            Log.d(
-                TAG,
-                "createEvent: answer ${it.questionMetadata.choices[answerNumber!!]}"
-            )
+            val qusNumber = eventQuestionsResponseDTO!!.data.questionnaireDtos.indexOf(it)
+            val answer = eventSelectedAnswerMap[qusNumber]
             val questionMetadata = QuestionMetadata(
-                it.questionMetadata.choices[answerNumber!!], it.questionMetadata.choices,
-                it.questionMetadata.eventOrganizer, it.questionMetadata.filter,
-                it.questionMetadata.question, it.questionMetadata.questionType,
+                answer?.joinToString(),
+                it.questionMetadata.choices,
+                it.questionMetadata.eventOrganizer,
+                it.questionMetadata.filter,
+                it.questionMetadata.question,
+                it.questionMetadata.questionType,
                 it.questionMetadata.vendor
             )
             questionnaireDtoList.add(
@@ -376,9 +333,9 @@ class EventDetailsViewModel : BaseViewModel() {
             address1.value!!,
             address2.value!!,
             city.value!!,
-            countryList[countryPosition.value!!],
+            countryList[selectedCountryPosition],
             iKnowVenue.value!!,
-            stateList[countryPosition.value!!][statePosition.value!!],
+            stateList[selectedCountryPosition][selectedStatePosition],
             zipCode.value!!
         )
         return EventMetaDataDto(

@@ -92,5 +92,9 @@ object AppConstant {
 
     //3317
     const val EVENT_DASH_BOARD= "EventDashBoard"
+    const val EVENT_QUESTIONS= "EventQuestions"
+    const val SELECTED_ANSWER_MAP= "selectedAnswerMap"
+    const val QUESTION_LIST_ITEM= "questionListItem"
+    const val QUESTION_NUMBER_LIST= "questionNumberList"
 
 }

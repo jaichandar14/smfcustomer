@@ -37,7 +37,7 @@ data class EventQuestionMetaDataDto(
 )
 
 data class QuestionMetadata(
-    val answer: String,
+    val answer: String?,
     val choices: List<String>,
     val eventOrganizer: String,
     val filter: String,

@@ -7,13 +7,14 @@ data class EventQuestionsResponseDTO(
 ) : ResponseDTO()
 
 data class QuestionMetadata(
-    val answer: Any,
+    val answer: Any?,
     val choices: List<String>,
     val eventOrganizer: String,
     val filter: String,
     val question: String,
     val questionType: String,
-    val vendor: String
+    val vendor: String,
+    val isMandatory  : Boolean
 )
 
 data class QuestionnaireDto(

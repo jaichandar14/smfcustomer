@@ -4,9 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -19,20 +19,17 @@ import com.smf.customer.data.model.response.EventQuestionsResponseDTO
 import com.smf.customer.databinding.EventDetailsBinding
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
-import com.smf.customer.dialog.EventQuestionsCallback
-import com.smf.customer.dialog.EventQuestionsDialog
-import com.smf.customer.listener.DialogThreeButtonListener
 import com.smf.customer.utility.DatePicker
 import com.smf.customer.utility.Util
 import com.smf.customer.view.dashboard.DashBoardActivity
+import com.smf.customer.view.questions.QuestionsActivity
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.set
 
-class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeButtonListener,
-    EventDetailsViewModel.CallBackInterface, EventQuestionsCallback {
+class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
+    EventDetailsViewModel.CallBackInterface {
     lateinit var binding: EventDetailsBinding
     private var picker: MaterialDatePicker<Long> = DatePicker.newInstance
     var currentCountryName = ""
@@ -40,10 +37,6 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
 
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
-
-    companion object {
-        val questionListItem = ArrayList<QuestionListItem>()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,21 +47,12 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         MyApplication.applicationComponent.inject(this)
         currentCountryName = binding.cppSignIn.defaultCountryName
         viewModel.setCallBackInterface(this)
-        init()
 
-//        viewModel.screenRotationStatus.value = true
-//        var local = (getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager).simCountryIso
-//        val locale = Locale.getDefault()
-//        locale.country
-//        Log.d(TAG, "onCreate: $local")
+        init()
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        // Verify event question dialog isVisible
-        if (viewModel.isEventQuestionDialogVisible()) {
-            createDialog()
-        }
         // Verify date picker dialog isVisible
         if (viewModel.isDatePickerDialogVisible()) {
             showDatePickerDialog()
@@ -81,13 +65,15 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
             viewModel.viewOrderQuestionNumber = 0
         } else {
             // Set start button visibility when rotating screen
-            if (questionListItem.isEmpty()) {
+            if (viewModel.questionListItem.isEmpty()) {
                 startQuestionsButtonVisibility(false)
             }
         }
     }
 
     private fun init() {
+        // Setting user details on UI
+        setUserDetails()
         // Get country and state list
         getCountryAndStateList()
         // Initialize country and state list
@@ -96,71 +82,50 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         venueDetailsObserver()
         // Restrict number inside editText
         setEditTextFilter()
-        // Setting User Details
-        setUserDetails()
         // Error details observer
         errorDetailsObserver()
         // Event date edittext Listener
         eventDateListener()
-        // Start question button listener
-        onClickQuestionsBtn()
-        // Method for modify and view
-        onClickModifyDetails()
         // Initialize currency type
         initializeCurrencyType()
     }
 
-    private fun onClickModifyDetails() {
-        if (intent.extras?.get(AppConstant.EVENT_DASH_BOARD) == AppConstant.EVENT_DASH_BOARD) {
-            viewModel.eventName.value =
-                sharedPrefsHelper[SharedPrefConstant.EVENT_NAME, ""].toString()
-            viewModel.eventDate.value =
-                sharedPrefsHelper[SharedPrefConstant.EVENT_DATE, ""].toString()
-            viewModel.noOfAttendees.value =
-                sharedPrefsHelper[SharedPrefConstant.NO_OF_ATTENDEES, ""].toString()
-            Log.d(TAG, "onClickModifyDetails: ${sharedPrefsHelper[SharedPrefConstant.COUNTRY, ""]}")
-            viewModel.totalBudget.value = sharedPrefsHelper[SharedPrefConstant.BUDGET, ""]
-            viewModel.zipCode.value = sharedPrefsHelper[SharedPrefConstant.ZIPCODE, ""].toString()
-            viewModel.iKnowVenue2.value =
-                sharedPrefsHelper[SharedPrefConstant.VENUE, false] == false
-//            viewModel.questionBtnText.value =
-//                "${getString(R.string.view_order)} (${questionListItem.size})"
-//            viewModel.editImageVisibility.value = true
-            Log.d(TAG, "onClickModifyDetails: ${sharedPrefsHelper[SharedPrefConstant.COUNTRY, ""]}")
-            viewModel.currencyPosition.value =
-                sharedPrefsHelper[SharedPrefConstant.CURRENCY_TYPE, 0]
-            viewModel.address1.value = sharedPrefsHelper[SharedPrefConstant.ADDRESS_1, ""]
-            viewModel.address2.value = sharedPrefsHelper[SharedPrefConstant.ADDRESS_2, ""]
-            viewModel.stateName.value = sharedPrefsHelper[SharedPrefConstant.STATE, ""]
-            viewModel.city.value = sharedPrefsHelper[SharedPrefConstant.CITY, ""]
-            viewModel.countryPosition.value = sharedPrefsHelper[SharedPrefConstant.COUNTRY, 0]
-            viewModel.countryState.value = false
-            binding.stateTxt.setOnClickListener {
-                viewModel.countryState.value = true
-                binding.state.performClick()
-            }
-        }
-
-    }
-
-
     override fun updateQuestions(eventQuestionsResponseDTO: EventQuestionsResponseDTO) {
         if (eventQuestionsResponseDTO.data.questionnaireDtos.isEmpty()) {
-            questionListItem.clear()
+            viewModel.questionListItem.clear()
             startQuestionsButtonVisibility(false)
         } else {
             startQuestionsButtonVisibility(true)
-            questionListItem.clear()
-            eventQuestionsResponseDTO.data.questionnaireDtos.forEach {
-                questionListItem.add(
-                    QuestionListItem(
-                        it.questionMetadata.question,
-                        it.questionMetadata.choices as ArrayList<String>,
-                        it.questionMetadata.questionType
-                    )
-                )
-            }
+            // Update Questions
+            updateQuestionsList(eventQuestionsResponseDTO)
+            // Update Question Number
+            updateQuestionNumberList()
         }
+    }
+
+    private fun updateQuestionsList(eventQuestionsResponseDTO: EventQuestionsResponseDTO) {
+        viewModel.questionListItem.clear()
+        eventQuestionsResponseDTO.data.questionnaireDtos.forEach {
+            viewModel.questionListItem.add(
+                QuestionListItem(
+                    it.questionMetadata.question,
+                    it.questionMetadata.choices as ArrayList<String>,
+                    it.questionMetadata.questionType,
+                    it.questionMetadata.isMandatory
+                )
+            )
+        }
+    }
+
+    private fun updateQuestionNumberList() {
+        viewModel.questionNumberList.clear()
+        for (i in 0 until viewModel.questionListItem.size) {
+            viewModel.questionNumberList.add(i)
+        }
+        Log.d(
+            TAG,
+            "updateListData: ${viewModel.questionListItem.size} ${viewModel.questionNumberList}"
+        )
     }
 
     override fun onClickNext() {
@@ -169,86 +134,20 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         startActivity(intent)
     }
 
-    private fun onClickQuestionsBtn() {
-        binding.startQusBtn.setOnClickListener {
-            createDialog()
-        }
-        binding.editImage.setOnClickListener {
-            showEventQuestionDialog(
-                AppConstant.EDIT_BUTTON,
-                AppConstant.EVENT_QUESTIONS_DIALOG,
-                viewModel.questionNumber
-            )
-        }
+    override fun onClickQuestionsBtn() {
+        // Go to questions page
+        navigateQuestionsPage()
     }
 
-    private fun createDialog() {
-        if (binding.startQusBtn.text.toString().contains(getString(R.string.view_order))) {
-            showEventQuestionDialog(
-                binding.startQusBtn.text.toString(),
-                AppConstant.VIEW_QUESTIONS_DIALOG,
-                viewModel.viewOrderQuestionNumber
-            )
-        } else {
-            showEventQuestionDialog(
-                binding.startQusBtn.text.toString(),
-                AppConstant.EVENT_QUESTIONS_DIALOG,
-                viewModel.questionNumber
-            )
-        }
-    }
-
-    private fun showEventQuestionDialog(
-        questionBtnStatus: String, tag: String, questionNumber: Int
-    ) {
-        Log.d(TAG, "setData: questionNumber ${viewModel.questionNumber}")
-        // set dialog flag true
-        viewModel.showEventQuestionDialogFlag()
-        EventQuestionsDialog.newInstance(
-            questionListItem,
-            questionBtnStatus,
-            viewModel.selectedAnswerPositionMap,
-            questionNumber,
-            this,
-            this
-        ).show(supportFragmentManager, tag)
-    }
-
-    override fun updateSelectedAnswer(questionNumber: Int, position: Int) {
-        // Update Selected answer viewModel selectedAnswerPositionMap
-        viewModel.selectedAnswerPositionMap[questionNumber] = position
-    }
-
-    override fun dialogStatus(status: String, questionNumber: Int) {
-        if (status == AppConstant.SUBMIT) {
-            viewModel.questionStatus = AppConstant.SUBMIT
-            viewModel.questionBtnText.value =
-                "${getString(R.string.view_order)} (${questionListItem.size})"
-            viewModel.editImageVisibility.value = true
-        } else {
-            viewModel.questionStatus = AppConstant.CANCEL
-            viewModel.questionBtnText.value = getString(R.string.start_questions)
-            viewModel.editImageVisibility.value = false
-        }
-        viewModel.questionNumber = questionNumber
-    }
-
-    override fun updateQusNumberOnScreenRotation(
-        questionNumber: Int, dialogFragment: DialogFragment
-    ) {
-        when {
-            dialogFragment.tag.equals(AppConstant.EVENT_QUESTIONS_DIALOG) -> {
-                viewModel.questionNumber = questionNumber
-            }
-            dialogFragment.tag.equals(AppConstant.VIEW_QUESTIONS_DIALOG) -> {
-                viewModel.viewOrderQuestionNumber = questionNumber
-            }
-        }
-    }
-
-    override fun onCancelClick(dialogFragment: DialogFragment) {
-        // Update Flag status
-        viewModel.hideEventQuestionDialogFlag()
+    private fun navigateQuestionsPage() {
+        val intent = Intent(this, QuestionsActivity::class.java)
+        intent.putExtra(AppConstant.QUESTION_LIST_ITEM, viewModel.questionListItem)
+        intent.putIntegerArrayListExtra(
+            AppConstant.QUESTION_NUMBER_LIST, viewModel.questionNumberList
+        )
+        intent.putExtra(AppConstant.SELECTED_ANSWER_MAP, viewModel.eventSelectedAnswerMap)
+        finish()
+        startActivity(intent)
     }
 
     private fun initializeCurrencyType() {
@@ -270,26 +169,55 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         val arrayAdapterCountry =
             ArrayAdapter(applicationContext, R.layout.spinner_text_view, viewModel.countryList)
         binding.country.adapter = arrayAdapterCountry
+        // Update Selected country Position
+        binding.country.setSelection(viewModel.selectedCountryPosition)
+        binding.country.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                // Update selected country position
+                viewModel.selectedCountryPosition = position
+                // Update country error visibility
+                viewModel.countryPositionError.value = false
+                // Update state based on selected country
+                updateStateBaseOnCountry(position)
+            }
 
-        val arrayAdapterStates =
-            ArrayAdapter(applicationContext, R.layout.spinner_text_view, viewModel.stateList[0])
-        binding.state.adapter = arrayAdapterStates
-
-        viewModel.countryPosition.observe(this, Observer { position ->
-            updateStateBaseOnCountry(position)
-        })
-
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
     }
 
-    private fun updateStateBaseOnCountry(position: Int) {
+    private fun updateStateBaseOnCountry(countryPosition: Int) {
         val stateListForSpinner = ArrayList<String>()
-        viewModel.stateList[position].forEach {
+        viewModel.stateList[countryPosition].forEach {
             stateListForSpinner.add(it)
         }
         val arrayAdapterStatesSpinner = ArrayAdapter(
             applicationContext, R.layout.spinner_text_view, stateListForSpinner
         )
         binding.state.adapter = arrayAdapterStatesSpinner
+        Log.d(TAG, "updateStateBaseOnCountry: state ${viewModel.selectedStatePosition}")
+        // Update Selected state Position
+        binding.state.setSelection(viewModel.selectedStatePosition)
+        binding.state.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                // Update selected state position
+                viewModel.selectedStatePosition = position
+                // Update state error visibility
+                viewModel.statePositionError.value = false
+                Log.d(TAG, "updateStateBaseOnCountry: onItem ${viewModel.selectedStatePosition}")
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
     }
 
     private fun getCountryAndStateList() {
@@ -358,12 +286,6 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         viewModel.address2.observe(this, Observer {
             viewModel.address2Error.value = false
         })
-        viewModel.countryPosition.observe(this, Observer {
-            viewModel.countryPositionError.value = false
-        })
-        viewModel.statePosition.observe(this, Observer {
-            viewModel.statePositionError.value = false
-        })
         viewModel.city.observe(this, Observer {
             viewModel.cityError.value = false
         })
@@ -379,21 +301,6 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         viewModel.emailId.observe(this, Observer {
             viewModel.emailIdError.value = false
         })
-    }
-
-    // Setting Initial User Details to the UI
-    private fun setUserDetails() {
-        binding.pageTitleText.text =
-            intent.getStringExtra(AppConstant.TITLE) + " " + getString(R.string.event_Details)
-        token = sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""]
-        viewModel.templateId = intent.getStringExtra(AppConstant.TEMPLATE_ID)?.toInt()
-        viewModel.name.value =
-            sharedPrefsHelper[SharedPrefConstant.FIRST_NAME, ""] + " " + sharedPrefsHelper[SharedPrefConstant.LAST_NAME, ""]
-        viewModel.emailId.value = sharedPrefsHelper[SharedPrefConstant.EMAIL_ID, ""]
-        val countryCode = sharedPrefsHelper[SharedPrefConstant.COUNTRY_CODE, ""]
-        val mobileNumber = sharedPrefsHelper[SharedPrefConstant.MOBILE_NUMBER, ""]
-        viewModel.mobileNumber.value = mobileNumber.substringAfter(countryCode)
-        binding.cppSignIn.setCountryForPhoneCode(sharedPrefsHelper[SharedPrefConstant.COUNTRY_CODE, 0])
     }
 
     override fun onPause() {
@@ -421,8 +328,6 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
             binding.provideEventDetailsText.visibility = View.VISIBLE
             binding.hostDetailsSeparator.visibility = View.VISIBLE
         } else {
-            // Update question answer status
-            viewModel.questionStatus = AppConstant.SUBMIT
             binding.startQusBtn.visibility = View.GONE
             binding.provideEventDetailsText.visibility = View.GONE
             binding.hostDetailsSeparator.visibility = View.GONE
@@ -434,5 +339,70 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(), DialogThreeB
         binding.city.filters = arrayOf(Util.filterText())
     }
 
+    // Setting user details to the UI
+    private fun setUserDetails() {
+        if (intent.extras?.get(AppConstant.EVENT_DASH_BOARD) == AppConstant.EVENT_DASH_BOARD ||
+            intent.extras?.get(AppConstant.EVENT_QUESTIONS) == AppConstant.EVENT_QUESTIONS
+        ) {
+            // Set sharedPref details
+            updateOldValues()
+            // Set Initial details
+            setInitialUserDetails()
+        } else {
+            // Update eventTitle and TemplateId
+            updateSharedPrefValues()
+            // Set Initial details
+            setInitialUserDetails()
+        }
+    }
+
+    private fun updateSharedPrefValues() {
+        sharedPrefsHelper.put(
+            SharedPrefConstant.EVENT_TITLE,
+            intent.getStringExtra(AppConstant.TITLE) + " " + getString(R.string.event_Details)
+        )
+        intent.getStringExtra(AppConstant.TEMPLATE_ID)?.let {
+            Log.d(TAG, "updateSharedPrefValues: $it")
+            sharedPrefsHelper.put(SharedPrefConstant.TEMPLATE_ID, it.toInt())
+        }
+    }
+
+    private fun setInitialUserDetails() {
+        binding.pageTitleText.text = sharedPrefsHelper[SharedPrefConstant.EVENT_TITLE, ""]
+        viewModel.templateId = sharedPrefsHelper[SharedPrefConstant.TEMPLATE_ID, 0]
+        token = sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""]
+        viewModel.name.value =
+            sharedPrefsHelper[SharedPrefConstant.FIRST_NAME, ""] + " " + sharedPrefsHelper[SharedPrefConstant.LAST_NAME, ""]
+        viewModel.emailId.value = sharedPrefsHelper[SharedPrefConstant.EMAIL_ID, ""]
+        val countryCode = sharedPrefsHelper[SharedPrefConstant.COUNTRY_CODE, ""]
+        val mobileNumber = sharedPrefsHelper[SharedPrefConstant.MOBILE_NUMBER, ""]
+        viewModel.mobileNumber.value = mobileNumber.substringAfter(countryCode)
+        binding.cppSignIn.setCountryForPhoneCode(sharedPrefsHelper[SharedPrefConstant.COUNTRY_CODE, 0])
+    }
+
+    private fun updateOldValues() {
+        viewModel.eventName.value = sharedPrefsHelper[SharedPrefConstant.EVENT_NAME, ""]
+        viewModel.eventDate.value = sharedPrefsHelper[SharedPrefConstant.EVENT_DATE, ""]
+        viewModel.noOfAttendees.value = sharedPrefsHelper[SharedPrefConstant.NO_OF_ATTENDEES, ""]
+        viewModel.currencyPosition.value = sharedPrefsHelper[SharedPrefConstant.CURRENCY_TYPE, 0]
+        viewModel.totalBudget.value = sharedPrefsHelper[SharedPrefConstant.BUDGET, ""]
+        viewModel.iKnowVenue2.value = sharedPrefsHelper[SharedPrefConstant.VENUE, false] == false
+        viewModel.address1.value = sharedPrefsHelper[SharedPrefConstant.ADDRESS_1, ""]
+        viewModel.address2.value = sharedPrefsHelper[SharedPrefConstant.ADDRESS_2, ""]
+        viewModel.selectedCountryPosition = sharedPrefsHelper[SharedPrefConstant.COUNTRY, 0]
+        viewModel.selectedStatePosition = sharedPrefsHelper[SharedPrefConstant.STATE, 0]
+        viewModel.city.value = sharedPrefsHelper[SharedPrefConstant.CITY, ""]
+        viewModel.zipCode.value = sharedPrefsHelper[SharedPrefConstant.ZIPCODE, ""]
+        // Update selected questions answers
+        viewModel.eventSelectedAnswerMap =
+            intent.getSerializableExtra(AppConstant.SELECTED_ANSWER_MAP) as HashMap<Int, ArrayList<String>>
+        // Update questions button text
+        if (viewModel.eventSelectedAnswerMap.isNotEmpty()) {
+            viewModel.questionBtnText.value =
+                getString(R.string.view_order) + " {${viewModel.eventSelectedAnswerMap.keys.size}}"
+        } else {
+            viewModel.questionBtnText.value = getString(R.string.start_questions)
+        }
+    }
 
 }
