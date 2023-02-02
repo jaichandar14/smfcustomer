@@ -65,6 +65,8 @@ abstract class BaseActivity<T : BaseViewModel> : AppActivity(), DialogTwoButtonL
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
+        // Set Status bar
+        setStatusBarColor()
         if (::preferenceHelper.isInitialized) {
             Util.setUserIdToCrashlytics(preferenceHelper[SharedPrefConstant.USER_ID, ""])
         }

@@ -3,7 +3,6 @@ package com.smf.customer.view.splash
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.smf.customer.R
 import com.smf.customer.app.base.AppActivity
@@ -11,11 +10,10 @@ import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.databinding.ActivityMainBinding
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
-import com.smf.customer.view.dashboard.DashBoardActivity
 import com.smf.customer.view.login.LoginActivity
 import javax.inject.Inject
 
-class SplashActivity : AppCompatActivity() {
+class SplashActivity : AppActivity() {
     val TAG = this.javaClass.simpleName
 
     companion object {
