@@ -24,6 +24,7 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
     lateinit var questionsAdapter: QuestionsAdapter
     private var questionListItem = ArrayList<QuestionListItem>()
     var questionNumberList = ArrayList<Int>()
+    var fromActivity = ""
 
     companion object {
         var pagination = 0
@@ -64,7 +65,8 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
             viewModel.selectedAnswerMap,
             this,
             AppConstant.EVENT_QUESTIONS_DIALOG,
-            questionNumbers
+            questionNumbers,
+            fromActivity
         )
         questionsRecycler.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -79,6 +81,7 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
             intent.getIntegerArrayListExtra(AppConstant.QUESTION_NUMBER_LIST) as ArrayList<Int>
         viewModel.selectedAnswerMap =
             intent.getSerializableExtra(AppConstant.SELECTED_ANSWER_MAP) as HashMap<Int, ArrayList<String>>
+        fromActivity = intent.getStringExtra(AppConstant.FROM_ACTIVITY).toString()
     }
 
     override fun updateAnswer(

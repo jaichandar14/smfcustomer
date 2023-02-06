@@ -230,28 +230,28 @@ class EventDetailsViewModel : BaseViewModel() {
 
     private fun setSharedPreference() {
         eventName.value?.let {
-            sharedPrefsHelper.put(SharedPrefConstant.EVENT_NAME, it)
+            sharedPrefsHelper.put(SharedPrefConstant.EVENT_NAME, it.trim())
         }
         eventDate.value?.let {
             sharedPrefsHelper.put(SharedPrefConstant.EVENT_DATE, it)
         }
         noOfAttendees.value?.let {
-            sharedPrefsHelper.put(SharedPrefConstant.NO_OF_ATTENDEES, it)
+            sharedPrefsHelper.put(SharedPrefConstant.NO_OF_ATTENDEES, it.trim())
         }
         currencyPosition.value?.let {
             sharedPrefsHelper.put(SharedPrefConstant.CURRENCY_TYPE, it)
         }
-        totalBudget.value?.let { sharedPrefsHelper.put(SharedPrefConstant.BUDGET, it) }
+        totalBudget.value?.let { sharedPrefsHelper.put(SharedPrefConstant.BUDGET, it.trim()) }
         iKnowVenue.value?.let {
             sharedPrefsHelper.put(SharedPrefConstant.VENUE, it)
         }
-        address1.value?.let { sharedPrefsHelper.put(SharedPrefConstant.ADDRESS_1, it) }
-        address2.value?.let { sharedPrefsHelper.put(SharedPrefConstant.ADDRESS_2, it) }
+        address1.value?.let { sharedPrefsHelper.put(SharedPrefConstant.ADDRESS_1, it.trim()) }
+        address2.value?.let { sharedPrefsHelper.put(SharedPrefConstant.ADDRESS_2, it.trim()) }
         sharedPrefsHelper.put(SharedPrefConstant.COUNTRY, selectedCountryPosition)
         sharedPrefsHelper.put(SharedPrefConstant.STATE, selectedStatePosition)
         city.value?.let { sharedPrefsHelper.put(SharedPrefConstant.CITY, it) }
         zipCode.value?.let {
-            sharedPrefsHelper.put(SharedPrefConstant.ZIPCODE, it)
+            sharedPrefsHelper.put(SharedPrefConstant.ZIPCODE, it.trim())
         }
     }
 

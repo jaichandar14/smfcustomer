@@ -35,11 +35,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/mulish_regular"
-            tools:text="1-5 of 11"
             android:textSize="@dimen/_13ssp"
             app:layout_constraintBottom_toBottomOf="@+id/title_text"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/title_text" />
+            app:layout_constraintTop_toTopOf="@+id/title_text"
+            tools:text="1-5 of 11" />
 
         <View
             android:id="@+id/title_separator"
@@ -107,9 +107,10 @@
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/cancel_btn"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/_35sdp"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_8sdp"
                 android:fontFamily="@font/mulish_bold"
+                android:padding="@dimen/_2sdp"
                 android:text="@string/cancel"
                 android:textAllCaps="false"
                 android:textColor="@color/gray_text"
@@ -122,9 +123,10 @@
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/save_btn"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/_35sdp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_8sdp"
                 android:fontFamily="@font/mulish_bold"
+                android:padding="@dimen/_2sdp"
                 android:text="@string/submit"
                 android:textAllCaps="false"
                 android:textColor="@color/gray_text"

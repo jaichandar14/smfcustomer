@@ -23,7 +23,8 @@ class QuestionsAdapter(
     var selectedAnswerPositionMap: HashMap<Int, ArrayList<String>>,
     var context: Context,
     var questionBtnStatus: String,
-    var questionNumberList: ArrayList<Int>
+    var questionNumberList: ArrayList<Int>,
+    var from: String
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     @SuppressLint("NotifyDataSetChanged")
@@ -154,6 +155,7 @@ class QuestionsAdapter(
                 { it -> updateSelectedAnswerToMap(it, position) },
                 updateChoiceList,
                 questionListItem[position].questionType,
+                from,
                 updateSelectedAnswer,
                 questionBtnStatus,
                 context
@@ -200,6 +202,7 @@ class QuestionsAdapter(
                 { it -> updateSelectedAnswerToMap(it, position) },
                 questionListItem[position].choice!!,
                 questionListItem[position].questionType,
+                from,
                 updateSelectedAnswer,
                 questionBtnStatus, context
             )
@@ -246,6 +249,7 @@ class QuestionsAdapter(
                 { it -> updateSelectedAnswerToMap(it, position) },
                 updateChoiceList,
                 questionListItem[position].questionType,
+                from,
                 updateSelectedAnswer,
                 questionBtnStatus, context
             )
@@ -317,6 +321,7 @@ class QuestionsAdapter(
                 { it -> updateSelectedAnswerToMap(it, position) },
                 questionListItem[position].choice!!,
                 questionListItem[position].questionType,
+                from,
                 updateSelectedAnswer,
                 questionBtnStatus, context
             )
