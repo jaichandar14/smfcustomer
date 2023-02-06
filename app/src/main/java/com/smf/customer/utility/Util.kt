@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Rect
 import android.text.InputFilter
+import android.text.Spanned
 import android.util.Log
 import androidx.fragment.app.DialogFragment
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -36,6 +37,21 @@ class Util {
         // Restrict number inside editText
         fun filterText(): InputFilter {
             return InputFilter { source, start, end, _, _, _ ->
+                for (i in start until end) {
+                    if (!Character.isLetter(source[i])) {
+                        return@InputFilter ""
+                    }
+                }
+                null
+            }
+        }
+
+        // Restrict number inside editText
+        fun filterTextWithSpace(): InputFilter {
+            return InputFilter { source, start, end, dest, dstart, dend ->
+                if(source.equals(" ")){ // for backspace
+                    return@InputFilter source
+                }
                 for (i in start until end) {
                     if (!Character.isLetter(source[i])) {
                         return@InputFilter ""

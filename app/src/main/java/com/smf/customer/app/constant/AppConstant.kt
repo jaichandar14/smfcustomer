@@ -96,5 +96,6 @@ object AppConstant {
     const val SELECTED_ANSWER_MAP= "selectedAnswerMap"
     const val QUESTION_LIST_ITEM= "questionListItem"
     const val QUESTION_NUMBER_LIST= "questionNumberList"
+    const val FROM_ACTIVITY= "fromActivity"
 
 }

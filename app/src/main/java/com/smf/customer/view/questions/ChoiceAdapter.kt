@@ -13,12 +13,13 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RadioButton
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.textfield.TextInputLayout
 import com.smf.customer.R
 import com.smf.customer.app.base.MyApplication
 
 class ChoiceAdapter(
     var updateSelectedAnswerToMap: (ArrayList<String>) -> Unit,
-    val choiceList: ArrayList<String>, val questionType: String,
+    val choiceList: ArrayList<String>, val questionType: String, var from: String,
     var selectedAnswer: ArrayList<String>, var questionBtnStatus: String, var context: Context
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -183,11 +184,20 @@ class ChoiceAdapter(
 
     private inner class EditTextViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var editText: EditText = itemView.findViewById(R.id.edit_text_ans)
+        var textInputLayout: TextInputLayout = itemView.findViewById(R.id.edit_text_layout)
         fun bind(position: Int) {
             if (selectedAnswer.isNotEmpty()) {
                 editText.setText(selectedAnswer[0])
             } else {
                 editText.setText("")
+            }
+            when (from) {
+                context.getString(R.string.event_details_activity) -> {
+                    textInputLayout.hint = context.getString(R.string.about_event)
+                }
+                else -> {
+                    textInputLayout.hint = context.getString(R.string.about_service)
+                }
             }
             editText.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(

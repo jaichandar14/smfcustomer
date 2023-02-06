@@ -190,9 +190,11 @@
     <string name="add_icon">Add icon</string>
     <string name="event_dt">EventDetails</string>
     <string name="about_service">About Service</string>
+    <string name="about_event">About Event</string>
     <string name="comment_box">Comment Box</string>
     <string name="multiple_choices">Multiple Choices</string>
     <string name="date_time">Date/Time</string>
     <string name="radio_button">Radio Button</string>
+    <string name="event_details_activity">EventDetailsActivity</string>
 
 </resources>

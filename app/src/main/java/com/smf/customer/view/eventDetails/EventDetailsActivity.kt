@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -141,6 +142,7 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
 
     private fun navigateQuestionsPage() {
         val intent = Intent(this, QuestionsActivity::class.java)
+        intent.putExtra(AppConstant.FROM_ACTIVITY, this::class.java.simpleName)
         intent.putExtra(AppConstant.QUESTION_LIST_ITEM, viewModel.questionListItem)
         intent.putIntegerArrayListExtra(
             AppConstant.QUESTION_NUMBER_LIST, viewModel.questionNumberList
@@ -335,7 +337,7 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
     }
 
     private fun setEditTextFilter() {
-        binding.eventName.filters = arrayOf(Util.filterText())
+//        binding.eventName.filters = arrayOf(Util.filterTextWithSpace())
         binding.city.filters = arrayOf(Util.filterText())
     }
 
