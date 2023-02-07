@@ -94,7 +94,7 @@
     <string name="event_name_is_required">Event name is required</string>
     <string name="event_date">Event Date</string>
     <string name="choose_here">Choose here</string>
-    <string name="event_the_valid_date">Event the valid date</string>
+    <string name="event_the_valid_date">Enter the valid date</string>
     <string name="number_of_attendees">Number of attendees</string>
     <string name="number_of_attendees_is_required">Number of attendees is required</string>
     <string name="estimated_total_budget">Estimated total budget</string>
@@ -195,6 +195,8 @@
     <string name="multiple_choices">Multiple Choices</string>
     <string name="date_time">Date/Time</string>
     <string name="radio_button">Radio Button</string>
+    <string name="drop_down">Drop Down</string>
     <string name="event_details_activity">EventDetailsActivity</string>
+    <string name="select">Select*</string>
 
 </resources>

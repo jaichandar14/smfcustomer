@@ -8,10 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.RadioButton
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputLayout
 import com.smf.customer.R
@@ -28,6 +25,7 @@ class ChoiceAdapter(
         const val VIEW_TYPE_CHECK_BOX = 2
         const val VIEW_TYPE_DATE = 3
         const val VIEW_TYPE_RADIO_BTN = 4
+        const val VIEW_TYPE_DROP_DOWN = 5
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -56,6 +54,12 @@ class ChoiceAdapter(
                         .inflate(R.layout.radio_btn_list_item, parent, false)
                 )
             }
+            VIEW_TYPE_DROP_DOWN -> {
+                return DropDownViewHolder(
+                    LayoutInflater.from(parent.context)
+                        .inflate(R.layout.drop_down_list_item, parent, false)
+                )
+            }
             else -> {
                 return RadioViewHolder(
                     LayoutInflater.from(parent.context)
@@ -79,6 +83,9 @@ class ChoiceAdapter(
             context.getString(R.string.radio_button) -> {
                 (holder as RadioViewHolder).bind(position)
             }
+            context.getString(R.string.drop_down) -> {
+                (holder as DropDownViewHolder).bind(position)
+            }
             else -> {
                 (holder as RadioViewHolder).bind(position)
             }
@@ -86,7 +93,14 @@ class ChoiceAdapter(
     }
 
     override fun getItemCount(): Int {
-        return choiceList.size
+        return when (questionType) {
+            context.getString(R.string.drop_down) -> {
+                1
+            }
+            else -> {
+                choiceList.size
+            }
+        }
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -102,6 +116,9 @@ class ChoiceAdapter(
             }
             context.getString(R.string.radio_button) -> {
                 VIEW_TYPE_RADIO_BTN
+            }
+            context.getString(R.string.drop_down) -> {
+                VIEW_TYPE_DROP_DOWN
             }
             else -> {
                 VIEW_TYPE_RADIO_BTN
@@ -206,7 +223,6 @@ class ChoiceAdapter(
                     count: Int,
                     after: Int
                 ) {
-
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -217,6 +233,25 @@ class ChoiceAdapter(
                 override fun afterTextChanged(s: Editable?) {}
 
             })
+        }
+    }
+
+    private inner class DropDownViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var textView: AutoCompleteTextView = itemView.findViewById(R.id.menuAutocomplete)
+        fun bind(position: Int) {
+            val adapter = ArrayAdapter(context, R.layout.drop_down_list_options, choiceList)
+            textView.setAdapter(adapter)
+
+            if (selectedAnswer.isNotEmpty()) {
+                textView.setText(selectedAnswer[0])
+            }
+
+            textView.setOnItemClickListener { parent, view, position, id ->
+                Log.d("TAG", "bind: drop $position, $id")
+                // Update Selected Answer to Map
+                updateSelectedAnswerToMap(ArrayList<String>().apply { add(choiceList[position]) })
+            }
+
         }
     }
 }

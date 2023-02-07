@@ -243,11 +243,10 @@
 
                     <Spinner
                         android:id="@+id/currency_type"
-                        android:layout_width="@dimen/_90sdp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_5sdp"
                         android:background="@drawable/corner_radius_spinner"
-                        android:gravity="center"
                         android:padding="@dimen/_3sdp"
                         android:popupBackground="@color/white"
                         android:selectedItemPosition="@={eventDetailsViewModel.currencyPosition}"
