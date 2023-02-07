@@ -46,6 +46,7 @@ class QuestionsAdapter(
         const val VIEW_TYPE_CHECK_BOX = 2
         const val VIEW_TYPE_DATE = 3
         const val VIEW_TYPE_RADIO_BTN = 4
+        const val VIEW_TYPE_DROP_DOWN = 5
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -74,6 +75,12 @@ class QuestionsAdapter(
                         .inflate(R.layout.radio_btn_list_item_layout, parent, false)
                 )
             }
+            ChoiceAdapter.VIEW_TYPE_DROP_DOWN -> {
+                return DropDownViewHolder(
+                    LayoutInflater.from(parent.context)
+                        .inflate(R.layout.drop_down_list_layout, parent, false)
+                )
+            }
             else -> {
                 return EditTextViewHolder(
                     LayoutInflater.from(parent.context)
@@ -96,6 +103,9 @@ class QuestionsAdapter(
             }
             context.getString(R.string.radio_button) -> {
                 (holder as RadioBtnViewHolder).bind(position)
+            }
+            context.getString(R.string.drop_down) -> {
+                (holder as DropDownViewHolder).bind(position)
             }
             else -> {
                 (holder as EditTextViewHolder).bind(position)
@@ -120,6 +130,9 @@ class QuestionsAdapter(
             }
             context.getString(R.string.radio_button) -> {
                 VIEW_TYPE_RADIO_BTN
+            }
+            context.getString(R.string.drop_down) -> {
+                VIEW_TYPE_DROP_DOWN
             }
             else -> {
                 VIEW_TYPE_EDIT_TEXT
@@ -339,6 +352,53 @@ class QuestionsAdapter(
         }
     }
 
+    private inner class DropDownViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var question: TextView = itemView.findViewById(R.id.drop_down_qus_title)
+        var choiceRecycler: RecyclerView = itemView.findViewById(R.id.drop_down_recycler_view)
+        var choiceAdapter: ChoiceAdapter? = null
+
+        fun bind(position: Int) {
+            val recyclerModel = questionListItem[position]
+            if (questionListItem[position].isMandatory) {
+                question.text = "Q${questionNumberList[position] + 1}. ${recyclerModel.question} *"
+            } else {
+                question.text = "Q${questionNumberList[position] + 1}. ${recyclerModel.question}"
+            }
+
+            val selectedAnswer = selectedAnswerPositionMap[questionNumberList[position]]
+
+            // If selectedAnswer list is null replace empty list to send adapter
+            val updateSelectedAnswer = selectedAnswer ?: ArrayList()
+            val updateChoiceList =
+                questionListItem[position].choice ?: ArrayList<String>().apply { add("") }
+            Log.d(
+                "TAG",
+                "onTextChanged: start drop $recyclerModel ,$position ${questionNumberList[position]} " +
+                        "$selectedAnswer " +
+                        "${selectedAnswerPositionMap[questionNumberList[position]]} ,$updateSelectedAnswer"
+            )
+            choiceAdapter = ChoiceAdapter(
+                { it -> updateSelectedAnswerToMap(it, position) },
+                updateChoiceList,
+                questionListItem[position].questionType,
+                from,
+                updateSelectedAnswer,
+                questionBtnStatus,
+                context
+            )
+            choiceRecycler.layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            choiceRecycler.adapter = choiceAdapter
+        }
+
+        fun updateSelectedAnswerToMap(selectedAnswer: ArrayList<String>, position: Int) {
+            Log.d(
+                "TAG", "updateSelectedAnswerToMap:edit text called ${position + 1} $selectedAnswer"
+            )
+            updateAnswerListener?.updateAnswer(position, selectedAnswer, questionNumberList)
+        }
+    }
+
     private var updateAnswerListener: UpdateAnswerListener? = null
 
     // Initializing Listener Interface
@@ -352,5 +412,4 @@ class QuestionsAdapter(
             position: Int, selectedAnswer: ArrayList<String>, questionNumberList: ArrayList<Int>
         )
     }
-
 }

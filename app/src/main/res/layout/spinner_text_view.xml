@@ -3,5 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fontFamily="@font/mulish_medium"
-    android:padding="@dimen/_5sdp"
+    android:paddingStart="@dimen/_5sdp"
+    android:paddingTop="@dimen/_5sdp"
+    android:paddingEnd="@dimen/_20sdp"
+    android:paddingBottom="@dimen/_5sdp"
     android:textSize="@dimen/_14ssp" />
