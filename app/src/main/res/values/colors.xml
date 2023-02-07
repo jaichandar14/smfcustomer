@@ -39,5 +39,8 @@
     <color name="blue">#2196F3</color>
     <color name="circle_outer_border">#C6C6C6</color>
     <color name="gold_cut_off_progess">#FF9100</color>
+    <color name="top_stroke_color">#0000FF</color>
+    <color name="bottom_stroke_color">#FF0000</color>
+    <color name="main">#00FF00</color>
 
 </resources>
