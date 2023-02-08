@@ -22,6 +22,7 @@
             android:layout_height="@dimen/_30sdp"
             android:background="@drawable/event_details_et_background"
             android:focusable="false"
+            android:textColor="@color/black"
             android:fontFamily="@font/mulish_medium"
             android:hint="@string/choose_here"
             android:textCursorDrawable="@drawable/text_cursor"

@@ -23,6 +23,7 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
     lateinit var questionsRecycler: RecyclerView
     lateinit var questionsAdapter: QuestionsAdapter
     private var questionListItem = ArrayList<QuestionListItem>()
+    lateinit var questionBtnStatus: String
     var questionNumberList = ArrayList<Int>()
     var fromActivity = ""
 
@@ -64,7 +65,7 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
             initialQuestions,
             viewModel.selectedAnswerMap,
             this,
-            AppConstant.EVENT_QUESTIONS_DIALOG,
+            questionBtnStatus,
             questionNumbers,
             fromActivity
         )
@@ -82,6 +83,7 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
         viewModel.selectedAnswerMap =
             intent.getSerializableExtra(AppConstant.SELECTED_ANSWER_MAP) as HashMap<Int, ArrayList<String>>
         fromActivity = intent.getStringExtra(AppConstant.FROM_ACTIVITY).toString()
+        questionBtnStatus = intent.getStringExtra(AppConstant.QUESTION_BTN_TEXT) ?: ""
     }
 
     override fun updateAnswer(
@@ -118,7 +120,7 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
                     questionListItem.subList(endQuestion - 5, endQuestion)
                         .toMutableList() as ArrayList,
                     viewModel.selectedAnswerMap,
-                    AppConstant.EVENT_QUESTIONS_DIALOG,
+                    questionBtnStatus,
                     questionNumberList.subList(endQuestion - 5, endQuestion)
                         .toMutableList() as ArrayList
                 )
@@ -134,7 +136,7 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
                     questionListItem.subList(endQuestion - 5, questionListItem.size)
                         .toMutableList() as ArrayList,
                     viewModel.selectedAnswerMap,
-                    AppConstant.EVENT_QUESTIONS_DIALOG,
+                    questionBtnStatus,
                     questionNumberList.subList(endQuestion - 5, questionListItem.size)
                         .toMutableList() as ArrayList
                 )
@@ -159,7 +161,7 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
                     questionListItem.subList(endQuestion - 5, endQuestion)
                         .toMutableList() as ArrayList,
                     viewModel.selectedAnswerMap,
-                    AppConstant.EVENT_QUESTIONS_DIALOG,
+                    questionBtnStatus,
                     questionNumberList.subList(endQuestion - 5, endQuestion)
                         .toMutableList() as ArrayList
                 )
@@ -174,7 +176,7 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
                 questionsAdapter.updateValues(
                     questionListItem.subList(0, endQuestion).toMutableList() as ArrayList,
                     viewModel.selectedAnswerMap,
-                    AppConstant.EVENT_QUESTIONS_DIALOG,
+                    questionBtnStatus,
                     questionNumberList.subList(0, endQuestion).toMutableList() as ArrayList
                 )
             }

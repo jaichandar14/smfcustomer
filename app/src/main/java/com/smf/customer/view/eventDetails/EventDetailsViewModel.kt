@@ -253,6 +253,12 @@ class EventDetailsViewModel : BaseViewModel() {
         zipCode.value?.let {
             sharedPrefsHelper.put(SharedPrefConstant.ZIPCODE, it.trim())
         }
+        // Update Host Details
+        name.value?.let { sharedPrefsHelper.put(SharedPrefConstant.HOST_NAME, it.trim()) }
+        mobileNumber.value?.let {
+            sharedPrefsHelper.put(SharedPrefConstant.HOST_NUMBER, it.trim())
+        }
+        emailId.value?.let { sharedPrefsHelper.put(SharedPrefConstant.HOST_EMAIL, it.trim()) }
     }
 
     override fun onError(throwable: Throwable) {

@@ -97,5 +97,7 @@ object AppConstant {
     const val QUESTION_LIST_ITEM= "questionListItem"
     const val QUESTION_NUMBER_LIST= "questionNumberList"
     const val FROM_ACTIVITY= "fromActivity"
+    const val QUESTION_BTN_TEXT= "QuestionButtonText"
+    const val QUESTION_BUTTON= "QuestionButton"
 
 }

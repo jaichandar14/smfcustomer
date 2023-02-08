@@ -24,6 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/mulish_regular"
+            android:textColor="@color/black"
             android:inputType="none"
             android:textSize="@dimen/_14ssp" />
     </com.google.android.material.textfield.TextInputLayout>

@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.EditText
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -89,6 +88,8 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
         eventDateListener()
         // Initialize currency type
         initializeCurrencyType()
+        // Questions edit button Listener
+        editBtnListener()
     }
 
     override fun updateQuestions(eventQuestionsResponseDTO: EventQuestionsResponseDTO) {
@@ -136,11 +137,22 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
     }
 
     override fun onClickQuestionsBtn() {
+        // Update Host Country Code
+        sharedPrefsHelper.put(
+            SharedPrefConstant.HOST_COUNTRY_CODE,
+            binding.cppSignIn.selectedCountryCode
+        )
         // Go to questions page
-        navigateQuestionsPage()
+        navigateQuestionsPage(AppConstant.QUESTION_BUTTON)
     }
 
-    private fun navigateQuestionsPage() {
+    private fun editBtnListener() {
+        binding.editImage.setOnClickListener {
+            navigateQuestionsPage(AppConstant.EDIT_BUTTON)
+        }
+    }
+
+    private fun navigateQuestionsPage(from: String) {
         val intent = Intent(this, QuestionsActivity::class.java)
         intent.putExtra(AppConstant.FROM_ACTIVITY, this::class.java.simpleName)
         intent.putExtra(AppConstant.QUESTION_LIST_ITEM, viewModel.questionListItem)
@@ -148,6 +160,10 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
             AppConstant.QUESTION_NUMBER_LIST, viewModel.questionNumberList
         )
         intent.putExtra(AppConstant.SELECTED_ANSWER_MAP, viewModel.eventSelectedAnswerMap)
+        intent.putExtra(
+            AppConstant.QUESTION_BTN_TEXT,
+            if (from != AppConstant.EDIT_BUTTON) viewModel.questionBtnText.value else ""
+        )
         finish()
         startActivity(intent)
     }
@@ -349,12 +365,12 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
             // Set sharedPref details
             updateOldValues()
             // Set Initial details
-            setInitialUserDetails()
+            setInitialUserDetails(getString(R.string.after))
         } else {
             // Update eventTitle and TemplateId
             updateSharedPrefValues()
             // Set Initial details
-            setInitialUserDetails()
+            setInitialUserDetails(getString(R.string.initial))
         }
     }
 
@@ -369,17 +385,24 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
         }
     }
 
-    private fun setInitialUserDetails() {
+    private fun setInitialUserDetails(from: String) {
         binding.pageTitleText.text = sharedPrefsHelper[SharedPrefConstant.EVENT_TITLE, ""]
         viewModel.templateId = sharedPrefsHelper[SharedPrefConstant.TEMPLATE_ID, 0]
         token = sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""]
-        viewModel.name.value =
-            sharedPrefsHelper[SharedPrefConstant.FIRST_NAME, ""] + " " + sharedPrefsHelper[SharedPrefConstant.LAST_NAME, ""]
-        viewModel.emailId.value = sharedPrefsHelper[SharedPrefConstant.EMAIL_ID, ""]
-        val countryCode = sharedPrefsHelper[SharedPrefConstant.COUNTRY_CODE, ""]
-        val mobileNumber = sharedPrefsHelper[SharedPrefConstant.MOBILE_NUMBER, ""]
-        viewModel.mobileNumber.value = mobileNumber.substringAfter(countryCode)
-        binding.cppSignIn.setCountryForPhoneCode(sharedPrefsHelper[SharedPrefConstant.COUNTRY_CODE, 0])
+        if (from == getString(R.string.initial)) {
+            viewModel.name.value =
+                sharedPrefsHelper[SharedPrefConstant.FIRST_NAME, ""] + " " + sharedPrefsHelper[SharedPrefConstant.LAST_NAME, ""]
+            viewModel.emailId.value = sharedPrefsHelper[SharedPrefConstant.EMAIL_ID, ""]
+            val countryCode = sharedPrefsHelper[SharedPrefConstant.COUNTRY_CODE, ""]
+            val mobileNumber = sharedPrefsHelper[SharedPrefConstant.MOBILE_NUMBER, ""]
+            viewModel.mobileNumber.value = mobileNumber.substringAfter(countryCode)
+            binding.cppSignIn.setCountryForPhoneCode(sharedPrefsHelper[SharedPrefConstant.COUNTRY_CODE, 0])
+        } else {
+            viewModel.name.value = sharedPrefsHelper[SharedPrefConstant.HOST_NAME, ""]
+            viewModel.emailId.value = sharedPrefsHelper[SharedPrefConstant.HOST_EMAIL, ""]
+            viewModel.mobileNumber.value = sharedPrefsHelper[SharedPrefConstant.HOST_NUMBER, ""]
+            binding.cppSignIn.setCountryForPhoneCode(sharedPrefsHelper[SharedPrefConstant.HOST_COUNTRY_CODE, "0"].toInt())
+        }
     }
 
     private fun updateOldValues() {
@@ -402,8 +425,10 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
         if (viewModel.eventSelectedAnswerMap.isNotEmpty()) {
             viewModel.questionBtnText.value =
                 getString(R.string.view_order) + " {${viewModel.eventSelectedAnswerMap.keys.size}}"
+            viewModel.editImageVisibility.value = true
         } else {
             viewModel.questionBtnText.value = getString(R.string.start_questions)
+            viewModel.editImageVisibility.value = false
         }
     }
 
