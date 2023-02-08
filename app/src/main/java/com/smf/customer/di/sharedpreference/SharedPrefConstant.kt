@@ -80,4 +80,16 @@ object SharedPrefConstant {
 
     val CITY: String
         get() = "city"
+
+    val HOST_NAME: String
+        get() = "hostName"
+
+    val HOST_COUNTRY_CODE: String
+        get() = "hostCountryCode"
+
+    val HOST_NUMBER: String
+        get() = "hostNumber"
+
+    val HOST_EMAIL: String
+        get() = "hostEmail"
 }

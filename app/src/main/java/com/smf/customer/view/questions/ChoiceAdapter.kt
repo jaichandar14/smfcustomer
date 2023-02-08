@@ -188,13 +188,17 @@ class ChoiceAdapter(
             } else {
                 eventDateET.setText("")
             }
-            eventDateET.setOnClickListener {
-                // Show date picker dialog
-                updateSelectedAnswerToMap(ArrayList())
-            }
-            calendarImage.setOnClickListener {
-                // Show date picker dialog
-                updateSelectedAnswerToMap(ArrayList())
+            if (questionBtnStatus.contains(context.resources.getString(R.string.view_order))) {
+                eventDateET.isEnabled = false
+            } else {
+                eventDateET.setOnClickListener {
+                    // Show date picker dialog
+                    updateSelectedAnswerToMap(ArrayList())
+                }
+                calendarImage.setOnClickListener {
+                    // Show date picker dialog
+                    updateSelectedAnswerToMap(ArrayList())
+                }
             }
         }
     }
@@ -216,42 +220,56 @@ class ChoiceAdapter(
                     textInputLayout.hint = context.getString(R.string.about_service)
                 }
             }
-            editText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                }
+            if (questionBtnStatus.contains(context.resources.getString(R.string.view_order))) {
+                editText.isEnabled = false
+            } else {
+                editText.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) {
+                    }
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    // Update Selected Answer to Map
-                    updateSelectedAnswerToMap(ArrayList<String>().apply { add(s.toString()) })
-                }
+                    override fun onTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) {
+                        // Update Selected Answer to Map
+                        updateSelectedAnswerToMap(ArrayList<String>().apply { add(s.toString()) })
+                    }
 
-                override fun afterTextChanged(s: Editable?) {}
+                    override fun afterTextChanged(s: Editable?) {}
 
-            })
+                })
+            }
         }
     }
 
     private inner class DropDownViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var textView: AutoCompleteTextView = itemView.findViewById(R.id.menuAutocomplete)
+        var textInputLayout: TextInputLayout = itemView.findViewById(R.id.drop_down_question)
         fun bind(position: Int) {
             val adapter = ArrayAdapter(context, R.layout.drop_down_list_options, choiceList)
             textView.setAdapter(adapter)
 
             if (selectedAnswer.isNotEmpty()) {
-                textView.setText(selectedAnswer[0])
+                textView.setText(selectedAnswer[0], false)
             }
 
-            textView.setOnItemClickListener { parent, view, position, id ->
-                Log.d("TAG", "bind: drop $position, $id")
-                // Update Selected Answer to Map
-                updateSelectedAnswerToMap(ArrayList<String>().apply { add(choiceList[position]) })
+            if (questionBtnStatus.contains(context.resources.getString(R.string.view_order))) {
+                textView.isEnabled = false
+                textInputLayout.setEndIconOnClickListener(null)
+            } else {
+                textView.setOnItemClickListener { _, _, position, id ->
+                    Log.d("TAG", "bind: drop $position, $id")
+                    // Update Selected Answer to Map
+                    updateSelectedAnswerToMap(ArrayList<String>().apply { add(choiceList[position]) })
+                }
             }
-
         }
     }
 }

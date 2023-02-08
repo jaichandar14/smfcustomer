@@ -82,9 +82,9 @@ class QuestionsAdapter(
                 )
             }
             else -> {
-                return EditTextViewHolder(
+                return RadioBtnViewHolder(
                     LayoutInflater.from(parent.context)
-                        .inflate(R.layout.edit_text_list_item_layout, parent, false)
+                        .inflate(R.layout.radio_btn_list_item_layout, parent, false)
                 )
             }
         }
@@ -108,7 +108,7 @@ class QuestionsAdapter(
                 (holder as DropDownViewHolder).bind(position)
             }
             else -> {
-                (holder as EditTextViewHolder).bind(position)
+                (holder as RadioBtnViewHolder).bind(position)
             }
         }
     }
@@ -135,7 +135,7 @@ class QuestionsAdapter(
                 VIEW_TYPE_DROP_DOWN
             }
             else -> {
-                VIEW_TYPE_EDIT_TEXT
+                VIEW_TYPE_RADIO_BTN
             }
         }
     }

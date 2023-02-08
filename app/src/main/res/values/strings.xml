@@ -198,5 +198,6 @@
     <string name="drop_down">Drop Down</string>
     <string name="event_details_activity">EventDetailsActivity</string>
     <string name="select">Select*</string>
-
+    <string name="initial">Initial</string>
+    <string name="after">After</string>
 </resources>
