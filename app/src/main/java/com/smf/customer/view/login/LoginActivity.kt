@@ -34,6 +34,8 @@ class LoginActivity : BaseActivity<LoginViewModel>(), LoginViewModel.CallBackInt
         binding.loginViewModel = viewModel
         binding.lifecycleOwner = this@LoginActivity
         MyApplication.applicationComponent.inject(this)
+        //3372
+        viewModel.bindingRoot.value=binding
         // Initialize CallBackInterface
         viewModel.setCallBackInterface(this)
         // SignIn Button Listener
@@ -102,4 +104,8 @@ class LoginActivity : BaseActivity<LoginViewModel>(), LoginViewModel.CallBackInt
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        viewModel.toastMessageG.value?.msg=""
+    }
 }

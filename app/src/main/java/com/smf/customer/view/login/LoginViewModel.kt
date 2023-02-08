@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.amplifyframework.core.Amplify
+import com.google.android.material.snackbar.Snackbar
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseViewModel
 import com.smf.customer.app.base.MyApplication
@@ -51,11 +52,19 @@ class LoginViewModel : BaseViewModel() {
                     true
                 }
             } else {
-                showToastMessage(MyApplication.appContext.getString(R.string.please_Enter_Any_EMail_or_Phone_Number))
+                showSnackMessage(
+                    MyApplication.appContext.getString(R.string.please_Enter_Any_EMail_or_Phone_Number),
+                    Snackbar.LENGTH_LONG,
+                    AppConstant.PLAIN_SNACK_BAR
+                )
                 return false
             }
         } else {
-            showToastMessage(MyApplication.appContext.getString(R.string.please_Enter_Email_or_MobileNumber))
+            showSnackMessage(
+                MyApplication.appContext.getString(R.string.please_Enter_Any_EMail_or_Phone_Number),
+                Snackbar.LENGTH_LONG,
+                AppConstant.PLAIN_SNACK_BAR
+            )
         }
         return false
     }
@@ -112,13 +121,22 @@ class LoginViewModel : BaseViewModel() {
             viewModelScope.launch {
                 val errMsg = it.cause!!.message!!.split(".")[0]
                 if (errMsg == MyApplication.appContext.resources.getString(R.string.CreateAuthChallenge_failed_with_error)) {
-                    showToastMessage(errMsg)
+                    showSnackMessage(
+                        errMsg,
+                        Snackbar.LENGTH_LONG,
+                        AppConstant.PLAIN_SNACK_BAR
+                    )
                 } else if (errMsg.contains(MyApplication.appContext.resources.getString(R.string.Failed_to_connect_to_cognito_idp)) ||
                     errMsg.contains(MyApplication.appContext.resources.getString(R.string.Unable_to_resolve_host))
+
                 ) {
                     retryErrorMessage.value = R.string.internet_error
                 } else {
-                    showToastMessage(errMsg)
+                    showSnackMessage(
+                        errMsg,
+                        Snackbar.LENGTH_LONG,
+                        AppConstant.PLAIN_SNACK_BAR
+                    )
                 }
             }
         })

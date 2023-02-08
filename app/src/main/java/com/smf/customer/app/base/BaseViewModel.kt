@@ -1,8 +1,8 @@
 package com.smf.customer.app.base
 
 import android.util.Log
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
+import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.smf.customer.R
@@ -44,7 +44,8 @@ abstract class BaseViewModel : ViewModel() {
     var count = 100
     var idToken: String = ""
     var negativeCode = true
-
+//3372
+    var bindingRoot=MutableLiveData<ViewDataBinding>()
     @Inject
     lateinit var retrofitHelper: RetrofitHelper
 
@@ -230,7 +231,7 @@ abstract class BaseViewModel : ViewModel() {
     open fun doNetworkOperation() {
         showLoading.value = true
         Log.d(TAG, "doNetworkOperation: ${TAG}")
-        
+
         observable.value?.subscribeOn(Schedulers.io())
             ?.observeOn(AndroidSchedulers.mainThread())?.subscribe(this::onSuccess, this::onError)
             ?.let {
@@ -238,6 +239,17 @@ abstract class BaseViewModel : ViewModel() {
             }
     }
 
+    // 3372
+    data class ToastLayoutParam(var msg: String, var duration: Int, var properties: String)
+
+    var toastMessageG = MutableLiveData<ToastLayoutParam>()
+    val getToastMessageG: LiveData<ToastLayoutParam> = toastMessageG
+    fun showSnackMessage(
+        msg: String, duration: Int, properties: String
+    ) {
+        toastMessageG.value = ToastLayoutParam(msg, duration, properties)
+        Log.d("TAG", "setCurrentDate: ${toastMessageG.value}")
+    }
     data class ErrorResponse(
         var id: Int,
         var errorMessage: String,

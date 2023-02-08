@@ -35,7 +35,7 @@
     <string name="login_message">The phone number you have mentioned does not match our account. Please try again</string>
     <string name="login_email_message">The email address you have mentioned does not match our account. Please try again</string>
     <string name="perter_gmail_com">aaa@bbb.com</string>
-    <string name="please_Enter_Any_EMail_or_Phone_Number">Please Enter Any EMail or Phone Number</string>
+    <string name="please_Enter_Any_EMail_or_Phone_Number">Please Enter Any Email or Phone Number</string>
     <string name="please_Enter_Email_or_MobileNumber">Please Enter Email or MobileNumber</string>
     // 3245
     <string name="logo">LOGO</string>

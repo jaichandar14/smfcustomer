@@ -100,4 +100,6 @@ object AppConstant {
     const val QUESTION_BTN_TEXT= "QuestionButtonText"
     const val QUESTION_BUTTON= "QuestionButton"
 
+    //3372
+    const val PLAIN_SNACK_BAR = "Plain Snackbar"
 }

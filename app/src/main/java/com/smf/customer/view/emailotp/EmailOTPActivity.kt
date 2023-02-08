@@ -3,10 +3,10 @@ package com.smf.customer.view.emailotp
 import android.content.Intent
 import android.os.Bundle
 import android.widget.EditText
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.snackbar.Snackbar
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseActivity
 import com.smf.customer.app.base.MyApplication
@@ -15,7 +15,6 @@ import com.smf.customer.databinding.EmailOtpActivityBinding
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.dialog.DialogConstant
-import com.smf.customer.utility.MyToast
 import com.smf.customer.view.dashboard.DashBoardActivity
 import com.smf.customer.view.login.LoginActivity
 import javax.inject.Inject
@@ -49,6 +48,8 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
         mDataBinding.otpactivity = this
         mDataBinding.lifecycleOwner = this@EmailOTPActivity
         MyApplication.applicationComponent.inject(this)
+        //3372
+        viewModel.bindingRoot.value = mDataBinding
         // Initialize CallBackInterface
         viewModel.setCallBackInterface(this)
         otp0 = mDataBinding.otp1ed
@@ -82,7 +83,12 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
         otp3: String
     ): Boolean {
         return if (otp0.isEmpty()) {
-            viewModel.showToastMessage(AppConstant.ENTER_OTP)
+            viewModel.showSnackMessage(
+                AppConstant.ENTER_OTP,
+                Snackbar.LENGTH_LONG,
+                AppConstant.PLAIN_SNACK_BAR
+            )
+            viewModel.showLoading.value = false
             false
         } else {
             viewModel.AwsAmplify().confirmSignIn(
@@ -124,7 +130,11 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
             viewModel.loginUser(false, getUserID())
             if (num.toInt() >= 3) {
             } else {
-                viewModel.showToastMessage(viewModel.toast)
+                viewModel.showSnackMessage(
+                    viewModel.toast,
+                    Snackbar.LENGTH_LONG,
+                    AppConstant.PLAIN_SNACK_BAR
+                )
             }
             mDataBinding.otp1ed.text = null
             mDataBinding.otp3ed.text = null
@@ -136,17 +146,29 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
 
     override fun showToast(resendRestriction: Int) {
         if (resendRestriction <= 5) {
-            viewModel.showToastMessage(getString(R.string.otp_sent_to_your_mail))
+            viewModel.showSnackMessage(
+                getString(R.string.otp_sent_to_your_mail),
+                Snackbar.LENGTH_LONG,
+                AppConstant.PLAIN_SNACK_BAR
+            )
             viewModel.showLoading.value = false
         } else {
-            viewModel.showToastMessage(getString(R.string.resend_clicked_multiple_time))
+            viewModel.showSnackMessage(
+                getString(R.string.resend_clicked_multiple_time),
+                Snackbar.LENGTH_LONG,
+                AppConstant.PLAIN_SNACK_BAR
+            )
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
     }
 
     override fun otpValidation(b: Boolean) {
-        MyToast.show(this, AppConstant.ENTER_OTP, Toast.LENGTH_LONG)
+        viewModel.showSnackMessage(
+            AppConstant.ENTER_OTP,
+            Snackbar.LENGTH_LONG,
+            AppConstant.PLAIN_SNACK_BAR
+        )
     }
 
     private fun getUserID(): String {
@@ -164,5 +186,10 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
                 finish()
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.toastMessageG.value?.msg = ""
     }
 }
