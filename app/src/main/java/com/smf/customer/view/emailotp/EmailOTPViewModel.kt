@@ -11,6 +11,7 @@ import com.amplifyframework.auth.AuthUserAttributeKey
 import com.amplifyframework.auth.cognito.AWSCognitoAuthSession
 import com.amplifyframework.auth.result.AuthSessionResult
 import com.amplifyframework.core.Amplify
+import com.google.android.material.snackbar.Snackbar
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseViewModel
 import com.smf.customer.app.base.MyApplication
@@ -110,7 +111,11 @@ class EmailOTPViewModel : BaseViewModel() {
                             )
                         )
                     } else {
-                        showToastMessage(errMsg)
+                        showSnackMessage(
+                            errMsg,
+                            Snackbar.LENGTH_LONG,
+                            AppConstant.PLAIN_SNACK_BAR
+                        )
                         callBackInterface!!.awsErrorResponse(num.toString())
                     }
                 }
@@ -259,7 +264,11 @@ class EmailOTPViewModel : BaseViewModel() {
                     Log.e(TAG, "Failed to resend code", it)
                     viewModelScope.launch {
                         val errMsg = it.cause!!.message!!.split(".")[0]
-                        showToastMessage(errMsg)
+                        showSnackMessage(
+                            errMsg,
+                            Snackbar.LENGTH_LONG,
+                            AppConstant.PLAIN_SNACK_BAR
+                        )
                         callBackInterface!!.awsErrorResponse(num.toString())
                     }
                 })

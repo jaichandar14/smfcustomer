@@ -3,6 +3,7 @@ package com.smf.customer.app.base
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.DialogFragment
 import com.smf.customer.R
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
@@ -12,6 +13,7 @@ import com.smf.customer.dialog.InternetErrorDialog
 import com.smf.customer.listener.DialogTwoButtonListener
 import com.smf.customer.utility.ConnectionLiveData
 import com.smf.customer.utility.MyToast
+import com.smf.customer.utility.SnackBar
 import com.smf.customer.utility.Util
 import com.smf.customer.view.splash.SplashActivity
 import javax.inject.Inject
@@ -24,6 +26,7 @@ abstract class BaseActivity<T : BaseViewModel> : AppActivity(), DialogTwoButtonL
     private lateinit var connectionLiveData: ConnectionLiveData
     private var networkDialog: InternetErrorDialog? = null
 
+    var bindingRoot: ViewDataBinding? =null
     open fun observer() {
         viewModel.toastMessage.observe(this) { message ->
             message?.let { MyToast.show(this, message, Toast.LENGTH_LONG) }
@@ -59,6 +62,21 @@ abstract class BaseActivity<T : BaseViewModel> : AppActivity(), DialogTwoButtonL
                     Log.d(TAG, "connect onAvailable: act not available $isNetworkAvailable")
                 }
 
+            }
+        }
+        // 3372 getting the root view from each activity
+        viewModel.bindingRoot.observe(this){
+            bindingRoot=it
+        }
+        viewModel.getToastMessageG.observe(this) { toastMessageG ->
+            Log.d("TAG", "on toast create Base Activity $toastMessageG")
+            if (!toastMessageG.msg.isNullOrEmpty()) {
+                SnackBar.showSnakbarTypeOne(
+                    bindingRoot?.root,
+                    toastMessageG.msg,
+                    this,
+                    toastMessageG.duration
+                )
             }
         }
     }

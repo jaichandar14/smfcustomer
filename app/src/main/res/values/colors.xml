@@ -42,5 +42,6 @@
     <color name="top_stroke_color">#0000FF</color>
     <color name="bottom_stroke_color">#FF0000</color>
     <color name="main">#00FF00</color>
-
+    //3372
+    <color name="snack_background">#F3F0F0</color>
 </resources>
