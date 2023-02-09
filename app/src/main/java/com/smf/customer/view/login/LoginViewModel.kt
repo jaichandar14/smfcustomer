@@ -53,17 +53,13 @@ class LoginViewModel : BaseViewModel() {
                 }
             } else {
                 showSnackMessage(
-                    MyApplication.appContext.getString(R.string.please_Enter_Any_EMail_or_Phone_Number),
-                    Snackbar.LENGTH_LONG,
-                    AppConstant.PLAIN_SNACK_BAR
+                    MyApplication.appContext.getString(R.string.please_Enter_Any_EMail_or_Phone_Number)
                 )
                 return false
             }
         } else {
             showSnackMessage(
-                MyApplication.appContext.getString(R.string.please_Enter_Any_EMail_or_Phone_Number),
-                Snackbar.LENGTH_LONG,
-                AppConstant.PLAIN_SNACK_BAR
+                MyApplication.appContext.getString(R.string.please_Enter_Any_EMail_or_Phone_Number)
             )
         }
         return false
@@ -122,9 +118,7 @@ class LoginViewModel : BaseViewModel() {
                 val errMsg = it.cause!!.message!!.split(".")[0]
                 if (errMsg == MyApplication.appContext.resources.getString(R.string.CreateAuthChallenge_failed_with_error)) {
                     showSnackMessage(
-                        errMsg,
-                        Snackbar.LENGTH_LONG,
-                        AppConstant.PLAIN_SNACK_BAR
+                        errMsg
                     )
                 } else if (errMsg.contains(MyApplication.appContext.resources.getString(R.string.Failed_to_connect_to_cognito_idp)) ||
                     errMsg.contains(MyApplication.appContext.resources.getString(R.string.Unable_to_resolve_host))
@@ -133,9 +127,7 @@ class LoginViewModel : BaseViewModel() {
                     retryErrorMessage.value = R.string.internet_error
                 } else {
                     showSnackMessage(
-                        errMsg,
-                        Snackbar.LENGTH_LONG,
-                        AppConstant.PLAIN_SNACK_BAR
+                        errMsg
                     )
                 }
             }

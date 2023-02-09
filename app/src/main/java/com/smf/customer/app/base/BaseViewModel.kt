@@ -5,6 +5,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.material.snackbar.Snackbar
 import com.smf.customer.R
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.app.constant.AppConstant.NOT_FOUND
@@ -245,7 +246,7 @@ abstract class BaseViewModel : ViewModel() {
     var toastMessageG = MutableLiveData<ToastLayoutParam>()
     val getToastMessageG: LiveData<ToastLayoutParam> = toastMessageG
     fun showSnackMessage(
-        msg: String, duration: Int, properties: String
+        msg: String, duration: Int=Snackbar.LENGTH_LONG, properties: String=AppConstant.PLAIN_SNACK_BAR
     ) {
         toastMessageG.value = ToastLayoutParam(msg, duration, properties)
         Log.d("TAG", "setCurrentDate: ${toastMessageG.value}")

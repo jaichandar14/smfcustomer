@@ -84,9 +84,7 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
     ): Boolean {
         return if (otp0.isEmpty()) {
             viewModel.showSnackMessage(
-                AppConstant.ENTER_OTP,
-                Snackbar.LENGTH_LONG,
-                AppConstant.PLAIN_SNACK_BAR
+                AppConstant.ENTER_OTP
             )
             viewModel.showLoading.value = false
             false
@@ -131,9 +129,7 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
             if (num.toInt() >= 3) {
             } else {
                 viewModel.showSnackMessage(
-                    viewModel.toast,
-                    Snackbar.LENGTH_LONG,
-                    AppConstant.PLAIN_SNACK_BAR
+                    viewModel.toast
                 )
             }
             mDataBinding.otp1ed.text = null
@@ -147,16 +143,12 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
     override fun showToast(resendRestriction: Int) {
         if (resendRestriction <= 5) {
             viewModel.showSnackMessage(
-                getString(R.string.otp_sent_to_your_mail),
-                Snackbar.LENGTH_LONG,
-                AppConstant.PLAIN_SNACK_BAR
+                getString(R.string.otp_sent_to_your_mail)
             )
             viewModel.showLoading.value = false
         } else {
             viewModel.showSnackMessage(
-                getString(R.string.resend_clicked_multiple_time),
-                Snackbar.LENGTH_LONG,
-                AppConstant.PLAIN_SNACK_BAR
+                getString(R.string.resend_clicked_multiple_time)
             )
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
@@ -165,9 +157,7 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
 
     override fun otpValidation(b: Boolean) {
         viewModel.showSnackMessage(
-            AppConstant.ENTER_OTP,
-            Snackbar.LENGTH_LONG,
-            AppConstant.PLAIN_SNACK_BAR
+            AppConstant.ENTER_OTP
         )
     }
 
