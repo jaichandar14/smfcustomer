@@ -393,10 +393,10 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
             viewModel.eventStatusData.value = response
             mAdapterEvent.refreshItems(response.eventDtos)
         }
-        viewModel.getEventCount(
-            sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""],
-            sharedPrefsHelper[SharedPrefConstant.USER_ID, ""]
-        )
+//        viewModel.getEventCount(
+//            sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""],
+//            sharedPrefsHelper[SharedPrefConstant.USER_ID, ""]
+//        )
 
 
     }
