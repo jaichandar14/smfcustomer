@@ -18,6 +18,7 @@ import com.smf.customer.data.model.dto.QuestionListItem
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 class QuestionsAdapter(
     var questionListItem: ArrayList<QuestionListItem>,
     var selectedAnswerPositionMap: HashMap<Int, ArrayList<String>>,
@@ -418,11 +419,8 @@ class QuestionsAdapter(
     }
 
     private fun errorVisibility(errorView: TextView, position: Int) {
-        if (mandatoryQuesErrorPositionList.contains(position)) {
-            errorView.visibility = View.VISIBLE
-        } else {
-            errorView.visibility = View.GONE
-        }
+        errorView.visibility =
+            if (mandatoryQuesErrorPositionList.contains(position)) View.VISIBLE else View.GONE
     }
 
     private var updateAnswerListener: UpdateAnswerListener? = null

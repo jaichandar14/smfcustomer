@@ -98,10 +98,10 @@ class EventDetailsViewModel : BaseViewModel() {
         // Verify all mandatory questions answered before submit
         if (verifyMandatoryQuesAnswered()) {
             if (iKnowVenue.value != true) {
-                if (!eventName.value.isNullOrEmpty() && !eventDate.value.isNullOrEmpty() &&
-                    !noOfAttendees.value.isNullOrEmpty() && !totalBudget.value.isNullOrEmpty() &&
-                    !zipCode.value.isNullOrEmpty() && !name.value.isNullOrEmpty() &&
-                    !mobileNumber.value.isNullOrEmpty() && !emailId.value.isNullOrEmpty()
+                if (eventName.value.isNullOrEmpty().not() && eventDate.value.isNullOrEmpty().not() &&
+                    noOfAttendees.value.isNullOrEmpty().not() && totalBudget.value.isNullOrEmpty().not() &&
+                    zipCode.value.isNullOrEmpty().not() && name.value.isNullOrEmpty().not() &&
+                    mobileNumber.value.isNullOrEmpty().not() && emailId.value.isNullOrEmpty().not()
                 ) {
                     if (questionListItem.size == eventSelectedAnswerMap.keys.size) {
                         // Post Event info details
@@ -114,12 +114,12 @@ class EventDetailsViewModel : BaseViewModel() {
                     setIWillBeSelectingErrorVisible()
                 }
             } else {
-                if (!eventName.value.isNullOrEmpty() && !eventDate.value.isNullOrEmpty() &&
-                    !noOfAttendees.value.isNullOrEmpty() && !totalBudget.value.isNullOrEmpty() &&
-                    !address1.value.isNullOrEmpty() && !address2.value.isNullOrEmpty() &&
-                    selectedCountryPosition != 0 && !city.value.isNullOrEmpty() &&
-                    !name.value.isNullOrEmpty() && !mobileNumber.value.isNullOrEmpty() &&
-                    !emailId.value.isNullOrEmpty() && selectedStatePosition != 0
+                if (eventName.value.isNullOrEmpty().not() && eventDate.value.isNullOrEmpty().not() &&
+                    noOfAttendees.value.isNullOrEmpty().not() && totalBudget.value.isNullOrEmpty().not() &&
+                    address1.value.isNullOrEmpty().not() && address2.value.isNullOrEmpty().not() &&
+                    selectedCountryPosition != 0 && city.value.isNullOrEmpty().not() &&
+                    name.value.isNullOrEmpty().not() && mobileNumber.value.isNullOrEmpty().not() &&
+                    emailId.value.isNullOrEmpty().not() && selectedStatePosition != 0
                 ) {
                     if (questionListItem.size == eventSelectedAnswerMap.keys.size) {
                         // Post Event info details
