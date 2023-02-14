@@ -95,41 +95,63 @@ class EventDetailsViewModel : BaseViewModel() {
     }
 
     fun onClickNextButton() {
-        if (iKnowVenue.value != true) {
-            if (!eventName.value.isNullOrEmpty() && !eventDate.value.isNullOrEmpty() &&
-                !noOfAttendees.value.isNullOrEmpty() && !totalBudget.value.isNullOrEmpty() &&
-                !zipCode.value.isNullOrEmpty() && !name.value.isNullOrEmpty() &&
-                !mobileNumber.value.isNullOrEmpty() && !emailId.value.isNullOrEmpty()
-            ) {
-                if (questionListItem.size == eventSelectedAnswerMap.keys.size) {
-                    // Post Event info details
-                    postEventInfo(idToken, createEventInfoDto())
+        // Verify all mandatory questions answered before submit
+        if (verifyMandatoryQuesAnswered()) {
+            if (iKnowVenue.value != true) {
+                if (eventName.value.isNullOrEmpty().not() && eventDate.value.isNullOrEmpty().not() &&
+                    noOfAttendees.value.isNullOrEmpty().not() && totalBudget.value.isNullOrEmpty().not() &&
+                    zipCode.value.isNullOrEmpty().not() && name.value.isNullOrEmpty().not() &&
+                    mobileNumber.value.isNullOrEmpty().not() && emailId.value.isNullOrEmpty().not()
+                ) {
+                    if (questionListItem.size == eventSelectedAnswerMap.keys.size) {
+                        // Post Event info details
+                        postEventInfo(idToken, createEventInfoDto())
+                    } else {
+                        showToastMessage("Please submit all questions")
+                    }
                 } else {
-                    showToastMessage("Please submit all questions")
+                    // Set error
+                    setIWillBeSelectingErrorVisible()
                 }
             } else {
-                // Set error
-                setIWillBeSelectingErrorVisible()
+                if (eventName.value.isNullOrEmpty().not() && eventDate.value.isNullOrEmpty().not() &&
+                    noOfAttendees.value.isNullOrEmpty().not() && totalBudget.value.isNullOrEmpty().not() &&
+                    address1.value.isNullOrEmpty().not() && address2.value.isNullOrEmpty().not() &&
+                    selectedCountryPosition != 0 && city.value.isNullOrEmpty().not() &&
+                    name.value.isNullOrEmpty().not() && mobileNumber.value.isNullOrEmpty().not() &&
+                    emailId.value.isNullOrEmpty().not() && selectedStatePosition != 0
+                ) {
+                    if (questionListItem.size == eventSelectedAnswerMap.keys.size) {
+                        // Post Event info details
+                        postEventInfo(idToken, createEventInfoDto())
+                    } else {
+                        showToastMessage("Please submit all questions")
+                    }
+                } else {
+                    // Set error
+                    setIWillBeSelectingErrorVisible()
+                    setIKnowVenueErrorVisible()
+                }
+            }
+        }
+    }
+
+    private fun verifyMandatoryQuesAnswered(): Boolean {
+        if (questionListItem.isNotEmpty()) {
+            val mandatoryQuesIndexList = ArrayList<Int>().apply {
+                questionListItem.filter { it.isMandatory }.forEach {
+                    add(questionListItem.indexOf(it))
+                }
+            }
+            // Verify all mandatory questions are answered
+            return if (eventSelectedAnswerMap.keys.containsAll(mandatoryQuesIndexList)) {
+                true
+            } else {
+                showToastMessage(MyApplication.appContext.resources.getString(R.string.please_answer_all_mandatory_questions))
+                false
             }
         } else {
-            if (!eventName.value.isNullOrEmpty() && !eventDate.value.isNullOrEmpty() &&
-                !noOfAttendees.value.isNullOrEmpty() && !totalBudget.value.isNullOrEmpty() &&
-                !address1.value.isNullOrEmpty() && !address2.value.isNullOrEmpty() &&
-                selectedCountryPosition != 0 && !city.value.isNullOrEmpty() &&
-                !name.value.isNullOrEmpty() && !mobileNumber.value.isNullOrEmpty() &&
-                !emailId.value.isNullOrEmpty() && selectedStatePosition != 0
-            ) {
-                if (questionListItem.size == eventSelectedAnswerMap.keys.size) {
-                    // Post Event info details
-                    postEventInfo(idToken, createEventInfoDto())
-                } else {
-                    showToastMessage("Please submit all questions")
-                }
-            } else {
-                // Set error
-                setIWillBeSelectingErrorVisible()
-                setIKnowVenueErrorVisible()
-            }
+            return true
         }
     }
 

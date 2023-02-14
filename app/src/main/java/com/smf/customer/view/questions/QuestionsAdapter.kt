@@ -18,13 +18,15 @@ import com.smf.customer.data.model.dto.QuestionListItem
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 class QuestionsAdapter(
     var questionListItem: ArrayList<QuestionListItem>,
     var selectedAnswerPositionMap: HashMap<Int, ArrayList<String>>,
     var context: Context,
     var questionBtnStatus: String,
     var questionNumberList: ArrayList<Int>,
-    var from: String
+    var from: String,
+    var mandatoryQuesErrorPositionList: ArrayList<Int> = ArrayList<Int>()
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     @SuppressLint("NotifyDataSetChanged")
@@ -32,12 +34,14 @@ class QuestionsAdapter(
         questionListItem: ArrayList<QuestionListItem>,
         selectedAnswerPositionMap: HashMap<Int, ArrayList<String>>,
         questionBtnStatus: String,
-        questionNumberList: ArrayList<Int>
+        questionNumberList: ArrayList<Int>,
+        mandatoryQuesErrorPositionList: ArrayList<Int>
     ) {
         this.questionListItem = questionListItem
         this.selectedAnswerPositionMap = selectedAnswerPositionMap
         this.questionBtnStatus = questionBtnStatus
         this.questionNumberList = questionNumberList
+        this.mandatoryQuesErrorPositionList = mandatoryQuesErrorPositionList
         notifyDataSetChanged()
     }
 
@@ -143,6 +147,7 @@ class QuestionsAdapter(
     private inner class EditTextViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var question: TextView = itemView.findViewById(R.id.edit_text_qus_title)
         var choiceRecycler: RecyclerView = itemView.findViewById(R.id.edit_text_recycler_view)
+        var error: TextView = itemView.findViewById(R.id.edit_text_error)
         var choiceAdapter: ChoiceAdapter? = null
 
         fun bind(position: Int) {
@@ -152,6 +157,8 @@ class QuestionsAdapter(
             } else {
                 question.text = "Q${questionNumberList[position] + 1}. ${recyclerModel.question}"
             }
+            // Error visibility
+            errorVisibility(error, position)
 
             val selectedAnswer = selectedAnswerPositionMap[questionNumberList[position]]
             Log.d(
@@ -191,6 +198,7 @@ class QuestionsAdapter(
     private inner class CheckBoxViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var question: TextView = itemView.findViewById(R.id.check_box_qus_title)
         var choiceRecycler: RecyclerView = itemView.findViewById(R.id.check_options_recycler_view)
+        var error: TextView = itemView.findViewById(R.id.check_options_error)
         var choiceAdapter: ChoiceAdapter? = null
 
         fun bind(position: Int) {
@@ -202,6 +210,8 @@ class QuestionsAdapter(
                 question.text =
                     "Q${questionNumberList[position] + 1}. ${recyclerViewModel.question}"
             }
+            // Error visibility
+            errorVisibility(error, position)
 
             val selectedAnswer = selectedAnswerPositionMap[questionNumberList[position]]
             Log.d(
@@ -235,6 +245,7 @@ class QuestionsAdapter(
     private inner class DateViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var question: TextView = itemView.findViewById(R.id.date_qus_title)
         var choiceRecycler: RecyclerView = itemView.findViewById(R.id.date_recycler_view)
+        var error: TextView = itemView.findViewById(R.id.date_error)
         var choiceAdapter: ChoiceAdapter? = null
 
         fun bind(position: Int) {
@@ -246,6 +257,8 @@ class QuestionsAdapter(
                 question.text =
                     "Q${questionNumberList[position] + 1}. ${recyclerViewModel.question}"
             }
+            // Error visibility
+            errorVisibility(error, position)
 
             val selectedAnswer = selectedAnswerPositionMap[questionNumberList[position]]
             Log.d(
@@ -310,6 +323,7 @@ class QuestionsAdapter(
     private inner class RadioBtnViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var question: TextView = itemView.findViewById(R.id.radio_btn_qus_title)
         var choiceRecycler: RecyclerView = itemView.findViewById(R.id.radio_options_recycler_view)
+        var error: TextView = itemView.findViewById(R.id.radio_options_error)
         var choiceAdapter: ChoiceAdapter? = null
 
         fun bind(position: Int) {
@@ -321,6 +335,8 @@ class QuestionsAdapter(
                 question.text =
                     "Q${questionNumberList[position] + 1}. ${recyclerViewModel.question}"
             }
+            // Error visibility
+            errorVisibility(error, position)
 
             val selectedAnswer = selectedAnswerPositionMap[questionNumberList[position]]
             Log.d(
@@ -355,6 +371,7 @@ class QuestionsAdapter(
     private inner class DropDownViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var question: TextView = itemView.findViewById(R.id.drop_down_qus_title)
         var choiceRecycler: RecyclerView = itemView.findViewById(R.id.drop_down_recycler_view)
+        var error: TextView = itemView.findViewById(R.id.drop_down_error)
         var choiceAdapter: ChoiceAdapter? = null
 
         fun bind(position: Int) {
@@ -364,6 +381,8 @@ class QuestionsAdapter(
             } else {
                 question.text = "Q${questionNumberList[position] + 1}. ${recyclerModel.question}"
             }
+            // Error visibility
+            errorVisibility(error, position)
 
             val selectedAnswer = selectedAnswerPositionMap[questionNumberList[position]]
 
@@ -397,6 +416,11 @@ class QuestionsAdapter(
             )
             updateAnswerListener?.updateAnswer(position, selectedAnswer, questionNumberList)
         }
+    }
+
+    private fun errorVisibility(errorView: TextView, position: Int) {
+        errorView.visibility =
+            if (mandatoryQuesErrorPositionList.contains(position)) View.VISIBLE else View.GONE
     }
 
     private var updateAnswerListener: UpdateAnswerListener? = null

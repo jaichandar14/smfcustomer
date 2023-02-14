@@ -200,4 +200,9 @@
     <string name="select">Select*</string>
     <string name="initial">Initial</string>
     <string name="after">After</string>
+    // 3380
+    <string name="please_answer_all_mandatory_questions">Please answer all mandatory questions</string>
+    <string name="please_answer_the_question">Please answer the question</string>
+    <string name="close">close</string>
+
 </resources>
