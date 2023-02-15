@@ -98,14 +98,16 @@ class EventDetailsViewModel : BaseViewModel() {
         // Verify all mandatory questions answered before submit
         if (verifyMandatoryQuesAnswered()) {
             if (iKnowVenue.value != true) {
-                if (eventName.value.isNullOrEmpty().not() && eventDate.value.isNullOrEmpty().not() &&
-                    noOfAttendees.value.isNullOrEmpty().not() && totalBudget.value.isNullOrEmpty().not() &&
+                if (eventName.value.isNullOrEmpty().not() && eventDate.value.isNullOrEmpty()
+                        .not() &&
+                    noOfAttendees.value.isNullOrEmpty().not() && totalBudget.value.isNullOrEmpty()
+                        .not() &&
                     zipCode.value.isNullOrEmpty().not() && name.value.isNullOrEmpty().not() &&
                     mobileNumber.value.isNullOrEmpty().not() && emailId.value.isNullOrEmpty().not()
                 ) {
                     if (questionListItem.size == eventSelectedAnswerMap.keys.size) {
                         // Post Event info details
-                        postEventInfo(idToken, createEventInfoDto())
+                        postEventInfo(createEventInfoDto())
                     } else {
                         showToastMessage("Please submit all questions")
                     }
@@ -114,8 +116,10 @@ class EventDetailsViewModel : BaseViewModel() {
                     setIWillBeSelectingErrorVisible()
                 }
             } else {
-                if (eventName.value.isNullOrEmpty().not() && eventDate.value.isNullOrEmpty().not() &&
-                    noOfAttendees.value.isNullOrEmpty().not() && totalBudget.value.isNullOrEmpty().not() &&
+                if (eventName.value.isNullOrEmpty().not() && eventDate.value.isNullOrEmpty()
+                        .not() &&
+                    noOfAttendees.value.isNullOrEmpty().not() && totalBudget.value.isNullOrEmpty()
+                        .not() &&
                     address1.value.isNullOrEmpty().not() && address2.value.isNullOrEmpty().not() &&
                     selectedCountryPosition != 0 && city.value.isNullOrEmpty().not() &&
                     name.value.isNullOrEmpty().not() && mobileNumber.value.isNullOrEmpty().not() &&
@@ -123,7 +127,7 @@ class EventDetailsViewModel : BaseViewModel() {
                 ) {
                     if (questionListItem.size == eventSelectedAnswerMap.keys.size) {
                         // Post Event info details
-                        postEventInfo(idToken, createEventInfoDto())
+                        postEventInfo(createEventInfoDto())
                     } else {
                         showToastMessage("Please submit all questions")
                     }
@@ -155,11 +159,9 @@ class EventDetailsViewModel : BaseViewModel() {
         }
     }
 
-    private fun postEventInfo(
-        idToken: String, eventInfo: EventInfoDTO
-    ) {
+    private fun postEventInfo(eventInfo: EventInfoDTO) {
         val observable: Observable<EventInfoResponseDto> =
-            retrofitHelper.getEventRepository().postEventInfo(idToken, eventInfo)
+            retrofitHelper.getEventRepository().postEventInfo(getUserToken(), eventInfo)
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
     }
@@ -225,11 +227,10 @@ class EventDetailsViewModel : BaseViewModel() {
         return datePickerDialog.value!!
     }
 
-    fun getEventDetailsQuestions(
-        idToken: String, eventTemplateId: Int
-    ) {
+    fun getEventDetailsQuestions(eventTemplateId: Int) {
         val observable: Observable<EventQuestionsResponseDTO> =
-            retrofitHelper.getEventRepository().getEventDetailQuestions(idToken, eventTemplateId)
+            retrofitHelper.getEventRepository()
+                .getEventDetailQuestions(getUserToken(), eventTemplateId)
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
     }

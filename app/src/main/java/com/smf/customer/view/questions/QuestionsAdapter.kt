@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.datepicker.CalendarConstraints
@@ -17,7 +18,6 @@ import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.data.model.dto.QuestionListItem
 import java.text.SimpleDateFormat
 import java.util.*
-
 
 class QuestionsAdapter(
     var questionListItem: ArrayList<QuestionListItem>,
@@ -158,7 +158,7 @@ class QuestionsAdapter(
                 question.text = "Q${questionNumberList[position] + 1}. ${recyclerModel.question}"
             }
             // Error visibility
-            errorVisibility(error, position)
+            initialErrorVisibility(error, position)
 
             val selectedAnswer = selectedAnswerPositionMap[questionNumberList[position]]
             Log.d(
@@ -191,6 +191,8 @@ class QuestionsAdapter(
                 "TAG", "updateSelectedAnswerToMap:edit text called ${position + 1} $selectedAnswer"
             )
             updateAnswerListener?.updateAnswer(position, selectedAnswer, questionNumberList)
+            // Verify error visibility
+            errorVisibilityAfterValue(error, selectedAnswer, position)
         }
 
     }
@@ -211,7 +213,7 @@ class QuestionsAdapter(
                     "Q${questionNumberList[position] + 1}. ${recyclerViewModel.question}"
             }
             // Error visibility
-            errorVisibility(error, position)
+            initialErrorVisibility(error, position)
 
             val selectedAnswer = selectedAnswerPositionMap[questionNumberList[position]]
             Log.d(
@@ -239,6 +241,8 @@ class QuestionsAdapter(
                 "TAG", "updateSelectedAnswerToMap:check box called ${position + 1} $selectedAnswer"
             )
             updateAnswerListener?.updateAnswer(position, selectedAnswer, questionNumberList)
+            // Verify error visibility
+            errorVisibilityAfterValue(error, selectedAnswer, position)
         }
     }
 
@@ -258,9 +262,11 @@ class QuestionsAdapter(
                     "Q${questionNumberList[position] + 1}. ${recyclerViewModel.question}"
             }
             // Error visibility
-            errorVisibility(error, position)
+            initialErrorVisibility(error, position)
 
             val selectedAnswer = selectedAnswerPositionMap[questionNumberList[position]]
+            // Verify error visibility after notifyItemChanged
+            selectedAnswer?.let { errorVisibilityAfterValue(error, selectedAnswer, position) }
             Log.d(
                 "TAG",
                 "onTextChanged: start $position ${questionNumberList[position]} " +
@@ -272,7 +278,7 @@ class QuestionsAdapter(
             val updateChoiceList =
                 questionListItem[position].choice ?: ArrayList<String>().apply { add("") }
             choiceAdapter = ChoiceAdapter(
-                { it -> updateSelectedAnswerToMap(it, position) },
+                { updateSelectedAnswerToMap(it, position, selectedAnswer) },
                 updateChoiceList,
                 questionListItem[position].questionType,
                 from,
@@ -285,9 +291,10 @@ class QuestionsAdapter(
         }
 
         @SuppressLint("SimpleDateFormat")
-        fun showDatePickerDialog(position: Int) {
+        fun showDatePickerDialog(position: Int, selectedAnswer: ArrayList<String>?) {
             val constraintsBuilder =
                 CalendarConstraints.Builder().setValidator(DateValidatorPointForward.now())
+            Log.d("TAG", "updateSelectedAnswerToMap:w selectedAnswer $selectedAnswer")
             val picker: MaterialDatePicker<Long> =
                 MaterialDatePicker.Builder.datePicker().setTitleText("Event Date")
                     .setCalendarConstraints(constraintsBuilder.build()).build()
@@ -314,9 +321,13 @@ class QuestionsAdapter(
             }
         }
 
-        fun updateSelectedAnswerToMap(selectedDate: ArrayList<String>, position: Int) {
+        fun updateSelectedAnswerToMap(
+            selectedDate: ArrayList<String>,
+            position: Int,
+            selectedAnswer: ArrayList<String>?
+        ) {
             // Show date picker dialog
-            showDatePickerDialog(position)
+            showDatePickerDialog(position, selectedAnswer)
         }
     }
 
@@ -336,7 +347,7 @@ class QuestionsAdapter(
                     "Q${questionNumberList[position] + 1}. ${recyclerViewModel.question}"
             }
             // Error visibility
-            errorVisibility(error, position)
+            initialErrorVisibility(error, position)
 
             val selectedAnswer = selectedAnswerPositionMap[questionNumberList[position]]
             Log.d(
@@ -365,6 +376,8 @@ class QuestionsAdapter(
                 "updateSelectedAnswerToMap: Radio button called ${position + 1} $selectedAnswer"
             )
             updateAnswerListener?.updateAnswer(position, selectedAnswer, questionNumberList)
+            // Verify error visibility
+            errorVisibilityAfterValue(error, selectedAnswer, position)
         }
     }
 
@@ -382,7 +395,7 @@ class QuestionsAdapter(
                 question.text = "Q${questionNumberList[position] + 1}. ${recyclerModel.question}"
             }
             // Error visibility
-            errorVisibility(error, position)
+            initialErrorVisibility(error, position)
 
             val selectedAnswer = selectedAnswerPositionMap[questionNumberList[position]]
 
@@ -415,12 +428,24 @@ class QuestionsAdapter(
                 "TAG", "updateSelectedAnswerToMap:edit text called ${position + 1} $selectedAnswer"
             )
             updateAnswerListener?.updateAnswer(position, selectedAnswer, questionNumberList)
+            // Verify error visibility
+            errorVisibilityAfterValue(error, selectedAnswer, position)
         }
     }
 
-    private fun errorVisibility(errorView: TextView, position: Int) {
+    private fun initialErrorVisibility(errorView: TextView, position: Int) {
         errorView.visibility =
             if (mandatoryQuesErrorPositionList.contains(position)) View.VISIBLE else View.GONE
+    }
+
+    private fun errorVisibilityAfterValue(
+        errorView: TextView,
+        selectedAnswer: ArrayList<String>,
+        position: Int
+    ) {
+        if (questionListItem[position].isMandatory) {
+            errorView.visibility = if (selectedAnswer[0].isEmpty()) View.VISIBLE else View.GONE
+        }
     }
 
     private var updateAnswerListener: UpdateAnswerListener? = null
