@@ -2,6 +2,7 @@ package com.smf.customer.di
 
 import com.smf.customer.di.retrofit.NetworkModule
 import com.smf.customer.di.sharedpreference.SharedPreferencesModule
+import com.smf.customer.utility.Tokens
 import com.smf.customer.view.dashboard.DashBoardActivity
 import com.smf.customer.view.dashboard.DashBoardViewModel
 import com.smf.customer.view.dashboard.fragment.MainDashBoardFragment
@@ -47,4 +48,5 @@ interface AppComponent {
     fun inject(viewModel: EventsDashBoardViewModel)
     fun inject(activity: QuestionsActivity)
     fun inject(viewModel: QuestionsViewModel)
+    fun inject(token: Tokens)
 }

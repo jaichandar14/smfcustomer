@@ -55,9 +55,7 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
     private var eventStatus: Any = 0
     var count = 0
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         mDataBinding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_main_dash_board, container, false)
@@ -93,7 +91,6 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
         }
         if (isAvailable == true) {
             viewModel.getEventCount(
-                sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""],
                 sharedPrefsHelper[SharedPrefConstant.USER_ID, ""]
             )
         }
@@ -130,13 +127,11 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
     private fun dashBoardGetApiCall() {
         Log.d(TAG, "dashBoardGetApiCall: call")
         viewModel.getEventCount(
-            sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""],
             sharedPrefsHelper[SharedPrefConstant.USER_ID, ""]
         )
         mEventStatusList.add(AppConstant.APPROVED)
         Log.d(TAG, "doNetworkOperation Dashboard api : called ")
         viewModel.getEventStatus(
-            sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""],
             sharedPrefsHelper[SharedPrefConstant.USER_ID, ""], mEventStatusList
         )
     }
@@ -249,7 +244,6 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
 
     private fun getEventStatusApi(mEventStatusList: ArrayList<String>) {
         viewModel.getEventStatus(
-            sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""],
             sharedPrefsHelper[SharedPrefConstant.USER_ID, ""], mEventStatusList
         )
     }

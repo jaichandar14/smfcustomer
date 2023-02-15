@@ -17,6 +17,7 @@ import com.smf.customer.app.base.BaseViewModel
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.data.model.response.GetLoginInfoDTO
+import com.smf.customer.data.model.response.LoginResponseDTO
 import com.smf.customer.data.model.response.OTPValidationResponseDTO
 import com.smf.customer.data.model.response.ResponseDTO
 import com.smf.customer.databinding.EmailOtpActivityBinding
@@ -24,6 +25,7 @@ import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import io.reactivex.Observable
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -147,9 +149,9 @@ class EmailOTPViewModel : BaseViewModel() {
     }
 
     // 3245 - Login User get Details  Method
-    private fun getLoginInfo(idToken: String) {
+    private fun getLoginInfo() {
         val observable: Observable<GetLoginInfoDTO> =
-            retrofitHelper.getUserRepository().getLoginInfo(idToken)
+            retrofitHelper.getUserRepository().getLoginInfo(getUserToken())
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
     }
@@ -159,7 +161,7 @@ class EmailOTPViewModel : BaseViewModel() {
         when (responseDTO) {
             is OTPValidationResponseDTO -> {
                 if (isValid) {
-                    getLoginInfo(sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""])
+                    getLoginInfo()
                 }
 
             }
