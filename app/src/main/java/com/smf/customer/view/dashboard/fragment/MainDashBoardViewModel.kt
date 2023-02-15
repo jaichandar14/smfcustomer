@@ -1,6 +1,5 @@
 package com.smf.customer.view.dashboard.fragment
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.smf.customer.app.base.BaseFragmentViewModel
 import com.smf.customer.app.base.MyApplication
@@ -27,19 +26,17 @@ class MainDashBoardViewModel : BaseFragmentViewModel() {
     }
 
     // 3285
-    fun getEventCount(idToken: String, username: String) {
+    fun getEventCount(username: String) {
         val observable: Observable<EventCountDto> =
-            retrofitHelper.getDashBoardRepository().getEventCount(idToken, username)
+            retrofitHelper.getDashBoardRepository().getEventCount(getUserToken(), username)
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
     }
 
 
-    fun getEventStatus(idToken: String, username: String, status: ArrayList<String>) {
-        Log.d(TAG, "doNetworkOperation viewModel: called ")
-
+    fun getEventStatus(username: String, status: ArrayList<String>) {
         val observable: Observable<EventStatusResponse> =
-            retrofitHelper.getDashBoardRepository().getEventStatus(idToken, username, status)
+            retrofitHelper.getDashBoardRepository().getEventStatus(getUserToken(), username, status)
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
     }

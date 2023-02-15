@@ -17,8 +17,10 @@ import com.smf.customer.app.constant.AppConstant.UNAUTHORISED
 import com.smf.customer.data.model.request.RequestDTO
 import com.smf.customer.data.model.response.ResponseDTO
 import com.smf.customer.di.retrofit.RetrofitHelper
+import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.utility.CustomErrorAPI
+import com.smf.customer.utility.Tokens
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -58,6 +60,8 @@ abstract class BaseViewModel : ViewModel() {
 
     private var retryDialog = MutableLiveData<Boolean>(false)
 
+    @Inject
+    lateinit var tokens: Tokens
 
     fun showRetryDialogFlag() {
         retryDialog.value = true
@@ -78,37 +82,10 @@ abstract class BaseViewModel : ViewModel() {
         showLoading.value = false
     }
 
-    /*open fun getUserToken(userId: String) {
-
-        if (userId.isBlank()) {
-            userToken.postValue("")
-        } else {
-            val data = hashMapOf(
-                "userId" to userId,
-                "push" to true
-            )
-            showLoading.postValue(true)
-            functions = FirebaseFunctions.getInstance()
-            functions
-                .getHttpsCallable("getToken")
-                .call(data)
-                .continueWith { task ->
-                    // This continuation runs on either success or failure, but if the task
-                    // has failed then result will throw an Exception which will be
-                    // propagated down.
-                    if (task.isSuccessful) {
-                        Log.d(TAG, "Task is Successful")
-                        val result = task.result.data as String
-                        showLoading.postValue(false)
-                        userToken.postValue(result)
-                    } else {
-                        Log.d(TAG, "Task is Failed")
-                        userToken.postValue(null)
-                    }
-                }
-        }
+    open fun getUserToken() :String{
+       return tokens.checkTokenExpiry(preferenceHelper[SharedPrefConstant.ACCESS_TOKEN, ""]).toString()
     }
-*/
+
     fun prepareRequest(requestDTO: RequestDTO): RequestDTO {
         //requestDTO.accessToken = preferenceHelper[SharedPrefConstant.ACCESS_TOKEN, ""]
         //requestDTO.appKey = BuildConfig.MY_APP_KEY
