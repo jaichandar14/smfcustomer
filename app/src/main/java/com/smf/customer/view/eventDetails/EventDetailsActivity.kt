@@ -60,7 +60,7 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
         // Check screen rotating
         if (viewModel.screenRotationStatus.value == false) {
             // Event Questions Api call
-            viewModel.templateId?.let { viewModel.getEventDetailsQuestions(token, it) }
+            viewModel.templateId?.let { viewModel.getEventDetailsQuestions(it) }
             // Update viewOrderQuestionNumber when activity not rotation
             viewModel.viewOrderQuestionNumber = 0
         } else {
