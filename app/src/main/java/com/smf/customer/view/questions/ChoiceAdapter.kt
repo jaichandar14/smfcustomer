@@ -184,7 +184,7 @@ class ChoiceAdapter(
         var calendarImage: ImageView = itemView.findViewById(R.id.calendar_image)
         fun bind(position: Int) {
             if (selectedAnswer.isNotEmpty()) {
-                eventDateET.setText(selectedAnswer[0])
+                eventDateET.setText(selectedAnswer[0].replace("T", " "))
             } else {
                 eventDateET.setText("")
             }

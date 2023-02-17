@@ -10,14 +10,10 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.datepicker.CalendarConstraints
-import com.google.android.material.datepicker.DateValidatorPointForward
-import com.google.android.material.datepicker.MaterialDatePicker
 import com.smf.customer.R
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.data.model.dto.QuestionListItem
-import java.text.SimpleDateFormat
-import java.util.*
+import com.smf.customer.utility.DateTimePicker
 
 class QuestionsAdapter(
     var questionListItem: ArrayList<QuestionListItem>,
@@ -290,37 +286,6 @@ class QuestionsAdapter(
             choiceRecycler.adapter = choiceAdapter
         }
 
-        @SuppressLint("SimpleDateFormat")
-        fun showDatePickerDialog(position: Int, selectedAnswer: ArrayList<String>?) {
-            val constraintsBuilder =
-                CalendarConstraints.Builder().setValidator(DateValidatorPointForward.now())
-            Log.d("TAG", "updateSelectedAnswerToMap:w selectedAnswer $selectedAnswer")
-            val picker: MaterialDatePicker<Long> =
-                MaterialDatePicker.Builder.datePicker().setTitleText("Event Date")
-                    .setCalendarConstraints(constraintsBuilder.build()).build()
-            val myFormat = AppConstant.DATE_FORMAT
-            val sdf = SimpleDateFormat(myFormat)
-            picker.addOnPositiveButtonClickListener {
-                val date = Date(it)
-                val formattedDate = sdf.format(date) // date selected by the user
-                // Update selected date
-                updateAnswerListener?.updateAnswer(
-                    position,
-                    ArrayList<String>().apply { add(formattedDate) },
-                    questionNumberList
-                )
-                // Refresh date edit text UI
-                notifyItemChanged(position)
-            }
-            // show picker using this
-            if (!picker.isVisible) {
-                picker.show(
-                    (context as QuestionsActivity).supportFragmentManager,
-                    AppConstant.MATERIAL_DATE_PICKER
-                )
-            }
-        }
-
         fun updateSelectedAnswerToMap(
             selectedDate: ArrayList<String>,
             position: Int,
@@ -328,6 +293,85 @@ class QuestionsAdapter(
         ) {
             // Show date picker dialog
             showDatePickerDialog(position, selectedAnswer)
+        }
+
+        @SuppressLint("SimpleDateFormat")
+        fun showDatePickerDialog(position: Int, selectedAnswer: ArrayList<String>?) {
+            // formatting date to long value
+            val preSelectedDateLongValue = selectedAnswer?.let {
+                val preSelectedDate = it[0].substring(0, it[0].indexOf("T"))
+                DateTimePicker.convertDateToLong(preSelectedDate)
+            }
+            // Get date picker title text
+            val datePickerTitle = DateTimePicker.getDatePickerTitle(from, context)
+            //Get date picker
+            val datePicker = DateTimePicker.getDatePicker(datePickerTitle, preSelectedDateLongValue)
+
+            datePicker.addOnPositiveButtonClickListener {
+                Log.d("TAG", "showTimePickerDialog: date $it")
+                // formatting date as MM/dd/yyyy
+                val formattedDate = DateTimePicker.convertLongToDate(it)
+                // Show time picker
+                showTimePickerDialog(formattedDate, selectedAnswer, position)
+            }
+            // show picker using this
+            if (!datePicker.isVisible) {
+                datePicker.show(
+                    (context as QuestionsActivity).supportFragmentManager,
+                    AppConstant.MATERIAL_DATE_PICKER
+                )
+            }
+        }
+    }
+
+    fun showTimePickerDialog(
+        formattedDate: String,
+        selectedAnswer: ArrayList<String>?,
+        position: Int
+    ) {
+        val time = selectedAnswer?.let {
+            it[0].substring(it[0].indexOf("T") + 1).split(":")
+                    as ArrayList<String>
+        }
+        Log.d("TAG", "showTimePickerDialog: time $formattedDate $selectedAnswer $time")
+        // Get time picker
+        val timePicker = if (time.isNullOrEmpty()) {
+            // Set default time
+            DateTimePicker.getTimePicker(context, 13, 10, R.string.select_time)
+        } else {
+            // Set previous selected time
+            DateTimePicker.getTimePicker(
+                context,
+                time[0].toInt(),
+                time[1].toInt(),
+                R.string.select_time
+            )
+        }
+
+        timePicker.addOnPositiveButtonClickListener {
+            var pickedHour: Int = timePicker.hour
+            val pickedMinute: Int = timePicker.minute
+            Log.d("TAG", "showTimePickerDialog: pos $pickedHour:$pickedMinute")
+            pickedHour = if (pickedHour == 0) 24 else pickedHour
+
+            val dateAndTime = formattedDate + "T" + pickedHour + ":" +
+                    if (pickedMinute < 10) "0$pickedMinute" else pickedMinute
+            // Update selected date
+            updateAnswerListener?.updateAnswer(
+                position,
+                ArrayList<String>().apply { add(dateAndTime) },
+                questionNumberList
+            )
+            // Refresh date edit text UI
+            notifyItemChanged(position)
+        }
+
+        // show time picker
+        if (!timePicker.isVisible) {
+            timePicker.show(
+                (context as QuestionsActivity).supportFragmentManager,
+                AppConstant.MATERIAL_TIME_PICKER
+            )
         }
     }
 
@@ -434,8 +478,7 @@ class QuestionsAdapter(
     }
 
     private fun initialErrorVisibility(errorView: TextView, position: Int) {
-        errorView.visibility =
-            if (mandatoryQuesErrorPositionList.contains(position)) View.VISIBLE else View.GONE
+        errorView.isVisible = mandatoryQuesErrorPositionList.contains(position)
     }
 
     private fun errorVisibilityAfterValue(
@@ -444,7 +487,7 @@ class QuestionsAdapter(
         position: Int
     ) {
         if (questionListItem[position].isMandatory) {
-            errorView.visibility = if (selectedAnswer[0].isEmpty()) View.VISIBLE else View.GONE
+            errorView.isVisible = selectedAnswer[0].isEmpty()
         }
     }
 
