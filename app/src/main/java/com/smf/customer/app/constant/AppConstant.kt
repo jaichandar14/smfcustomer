@@ -55,6 +55,7 @@ object AppConstant {
     const val EVENT_QUESTIONS_DIALOG = "EventQuestionsDialog"
     const val DATE_FORMAT = "MM/dd/yyyy"
     const val MATERIAL_DATE_PICKER = "materialDatePicker"
+    const val MATERIAL_TIME_PICKER = "materialTimePicker"
     const val COUNTRY = "country"
     const val STATES = "states"
     const val COUNTRIES = "countries"
