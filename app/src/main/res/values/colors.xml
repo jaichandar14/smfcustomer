@@ -44,4 +44,6 @@
     <color name="main">#00FF00</color>
     //3372
     <color name="snack_background">#F3F0F0</color>
+    <color name="calendar_current_date">#D8F2FF</color>
+    <color name="calendar_selected_date">#00D0FF</color>
 </resources>

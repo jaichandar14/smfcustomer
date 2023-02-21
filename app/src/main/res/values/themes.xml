@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Theme.Customer" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
@@ -14,6 +14,8 @@
         <!-- Customize your theme here. -->
         // windowLightStatusBar for visible status bar text when status bar color is white
         <item name="android:windowLightStatusBar">true</item>
+        // Date picker custom theme
+        <item name="materialCalendarTheme">@style/ThemeOverlay.App.DatePicker</item>
     </style>
 
     <style name="Title" parent="TextAppearance.AppCompat.Title">
@@ -246,5 +248,54 @@
         <item name="boxBackgroundColor">@color/white</item>
         <item name="hintTextColor">@color/black</item>
         <item name="boxStrokeColor">@color/black</item>
+    </style>
+
+    // Date picker custom theme
+
+    <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+    </style>
+
+    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <style name="CurrentDate" parent="Widget.MaterialComponents.MaterialCalendar.Day.Today">
+        <item name="itemStrokeColor">@color/calendar_current_date</item>
+        <item name="itemStrokeWidth">2dp</item>
+    </style>
+
+    <style name="SelectedDate" parent="@style/Widget.MaterialComponents.MaterialCalendar.Day.Selected">
+        <item name="itemFillColor">@color/calendar_selected_date</item>
+        <item name="itemTextColor">@color/white</item>
+        <item name="itemStrokeWidth">0dp</item>
+    </style>
+
+    <style name="SelectedYear" parent="@style/Widget.MaterialComponents.MaterialCalendar.Year.Selected">
+        <item name="itemFillColor">@color/calendar_selected_date</item>
+        <item name="itemTextColor">@color/white</item>
+        <item name="itemStrokeColor">@color/calendar_selected_date</item>
+    </style>
+
+    <style name="Material.calendarStyle" parent="Widget.MaterialComponents.MaterialCalendar">
+        <item name="dayTodayStyle">@style/CurrentDate</item>
+        <item name="daySelectedStyle">@style/SelectedDate</item>
+        <item name="yearSelectedStyle">@style/SelectedYear</item>
+    </style>
+
+    <style name="KeyBoardInput" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="boxBackgroundColor">@color/white</item>
+    </style>
+
+    <style name="ThemeOverlay.App.DatePicker" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <item name="colorPrimary">@color/theme_color</item>
+        //For title text
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.App.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.App.MediumComponent
+        </item>
+        <item name="materialCalendarStyle">@style/Material.calendarStyle</item>
+        <!-- Customize text field of the text input mode. -->
+        <item name="textInputStyle">@style/KeyBoardInput</item>
     </style>
 </resources>

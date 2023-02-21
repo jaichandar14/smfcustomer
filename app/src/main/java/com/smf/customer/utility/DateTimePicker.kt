@@ -32,6 +32,7 @@ object DateTimePicker {
             CalendarConstraints.Builder().setValidator(DateValidatorPointForward.now())
         return MaterialDatePicker.Builder.datePicker().setTitleText(title)
             .setSelection(selectedDate)
+//            .setTheme(R.style.ThemeOverlay_App_DatePicker)
             .setCalendarConstraints(constraintsBuilder.build()).build()
     }
 
