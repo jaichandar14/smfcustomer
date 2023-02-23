@@ -54,7 +54,7 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
     }
 
 
-    private fun mainFragment() {
+    fun mainFragment() {
         Log.d(TAG, "mainFragment:  called")
         frag = MainDashBoardFragment() //create the fragment instance for the middle fragment
         val manager: FragmentManager =
@@ -68,7 +68,7 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
         )
         transaction.commit()
     }
-    private fun eventListFragment() {
+     fun eventListFragment() {
         Log.d(TAG, "mainFragment:  called")
         //frag = MainDashBoardFragment() //create the fragment instance for the middle fragment
         frag = EventsDashBoardFragment()

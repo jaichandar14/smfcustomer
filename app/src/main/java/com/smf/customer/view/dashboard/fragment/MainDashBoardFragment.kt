@@ -57,14 +57,7 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        mDataBinding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_main_dash_board, container, false)
-        viewModel = ViewModelProvider(this)[MainDashBoardViewModel::class.java]
-        mDataBinding.mainDashboardViewModel = viewModel
-        mDataBinding.lifecycleOwner = this
-        MyApplication.applicationComponent.inject(this)
-        viewModel.noEventVisible.value = false
-        return mDataBinding.root
+        return mInitialize(inflater,container).root
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -84,7 +77,7 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
         // 3285 Method to get he screen orientation
         currentOrientation()
         // 3285 Method for Screen Rotation Validation
-        onScreenRotation(savedInstanceState)
+        onScreenRotation()
         mDataBinding.myEventIcon.setOnClickListener {
             val intent = Intent(requireContext().applicationContext, MyEventsActivity::class.java)
             startActivity(intent)
@@ -102,7 +95,7 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
         viewModel.screenRotationValue.value = true
     }
 
-    private fun onScreenRotation(savedInstanceState: Bundle?) {
+    fun onScreenRotation() {
         if (viewModel.screenRotationValue.value == false) {
             // 3285 Method for get api call
             dashBoardGetApiCall()
@@ -124,7 +117,7 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
     }
 
 
-    private fun dashBoardGetApiCall() {
+    fun dashBoardGetApiCall() {
         Log.d(TAG, "dashBoardGetApiCall: call")
         viewModel.getEventCount(
             sharedPrefsHelper[SharedPrefConstant.USER_ID, ""]
@@ -187,9 +180,14 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
 
     // 3285 On Tab view clicked
     fun onTabClick(tab: TabLayout.Tab, listMyEvents: MyEventData) {
+        Log.d(TAG, "onTabClick: $tab")
         val position = tab.position
         val mEventStatusList = ArrayList<String>()
         Log.d(TAG, ": $position")
+        onClickTabItems(position, listMyEvents)
+    }
+
+    fun onClickTabItems(position: Int, listMyEvents: MyEventData):String {
         when (position) {
             0 -> {
                 mEventStatusList.clear()
@@ -199,6 +197,7 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
                     listMyEvents.approvedEventsCount.toString() + " " + getString(
                         R.string.active_counts
                     )
+                return AppConstant.APPROVED
             }
             1 -> {
                 mEventStatusList.clear()
@@ -209,6 +208,7 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
                     listMyEvents.pendingEventsCount.toString() + " " + getString(
                         R.string.pending_counts
                     )
+                return AppConstant.PENDING_ADMIN_APPROVAL
             }
             2 -> {
                 mEventStatusList.clear()
@@ -220,6 +220,7 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
                         .toString() + " " + getString(
                         R.string.draft_counts
                     )
+                return AppConstant.NEW
             }
             3 -> {
                 mEventStatusList.clear()
@@ -229,6 +230,7 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
                     listMyEvents.rejectedEventsCount.toString() + " " + getString(
                         R.string.reject_counts
                     )
+                return AppConstant.REJECTED
             }
             4 -> {
                 mEventStatusList.clear()
@@ -238,8 +240,10 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
                     listMyEvents.closedEventsCount.toString() + " " + getString(
                         R.string.closed_counts
                     )
+                return AppConstant.CLOSED
             }
         }
+        return ""
     }
 
     private fun getEventStatusApi(mEventStatusList: ArrayList<String>) {
@@ -293,17 +297,18 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
     }
 
 
-    private fun mInitialize() {
+    private fun mInitialize(inflater: LayoutInflater, container: ViewGroup?): FragmentMainDashBoardBinding {
         mDataBinding =
-            DataBindingUtil.setContentView(requireActivity(), R.layout.fragment_main_dash_board)
+            DataBindingUtil.inflate(inflater, R.layout.fragment_main_dash_board, container, false)
         viewModel = ViewModelProvider(this)[MainDashBoardViewModel::class.java]
         mDataBinding.mainDashboardViewModel = viewModel
         mDataBinding.lifecycleOwner = this
         MyApplication.applicationComponent.inject(this)
         viewModel.noEventVisible.value = false
+        return mDataBinding
     }
 
-    private fun mEventOverviewRecycler(i: Int) {
+      fun mEventOverviewRecycler(i: Int) {
         mEventOverViewRecyclerView = mDataBinding.myEventsRecyclerview
         mAdapterEvent = EventOverView()
         mEventOverViewRecyclerView.layoutManager =
@@ -313,7 +318,7 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
         mEventOverViewRecyclerView.adapter = mAdapterEvent
     }
 
-    private fun mServiceStatusRecycler() {
+      fun mServiceStatusRecycler() {
         mServicesStatusRecyclerView = mDataBinding.serviceStatusRecylerview
         mAdapterService = ServicesStatus()
         mServicesStatusRecyclerView.layoutManager =
