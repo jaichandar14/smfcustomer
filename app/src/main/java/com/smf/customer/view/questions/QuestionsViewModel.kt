@@ -8,7 +8,7 @@ class QuestionsViewModel : BaseViewModel() {
     var selectedAnswerMap = HashMap<Int, ArrayList<String>>()
 
     init {
-        MyApplication.applicationComponent.inject(this)
+        MyApplication.applicationComponent?.inject(this)
     }
 
 }

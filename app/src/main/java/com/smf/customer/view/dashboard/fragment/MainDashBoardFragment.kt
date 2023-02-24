@@ -326,7 +326,7 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
         viewModel = ViewModelProvider(this)[MainDashBoardViewModel::class.java]
         mDataBinding.mainDashboardViewModel = viewModel
         mDataBinding.lifecycleOwner = this
-        MyApplication.applicationComponent.inject(this)
+        MyApplication.applicationComponent?.inject(this)
         viewModel.noEventVisible.value = false
         return mDataBinding
     }

@@ -89,7 +89,7 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
         viewModel = ViewModelProvider(this)[DashBoardViewModel::class.java]
         mDataBinding.dashdoardviewmodel = viewModel
         mDataBinding.lifecycleOwner = this
-        MyApplication.applicationComponent.inject(this)
+        MyApplication.applicationComponent?.inject(this)
     }
 
 }

@@ -47,7 +47,7 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         viewModel = ViewModelProvider(this)[ProvideServiceViewModel::class.java]
         binding.provideServiceViewModel = viewModel
         binding.lifecycleOwner = this@ProvideServiceDetailsActivity
-        MyApplication.applicationComponent.inject(this)
+        MyApplication.applicationComponent?.inject(this)
         viewModel.setCallBackInterface(this)
 
         init()

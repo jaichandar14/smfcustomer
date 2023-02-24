@@ -33,7 +33,7 @@ class LoginActivity : BaseActivity<LoginViewModel>(), LoginViewModel.CallBackInt
         viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
         binding.loginViewModel = viewModel
         binding.lifecycleOwner = this@LoginActivity
-        MyApplication.applicationComponent.inject(this)
+        MyApplication.applicationComponent?.inject(this)
         //3372
         viewModel.bindingRoot.value=binding
         // Initialize CallBackInterface

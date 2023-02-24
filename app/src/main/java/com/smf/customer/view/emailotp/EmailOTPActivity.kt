@@ -47,7 +47,7 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
         mDataBinding.otpviewmodel = viewModel
         mDataBinding.otpactivity = this
         mDataBinding.lifecycleOwner = this@EmailOTPActivity
-        MyApplication.applicationComponent.inject(this)
+        MyApplication.applicationComponent?.inject(this)
         //3372
         viewModel.bindingRoot.value = mDataBinding
         // Initialize CallBackInterface

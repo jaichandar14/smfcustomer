@@ -19,7 +19,7 @@ class MyEventsViewModel : BaseViewModel() {
     var clickedEventTitle = MutableLiveData<String?>()
     var clickedEventNo = MutableLiveData<String?>()
     init {
-        MyApplication.applicationComponent.inject(this)
+        MyApplication.applicationComponent?.inject(this)
     }
 
     val listMyEvents = ArrayList<EventStatusDTO>()

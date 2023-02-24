@@ -35,7 +35,7 @@ class SplashActivity : AppActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        MyApplication.applicationComponent.inject(this)
+        MyApplication.applicationComponent?.inject(this)
         if (::sharedPrefsHelper.isInitialized) {
             Log.d(TAG, "onCreate: yes")
         } else {

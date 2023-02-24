@@ -43,7 +43,7 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
         viewModel = ViewModelProvider(this)[QuestionsViewModel::class.java]
         binding.questionsViewModel = viewModel
         binding.lifecycleOwner = this@QuestionsActivity
-        MyApplication.applicationComponent.inject(this)
+        MyApplication.applicationComponent?.inject(this)
         init()
     }
 
