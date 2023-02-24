@@ -37,7 +37,7 @@ class ProvideServiceViewModel : BaseViewModel() {
     lateinit var sharedPrefsHelper: SharedPrefsHelper
 
     init {
-        MyApplication.applicationComponent.inject(this)
+        MyApplication.applicationComponent?.inject(this)
         // Update CurrencyType ArrayList
         mileList = MyApplication.appContext.resources.getStringArray(R.array.mile_distance)
             .toList() as ArrayList<String>

@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 class Tokens @Inject constructor() {
     init {
-        MyApplication.applicationComponent.inject(this)
+        MyApplication.applicationComponent?.inject(this)
     }
 
     @Inject

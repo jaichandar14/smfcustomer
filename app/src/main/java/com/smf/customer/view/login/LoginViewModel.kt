@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.amplifyframework.core.Amplify
-import com.google.android.material.snackbar.Snackbar
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseViewModel
 import com.smf.customer.app.base.MyApplication
@@ -28,7 +27,7 @@ class LoginViewModel : BaseViewModel() {
     var countryCode = MutableLiveData<String?>()
 
     init {
-        MyApplication.applicationComponent.inject(this)
+        MyApplication.applicationComponent?.inject(this)
         showPhnNumberError.value = false
         showEmailError.value = false
     }
@@ -40,32 +39,35 @@ class LoginViewModel : BaseViewModel() {
     ): Boolean {
         showPhnNumberError.value = false
         showEmailError.value = false
-        if (phoneNumber.isNotEmpty() || eMail.isNotEmpty()) {
-            if (phoneNumber.isEmpty() || eMail.isEmpty()) {
-                return if (phoneNumber.isEmpty()) {
-                    userInfo = AppConstant.EMAIL
-                    getUserDetails(eMail)
-                    true
-                } else {
-                    userInfo = AppConstant.MOBILE
-                    getUserDetails(encodedMobileNo)
-                    true
-                }
-            } else {
+        // Verify both number and email empty
+        if (phoneNumber.isEmpty() && eMail.isEmpty()) {
+            if (MyApplication.getAppContextInitialization()) {
                 showSnackMessage(
                     MyApplication.appContext.getString(R.string.please_Enter_Any_EMail_or_Phone_Number)
                 )
-                return false
             }
-        } else {
-            showSnackMessage(
-                MyApplication.appContext.getString(R.string.please_Enter_Any_EMail_or_Phone_Number)
-            )
+            return false
+        }
+        // Verify number
+        if (phoneNumber.isNotEmpty()) {
+            userInfo = AppConstant.MOBILE
+            if (MyApplication.getAppContextInitialization()) {
+                getUserDetails(encodedMobileNo)
+            }
+            return true
+        }
+        // Verify email
+        if (eMail.isNotEmpty()) {
+            userInfo = AppConstant.EMAIL
+            if (MyApplication.getAppContextInitialization()) {
+                getUserDetails(eMail)
+            }
+            return true
         }
         return false
     }
 
-    private fun getUserDetails(loginName: String) {
+    fun getUserDetails(loginName: String) {
         val observable: Observable<GetUserDetails> =
             retrofitHelper.getUserRepository().getUserDetails(loginName)
         this.observable.value = observable as Observable<ResponseDTO>

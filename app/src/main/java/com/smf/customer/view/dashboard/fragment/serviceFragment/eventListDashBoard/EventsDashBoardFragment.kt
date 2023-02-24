@@ -41,7 +41,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>() {
         viewModel = ViewModelProvider(this)[EventsDashBoardViewModel::class.java]
         mDataBinding.eventsDashboardViewModel = viewModel
         mDataBinding.lifecycleOwner = this
-        MyApplication.applicationComponent.inject(this)
+        MyApplication.applicationComponent?.inject(this)
         return mDataBinding.root
     }
 

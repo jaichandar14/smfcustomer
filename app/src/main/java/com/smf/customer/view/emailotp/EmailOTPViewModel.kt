@@ -40,7 +40,7 @@ class EmailOTPViewModel : BaseViewModel() {
     val resendColor = MutableLiveData<Boolean>()
 
     init {
-        MyApplication.applicationComponent.inject(this)
+        MyApplication.applicationComponent?.inject(this)
     }
 
     @Inject

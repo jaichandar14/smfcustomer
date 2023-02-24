@@ -22,7 +22,7 @@ class MainDashBoardViewModel : BaseFragmentViewModel() {
     lateinit var sharedPrefsHelper: SharedPrefsHelper
 
     init {
-        MyApplication.applicationComponent.inject(this)
+        MyApplication.applicationComponent?.inject(this)
     }
 
     // 3285

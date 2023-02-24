@@ -75,7 +75,7 @@ class EventDetailsViewModel : BaseViewModel() {
     var questionNumberList = ArrayList<Int>()
 
     init {
-        MyApplication.applicationComponent.inject(this)
+        MyApplication.applicationComponent?.inject(this)
         // Update CurrencyType ArrayList
         currencyTypeList = MyApplication.appContext.resources.getStringArray(R.array.currency_type)
             .toList() as ArrayList<String>

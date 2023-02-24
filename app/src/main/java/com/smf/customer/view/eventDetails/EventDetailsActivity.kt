@@ -44,7 +44,7 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
         viewModel = ViewModelProvider(this)[EventDetailsViewModel::class.java]
         binding.eventDetailsViewModel = viewModel
         binding.lifecycleOwner = this@EventDetailsActivity
-        MyApplication.applicationComponent.inject(this)
+        MyApplication.applicationComponent?.inject(this)
         currentCountryName = binding.cppSignIn.defaultCountryName
         viewModel.setCallBackInterface(this)
 

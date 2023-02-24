@@ -105,7 +105,7 @@ class MyEventsActivity : BaseActivity<MyEventsViewModel>(),
         viewModel = ViewModelProvider(this)[MyEventsViewModel::class.java]
         mDataBinding.myEventViewModel = viewModel
         mDataBinding.lifecycleOwner = this
-        MyApplication.applicationComponent.inject(this)
+        MyApplication.applicationComponent?.inject(this)
         onNextClick()
     }
 

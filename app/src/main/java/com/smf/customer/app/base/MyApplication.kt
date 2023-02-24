@@ -24,7 +24,8 @@ class MyApplication : Application() {
 
     companion object {
         lateinit var appContext: Context
-        lateinit var applicationComponent: AppComponent
+        var applicationComponent: AppComponent? = null
+        fun getAppContextInitialization(): Boolean = ::appContext.isInitialized
     }
 
     operator fun get(context: Context): MyApplication {
