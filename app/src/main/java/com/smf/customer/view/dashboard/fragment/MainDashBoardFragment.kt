@@ -57,7 +57,7 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        return mInitialize(inflater,container).root
+        return mInitialize(inflater, container).root
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -187,30 +187,39 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
         onClickTabItems(position, listMyEvents)
     }
 
-    fun onClickTabItems(position: Int, listMyEvents: MyEventData):String {
-        when (position) {
+    fun onClickTabItems(position: Int, listMyEvents: MyEventData): String {
+        return when (position) {
             0 -> {
-                mEventStatusList.clear()
-                mEventStatusList.add(AppConstant.APPROVED)
-                getEventStatusApi(mEventStatusList)
-                mDataBinding.myEventsCountsTx.text =
-                    listMyEvents.approvedEventsCount.toString() + " " + getString(
-                        R.string.active_counts
-                    )
-                return AppConstant.APPROVED
+                if (::mDataBinding.isInitialized) {
+                    mEventStatusList.clear()
+                    mEventStatusList.add(AppConstant.APPROVED)
+                    getEventStatusApi(mEventStatusList)
+                    mDataBinding.myEventsCountsTx.text =
+                        listMyEvents.approvedEventsCount.toString() + " " + getString(
+                            R.string.active_counts
+                        )
+                    AppConstant.PENDING_ADMIN_APPROVAL
+
+                } else {
+                    AppConstant.APPROVED
+                }
             }
             1 -> {
-                mEventStatusList.clear()
-                mEventStatusList.add(AppConstant.UNDER_REVIEW)
-                mEventStatusList.add(AppConstant.PENDING_ADMIN_APPROVAL)
-                getEventStatusApi(mEventStatusList)
-                mDataBinding.myEventsCountsTx.text =
-                    listMyEvents.pendingEventsCount.toString() + " " + getString(
-                        R.string.pending_counts
-                    )
-                return AppConstant.PENDING_ADMIN_APPROVAL
+                if (::mDataBinding.isInitialized) {
+                    mEventStatusList.clear()
+                    mEventStatusList.add(AppConstant.UNDER_REVIEW)
+                    mEventStatusList.add(AppConstant.PENDING_ADMIN_APPROVAL)
+                    getEventStatusApi(mEventStatusList)
+                    mDataBinding.myEventsCountsTx.text =
+                        listMyEvents.pendingEventsCount.toString() + " " + getString(
+                            R.string.pending_counts
+                        )
+                    AppConstant.PENDING_ADMIN_APPROVAL
+                } else {
+                    AppConstant.PENDING_ADMIN_APPROVAL
+                }
             }
-            2 -> {
+            2 -> {  if (::mDataBinding.isInitialized) {
                 mEventStatusList.clear()
                 mEventStatusList.add(AppConstant.NEW)
                 mEventStatusList.add(AppConstant.REVOKED)
@@ -220,19 +229,26 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
                         .toString() + " " + getString(
                         R.string.draft_counts
                     )
-                return AppConstant.NEW
+                AppConstant.NEW
+            } else{
+                AppConstant.NEW
+            }
             }
             3 -> {
-                mEventStatusList.clear()
-                mEventStatusList.add(AppConstant.REJECTED)
-                getEventStatusApi(mEventStatusList)
-                mDataBinding.myEventsCountsTx.text =
-                    listMyEvents.rejectedEventsCount.toString() + " " + getString(
-                        R.string.reject_counts
-                    )
-                return AppConstant.REJECTED
+                if (::mDataBinding.isInitialized) {
+                    mEventStatusList.clear()
+                    mEventStatusList.add(AppConstant.REJECTED)
+                    getEventStatusApi(mEventStatusList)
+                    mDataBinding.myEventsCountsTx.text =
+                        listMyEvents.rejectedEventsCount.toString() + " " + getString(
+                            R.string.reject_counts
+                        )
+                    AppConstant.REJECTED
+                }else{
+                    AppConstant.REJECTED
+                }
             }
-            4 -> {
+            4 -> {if (::mDataBinding.isInitialized) {
                 mEventStatusList.clear()
                 mEventStatusList.add(AppConstant.CLOSED)
                 getEventStatusApi(mEventStatusList)
@@ -240,10 +256,14 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
                     listMyEvents.closedEventsCount.toString() + " " + getString(
                         R.string.closed_counts
                     )
-                return AppConstant.CLOSED
+                AppConstant.CLOSED
+            }else{
+                AppConstant.CLOSED
             }
+            }
+            else -> ""
         }
-        return ""
+
     }
 
     private fun getEventStatusApi(mEventStatusList: ArrayList<String>) {
@@ -297,7 +317,10 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
     }
 
 
-    private fun mInitialize(inflater: LayoutInflater, container: ViewGroup?): FragmentMainDashBoardBinding {
+    private fun mInitialize(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentMainDashBoardBinding {
         mDataBinding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_main_dash_board, container, false)
         viewModel = ViewModelProvider(this)[MainDashBoardViewModel::class.java]
@@ -308,7 +331,7 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
         return mDataBinding
     }
 
-      fun mEventOverviewRecycler(i: Int) {
+    fun mEventOverviewRecycler(i: Int) {
         mEventOverViewRecyclerView = mDataBinding.myEventsRecyclerview
         mAdapterEvent = EventOverView()
         mEventOverViewRecyclerView.layoutManager =
@@ -318,7 +341,7 @@ class MainDashBoardFragment() : BaseFragment<MainDashBoardViewModel>(),
         mEventOverViewRecyclerView.adapter = mAdapterEvent
     }
 
-      fun mServiceStatusRecycler() {
+    fun mServiceStatusRecycler() {
         mServicesStatusRecyclerView = mDataBinding.serviceStatusRecylerview
         mAdapterService = ServicesStatus()
         mServicesStatusRecyclerView.layoutManager =
