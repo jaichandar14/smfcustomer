@@ -6,7 +6,6 @@ import android.widget.EditText
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.snackbar.Snackbar
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseActivity
 import com.smf.customer.app.base.MyApplication
@@ -76,22 +75,26 @@ class EmailOTPActivity : BaseActivity<EmailOTPViewModel>(), EmailOTPViewModel.Ca
     }
 
     // 3245 - OTP Validation Method
-    private fun otpValidation(
+    fun otpValidation(
         otp0: String,
         otp1: String,
         otp2: String,
         otp3: String
     ): Boolean {
         return if (otp0.isEmpty()) {
-            viewModel.showSnackMessage(
-                AppConstant.ENTER_OTP
-            )
-            viewModel.showLoading.value = false
+            if (::mDataBinding.isInitialized) {
+                viewModel.showSnackMessage(
+                    AppConstant.ENTER_OTP
+                )
+                viewModel.showLoading.value = false
+            }
             false
         } else {
-            viewModel.AwsAmplify().confirmSignIn(
-                this, otp0 + otp1 + otp2 + otp3
-            )
+            if (::mDataBinding.isInitialized) {
+                viewModel.AwsAmplify().confirmSignIn(
+                    this, otp0 + otp1 + otp2 + otp3
+                )
+            }
             true
         }
     }
