@@ -149,7 +149,7 @@ class EmailOTPViewModel : BaseViewModel() {
     }
 
     // 3245 - Login User get Details  Method
-    private fun getLoginInfo() {
+    fun getLoginInfo() {
         val observable: Observable<GetLoginInfoDTO> =
             retrofitHelper.getUserRepository().getLoginInfo(getUserToken())
         this.observable.value = observable as Observable<ResponseDTO>
