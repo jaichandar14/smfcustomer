@@ -21,6 +21,8 @@ internal class EmailOTPViewModelTest {
     @Test
     @DisplayName("otpTimerValidation method callable verification")
     fun otpTimerValidation() {
+        // mDataBinding variable for make resend textview button clickable
+        // userName variable for sending otp to current user
         every { emailOTPViewModel.otpTimerValidation(null, "") } returns Unit
         emailOTPViewModel.otpTimerValidation(null, "")
         verify(exactly = 1) { emailOTPViewModel.otpTimerValidation(null, "") }
@@ -29,6 +31,7 @@ internal class EmailOTPViewModelTest {
     @Test
     @DisplayName("reSendOTP method callable verification")
     fun reSendOTP() {
+        // userName variable for resending otp to current user
         every { emailOTPViewModel.reSendOTP("") } returns Unit
         emailOTPViewModel.reSendOTP("")
         verify(exactly = 1) { emailOTPViewModel.reSendOTP("") }
@@ -37,6 +40,8 @@ internal class EmailOTPViewModelTest {
     @Test
     @DisplayName("loginUser method callable verification")
     fun loginUser() {
+        // isValid variable for verify user completes all verifications
+        // userId variable for login specific user
         every { emailOTPViewModel.loginUser(true, "userId") } returns Unit
         emailOTPViewModel.loginUser(true, "userId")
         verify(exactly = 1) { emailOTPViewModel.loginUser(true, "userId") }
