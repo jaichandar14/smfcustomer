@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
@@ -19,7 +18,6 @@ import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.dialog.DialogConstant
-import com.smf.customer.utility.MyToast
 import com.smf.customer.view.dashboard.model.EventStatusDTO
 import com.smf.customer.view.eventDetails.EventDetailsActivity
 import com.smf.customer.view.myevents.Adaptor.MyEventListAdaptor
@@ -106,31 +104,47 @@ class MyEventsActivity : BaseActivity<MyEventsViewModel>(),
         mDataBinding.myEventViewModel = viewModel
         mDataBinding.lifecycleOwner = this
         MyApplication.applicationComponent?.inject(this)
-        onNextClick()
+        onNextClick(viewModel.eventClickedPos?.value)
     }
 
     // 3275 onNextButtonClick
-    private fun onNextClick() {
-        if (viewModel.eventClickedPos?.value != null) {
-            viewModel.onClicked.value = true
-            mDataBinding.appCompatButton.setOnClickListener {
-                val intent = Intent(this, EventDetailsActivity::class.java)
-                intent.putExtra(
-                    AppConstant.TITLE,
-                    title
-                )
-                intent.putExtra(
-                    AppConstant.TEMPLATE_ID,
-                    eventNo
-                )
-                startActivity(intent)
+    fun onNextClick(value: Int?): Boolean {
+        return if (value != null) {
+            return if (::mDataBinding.isInitialized) {
+                mDataBinding.appCompatButton.setOnClickListener {
+                    val intent = Intent(this, EventDetailsActivity::class.java)
+                    intent.putExtra(
+                        AppConstant.TITLE,
+                        title
+                    )
+                    intent.putExtra(
+                        AppConstant.TEMPLATE_ID,
+                        eventNo
+                    )
+                    startActivity(intent)
+
+                }
+                viewModel.onClicked.value = true
+                false
+            } else {
+                true
             }
+
+
         } else {
-            viewModel.onClicked.value = false
-            mDataBinding.appCompatButton.setOnClickListener {
-                MyToast.show(this, getString(R.string.select_any_event), Toast.LENGTH_LONG)
+            return if (::mDataBinding.isInitialized) {
+                viewModel.onClicked.value = false
+                mDataBinding.appCompatButton.setOnClickListener {
+                    //   MyToast.show(this, getString(R.string.select_any_event), Toast.LENGTH_LONG)
+                    viewModel.showSnackMessage(getString(R.string.select_any_event))
+                }
+                true
+            } else {
+                false
             }
+
         }
+
     }
 
     // 3275 Recycler view for showing event type
@@ -155,7 +169,7 @@ class MyEventsActivity : BaseActivity<MyEventsViewModel>(),
                 viewModel.eventClickedPos?.value
             )
         }
-        onNextClick()
+        onNextClick(viewModel.eventClickedPos?.value)
         Log.d(
             TAG,
             "onclick clciekd pos: ${position?.let { viewModel.eventTypeList.value?.get(it)?.title }}"
