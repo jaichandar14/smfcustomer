@@ -96,7 +96,7 @@ class EventDetailsViewModel : BaseViewModel() {
 
     fun onClickNextButton() {
         // Verify all mandatory questions answered before submit
-        if (verifyMandatoryQuesAnswered()) {
+        if (verifyMandatoryQuesAnswered(questionListItem, eventSelectedAnswerMap)) {
             if (iKnowVenue.value != true) {
                 if (eventName.value.isNullOrEmpty().not() && eventDate.value.isNullOrEmpty()
                         .not() &&
@@ -140,7 +140,10 @@ class EventDetailsViewModel : BaseViewModel() {
         }
     }
 
-    private fun verifyMandatoryQuesAnswered(): Boolean {
+    fun verifyMandatoryQuesAnswered(
+        questionListItem: ArrayList<QuestionListItem>,
+        eventSelectedAnswerMap: HashMap<Int, ArrayList<String>>
+    ): Boolean {
         if (questionListItem.isNotEmpty()) {
             val mandatoryQuesIndexList = ArrayList<Int>().apply {
                 questionListItem.filter { it.isMandatory }.forEach {
@@ -151,7 +154,9 @@ class EventDetailsViewModel : BaseViewModel() {
             return if (eventSelectedAnswerMap.keys.containsAll(mandatoryQuesIndexList)) {
                 true
             } else {
-                showToastMessage(MyApplication.appContext.resources.getString(R.string.please_answer_all_mandatory_questions))
+                if (MyApplication.getAppContextInitialization()){
+                    showToastMessage(MyApplication.appContext.resources.getString(R.string.please_answer_all_mandatory_questions))
+                }
                 false
             }
         } else {
@@ -159,7 +164,7 @@ class EventDetailsViewModel : BaseViewModel() {
         }
     }
 
-    private fun postEventInfo(eventInfo: EventInfoDTO) {
+    fun postEventInfo(eventInfo: EventInfoDTO) {
         val observable: Observable<EventInfoResponseDto> =
             retrofitHelper.getEventRepository().postEventInfo(getUserToken(), eventInfo)
         this.observable.value = observable as Observable<ResponseDTO>
