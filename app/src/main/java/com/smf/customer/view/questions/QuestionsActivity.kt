@@ -295,7 +295,7 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
         selectedAnswer: ArrayList<String>,
         questionNumberList: ArrayList<Int>
     ) {
-        if (selectedAnswer[0].isEmpty()) {
+        if (selectedAnswer.isNotEmpty() && selectedAnswer[0].isEmpty()) {
             viewModel.selectedAnswerMap.remove(questionNumberList[position])
         } else {
             viewModel.selectedAnswerMap[questionNumberList[position]] = selectedAnswer
