@@ -12,6 +12,7 @@ import com.smf.customer.dialog.DialogConstant
 import com.smf.customer.dialog.InternetErrorDialog
 import com.smf.customer.listener.DialogTwoButtonListener
 import com.smf.customer.utility.ConnectionLiveData
+import com.smf.customer.utility.CrashlyticsLogger
 import com.smf.customer.utility.MyToast
 import com.smf.customer.utility.Util
 import javax.inject.Inject
@@ -65,15 +66,14 @@ abstract class BaseFragment<T : BaseFragmentViewModel> : Fragment(), DialogTwoBu
         }
     }
 
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // To find which activity get exception and activity in which order it opened
+        crashlyticsFragNameLog()
     }
 
-    override fun onResume() {
-        super.onResume()
-
+    private fun crashlyticsFragNameLog() {
+        CrashlyticsLogger.log(this::class.java.simpleName)
     }
 
     override fun onStart() {

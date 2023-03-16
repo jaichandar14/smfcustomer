@@ -23,6 +23,7 @@ import com.smf.customer.data.model.response.ResponseDTO
 import com.smf.customer.databinding.EmailOtpActivityBinding
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
+import com.smf.customer.utility.CrashlyticsLogger
 import io.reactivex.Observable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -195,6 +196,12 @@ class EmailOTPViewModel : BaseViewModel() {
                 it.userName
             )
         }
+        // Set UserId for firebase crashlytics report
+        sendUserIdToCrashlytics(sharedPrefsHelper[SharedPrefConstant.USER_ID, ""])
+    }
+
+    private fun sendUserIdToCrashlytics(userId: String) {
+        CrashlyticsLogger.setUserId(userId)
     }
 
     override fun onError(throwable: Throwable) {
