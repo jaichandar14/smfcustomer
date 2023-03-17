@@ -35,7 +35,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_165sdp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_5sdp"
             android:background="@drawable/theme_corner_radius_white_background"
             android:backgroundTint="@color/fade_gray"
@@ -132,16 +132,15 @@
             <HorizontalScrollView
                 android:id="@+id/horizontal_scroll"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_75sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:padding="@dimen/_2sdp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_12sdp"
                 android:scrollbars="none"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.589"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/event_view_details"
-                app:layout_constraintVertical_bias="0.814">
+                app:layout_constraintVertical_bias="0.0">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="wrap_content"
@@ -171,6 +170,7 @@
                         app:layout_constraintEnd_toStartOf="@+id/order_details_icon"
                         app:layout_constraintStart_toEndOf="@+id/add_service_icon"
                         app:layout_constraintTop_toTopOf="@+id/add_service_icon" />
+
                     <androidx.constraintlayout.widget.Guideline
                         android:id="@+id/guideline4"
                         android:layout_width="wrap_content"
@@ -179,11 +179,13 @@
                         app:layout_constraintGuide_begin="@dimen/_40sdp" />
 
                     <TextView
-                        android:layout_width="@dimen/_70sdp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/mulish_medium"
                         android:text="@string/add_or_remove_services"
                         android:textAlignment="center"
+                        android:maxEms="6"
+                        android:maxLines="2"
                         android:textColor="@color/black_event_title"
                         android:textSize="@dimen/_10ssp"
                         app:layout_constraintBottom_toBottomOf="parent"

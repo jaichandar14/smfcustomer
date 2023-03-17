@@ -1,8 +1,6 @@
 package com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,17 +11,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseFragment
 import com.smf.customer.app.base.MyApplication
-import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.data.model.dto.DialogListItem
+import com.smf.customer.data.model.response.GetDataDto
 import com.smf.customer.databinding.FragmentEventsDashBoardBinding
+import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.dialog.MultipleSelectionListDialog
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.adaptor.EventDetailsAdaptor
 import com.smf.customer.view.dashboard.model.EventStatusDTO
-import com.smf.customer.view.eventDetails.EventDetailsActivity
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
-class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>() {
+class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
+    EventsDashBoardViewModel.OnServiceClickListener {
 
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
@@ -49,18 +52,22 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.onPending()
         mRecyclerViewIntializer()
-        mDataBinding.statusLayout.myEventIcon.setOnClickListener {
-            Log.d(TAG, "onViewCreated: ${mDataBinding.statusLayout.horizontalScroll.width}")
-            Log.d(
-                TAG,
-                "onViewCreated: ${mDataBinding.statusLayout.horizontalScroll.measuredWidth / 2}"
-            )
+        // 3420 Initialize the call back listeners
+        viewModel.setOnClickListener(this)
 
-            mDataBinding.statusLayout.horizontalScroll.smoothScrollTo(
-                (mDataBinding.statusLayout.horizontalScroll.width / 3).toInt(),
-                0
-            )
-        }
+        // 3420 We need this for future implemetation
+//        mDataBinding.statusLayout.myEventIcon.setOnClickListener {
+//            Log.d(TAG, "onViewCreated: ${mDataBinding.statusLayout.horizontalScroll.width}")
+//            Log.d(
+//                TAG,
+//                "onViewCreated: ${mDataBinding.statusLayout.horizontalScroll.measuredWidth / 2}"
+//            )
+//
+//            mDataBinding.statusLayout.horizontalScroll.smoothScrollTo(
+//                (mDataBinding.statusLayout.horizontalScroll.width / 3).toInt(),
+//                0
+//            )
+//        }
         mDataBinding.addServiceIcon.setOnClickListener {
             val list =
                 ArrayList<DialogListItem>()
@@ -79,6 +86,8 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>() {
 
         }
         onClickViewDetails()
+        // 3420 get event ifo api call
+        viewModel.getEventInfo(sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 1218])
     }
 
     private fun onClickViewDetails() {
@@ -122,5 +131,16 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>() {
         list.add(EventStatusDTO("2", "Draft"))
         list.add(EventStatusDTO("1", "Inactive"))
         return list
+    }
+
+    override fun getEventInfo(listMyEvents: GetDataDto) {
+        val strDate= listMyEvents.eventMetaDataDto.eventInformationDto.eventDate
+        val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.ENGLISH)
+        val date = LocalDate.parse(strDate, formatter)
+        val formatter1 = DateTimeFormatter.ofPattern("dd MMM yyyy")
+        val formattedDate = date.format(formatter1)
+        mDataBinding.statusLayout.eventDateTxt.text =formattedDate
+        mDataBinding.statusLayout.titleTxt.text =
+            listMyEvents.eventMetaDataDto.eventInformationDto.eventName
     }
 }

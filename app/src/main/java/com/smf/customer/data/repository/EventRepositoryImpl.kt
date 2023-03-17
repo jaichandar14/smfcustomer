@@ -4,6 +4,7 @@ import com.smf.customer.data.api_service.EventService
 import com.smf.customer.data.model.request.EventInfoDTO
 import com.smf.customer.data.model.response.EventInfoResponseDto
 import com.smf.customer.data.model.response.EventQuestionsResponseDTO
+import com.smf.customer.data.model.response.GetEventInfo
 import com.smf.customer.view.myevents.model.MyEventsDto
 import io.reactivex.Observable
 import javax.inject.Inject
@@ -29,4 +30,10 @@ class EventRepositoryImpl @Inject constructor(eventService: EventService) : Even
         return mEventService.postEventInfo(idToken, eventInfo).doOnNext { }
     }
 
+    override fun getEventInfo(
+        idToken: String,
+        eventId: Int
+    ): Observable<GetEventInfo> {
+        return mEventService.getEventInfo(idToken, eventId).doOnNext {}
+    }
 }
