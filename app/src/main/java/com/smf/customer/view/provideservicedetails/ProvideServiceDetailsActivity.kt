@@ -36,7 +36,6 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
     lateinit var sharedPrefsHelper: SharedPrefsHelper
 
     companion object {
-        private val timeSlotList = ArrayList<String>()
         var questionListItem = ArrayList<QuestionListItem>()
         var questionNumberList = ArrayList<Int>()
     }
@@ -99,15 +98,13 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         timeSlotRecycler.layoutManager = GridLayoutManager(this, 2)
         timeSlotRecycler.adapter = timeSlotsAdapter
         timeSlotsAdapter.setOnClickListener(this)
-        timeSlotList.clear()
-        timeSlotList.add("12 - 3 am")
-        timeSlotList.add("3 - 6 am")
-        timeSlotList.add("6 - 9 am")
-        timeSlotList.add("9 - 12 pm")
-        timeSlotList.add("12 - 3 pm")
-        timeSlotList.add("3 - 9 pm")
-        timeSlotList.add("9 - 12 am")
-        timeSlotsAdapter.setTimeSlotList(timeSlotList, viewModel.selectedSlotsPositionMap)
+        // API call for service time slots
+        viewModel.getServiceSlots()
+        // Observer for update service time slots to UI
+        viewModel.timeSlotList.observe(this, androidx.lifecycle.Observer {
+            Log.d(TAG, "setTimeSlotsRecycler: $it")
+            timeSlotsAdapter.setTimeSlotList(it, viewModel.selectedSlotsPositionMap)
+        })
     }
 
     private fun dateOnClickListeners() {

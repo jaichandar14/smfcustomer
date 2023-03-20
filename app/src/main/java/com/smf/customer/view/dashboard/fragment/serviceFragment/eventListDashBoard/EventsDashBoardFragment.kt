@@ -1,5 +1,6 @@
 package com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,7 @@ import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.dialog.MultipleSelectionListDialog
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.adaptor.EventDetailsAdaptor
 import com.smf.customer.view.dashboard.model.EventStatusDTO
+import com.smf.customer.view.provideservicedetails.ProvideServiceDetailsActivity
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -69,19 +71,21 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
 //            )
 //        }
         mDataBinding.addServiceIcon.setOnClickListener {
-            val list =
-                ArrayList<DialogListItem>()
-            list.add(DialogListItem("1", "Venue"))
-            list.add(DialogListItem("1", "Venue"))
-            list.add(DialogListItem("1", "Venue"))
-            list.add(DialogListItem("1", "Venue"))
-
-            MultipleSelectionListDialog.newInstance(
-                getString(R.string.service_list),
-                list, this, true, R.string.save_services,
-                R.string.cancel
-            )
-                .show(requireActivity().supportFragmentManager, "MultipleSelectionListDialog")
+            val intent = Intent(requireActivity(), ProvideServiceDetailsActivity::class.java)
+            startActivity(intent)
+//            val list =
+//                ArrayList<DialogListItem>()
+//            list.add(DialogListItem("1", "Venue"))
+//            list.add(DialogListItem("1", "Venue"))
+//            list.add(DialogListItem("1", "Venue"))
+//            list.add(DialogListItem("1", "Venue"))
+//
+//            MultipleSelectionListDialog.newInstance(
+//                getString(R.string.service_list),
+//                list, this, true, R.string.save_services,
+//                R.string.cancel
+//            )
+//                .show(requireActivity().supportFragmentManager, "MultipleSelectionListDialog")
 
 
         }

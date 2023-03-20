@@ -205,5 +205,18 @@
     <string name="please_answer_the_question">Please answer the question</string>
     <string name="close">close</string>
     <string name="select_time">Select time</string>
+    // 3421
+    <string name="set_date">Set date</string>
+    <string name="set_service_date">Set service date</string>
+    <string name="sorry_you_cannot_add_this_as_service_date_it_needs_at_least_3_days_lead_period_from_current_date">
+        Sorry you cannot add this as service date it needs at least 3 days lead period from current date.</string>
+    <string name="choose_your_preferred_slots_for_service">Choose your preferred slots for service</string>
+    <string name="estimated_budget">Estimated budget</string>
+    <string name="estimated_budget_required">Estimated budget required</string>
+    <string name="total_amount">Total amount</string>
+    <string name="remaining_amount">Remaining amount</string>
+    <string name="select_radius">Select radius</string>
+    <string name="choose_vendor_within_radius">(Choose vendor within radius)</string>
+    <string name="provide_order_summary">Provide order summary</string>
 
 </resources>

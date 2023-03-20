@@ -3,9 +3,11 @@ package com.smf.customer.di.retrofit
 import com.smf.customer.BuildConfig
 import com.smf.customer.data.api_service.DashBoardService
 import com.smf.customer.data.api_service.EventService
+import com.smf.customer.data.api_service.ProvideDetailsService
 import com.smf.customer.data.api_service.UserService
 import com.smf.customer.data.repository.DashBoardRepositoryImpl
 import com.smf.customer.data.repository.EventRepositoryImpl
+import com.smf.customer.data.repository.ServiceRepositoryImpl
 import com.smf.customer.data.repository.UserRepositoryImpl
 import retrofit2.Retrofit
 import javax.inject.Inject
@@ -41,5 +43,14 @@ constructor(private val retrofit: Retrofit.Builder) {
 
     fun getDashBoardRepository(): DashBoardRepositoryImpl {
         return DashBoardRepositoryImpl(getDashBoardService())
+    }
+
+    private fun getProvideDetailsService(): ProvideDetailsService {
+        val retrofitR1 = retrofit.baseUrl(BuildConfig.base_url).build()
+        return retrofitR1.create(ProvideDetailsService::class.java)
+    }
+
+    fun getServiceRepository(): ServiceRepositoryImpl {
+        return ServiceRepositoryImpl(getProvideDetailsService())
     }
 }
