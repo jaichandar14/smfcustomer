@@ -248,6 +248,11 @@ class EventDetailsViewModel : BaseViewModel() {
                 callBackInterface?.updateQuestions(responseDTO as EventQuestionsResponseDTO)
             }
             is EventInfoResponseDto -> {
+                // 3420 responseDTO.data.key is  event id we getting from event_info post response
+                val response= responseDTO.data.key
+                response.let {
+                    sharedPrefsHelper.put(SharedPrefConstant.EVENT_ID, it)
+                }
                 // Update entered values to shared preference
                 setSharedPreference()
                 // Go to dashboard

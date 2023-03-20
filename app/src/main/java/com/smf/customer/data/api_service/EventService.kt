@@ -4,6 +4,7 @@ import com.smf.customer.BuildConfig
 import com.smf.customer.data.model.request.EventInfoDTO
 import com.smf.customer.data.model.response.EventInfoResponseDto
 import com.smf.customer.data.model.response.EventQuestionsResponseDTO
+import com.smf.customer.data.model.response.GetEventInfo
 import com.smf.customer.view.myevents.model.MyEventsDto
 import io.reactivex.Observable
 import retrofit2.http.*
@@ -26,4 +27,9 @@ interface EventService {
         @Header("Authorization") idToken: String, @Body eventInfo: EventInfoDTO
     ): Observable<EventInfoResponseDto>
 
+    @GET(BuildConfig.apiType + "event/api/app-events/event-info/{event-id}")
+    fun getEventInfo(
+        @Header("Authorization") idToken: String,
+        @Path("event-id") eventId: Int,
+    ): Observable<GetEventInfo>
 }
