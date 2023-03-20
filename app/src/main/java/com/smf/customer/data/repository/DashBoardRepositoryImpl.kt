@@ -1,6 +1,7 @@
 package com.smf.customer.data.repository
 
 import com.smf.customer.data.api_service.DashBoardService
+import com.smf.customer.data.model.response.GetEventServiceInfo
 import com.smf.customer.view.dashboard.responsedto.EventCountDto
 import com.smf.customer.view.dashboard.responsedto.EventStatusResponse
 import io.reactivex.Observable
@@ -20,5 +21,12 @@ class DashBoardRepositoryImpl @Inject constructor(dashBoardService: DashBoardSer
         status: ArrayList<String>
     ): Observable<EventStatusResponse> {
         return mDashBoardService.getEventStatus(idToken, username, status).doOnNext { }
+    }
+
+    override fun getEventServiceInfo(
+        idToken: String,
+        eventId: Int
+    ): Observable<GetEventServiceInfo> {
+        return mDashBoardService.getEventServiceInfo(idToken,eventId).doOnNext { }
     }
 }

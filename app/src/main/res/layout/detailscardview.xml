@@ -7,7 +7,7 @@
 
         <variable
             name="details"
-            type="com.smf.customer.view.dashboard.model.EventStatusDTO" />
+            type="com.smf.customer.view.dashboard.model.EventServiceInfoDTO" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -36,7 +36,7 @@
                 android:layout_width="@dimen/_120sdp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/mulish_bold"
-                android:text="@{details.title}"
+                android:text="@{details.serviceName}"
                 android:textColor="@color/black_event_title"
                 android:textSize="@dimen/_15sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -66,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/mulish_bold"
-                android:text="@string/_2500"
+                android:text="@string/na"
                 android:textColor="@color/dark_blue_amount"
                 android:textSize="@dimen/_14sdp"
                 app:layout_constraintBottom_toBottomOf="@+id/quote_text_view"
@@ -76,7 +76,7 @@
                 app:layout_constraintTop_toTopOf="@+id/quote_text_view" />
 
             <TextView
-                android:id="@+id/code_text"
+                android:id="@+id/event_name_txt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_2sdp"
@@ -104,8 +104,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/code_text"
-                app:layout_constraintTop_toBottomOf="@+id/code_text"
+                app:layout_constraintStart_toStartOf="@+id/event_name_txt"
+                app:layout_constraintTop_toBottomOf="@+id/event_name_txt"
                 app:layout_constraintVertical_bias="0.0" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -119,7 +119,7 @@
                 app:layout_constraintEnd_toEndOf="@+id/amount_text"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toEndOf="@+id/event_type_text"
-                app:layout_constraintTop_toBottomOf="@+id/code_text"
+                app:layout_constraintTop_toBottomOf="@+id/event_name_txt"
                 app:layout_constraintVertical_bias="0.0">
 
                 <TextView
@@ -142,7 +142,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/mulish_semi_bold"
-                    android:text="@string/mar"
+                    android:text="@string/na"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_12sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -168,7 +168,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text=""
+                    android:text="-"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_10sdp"
@@ -185,7 +185,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:fontFamily="@font/mulish_medium"
-                android:text="@string/_12_aug"
+                android:text="@{details.serviceDate}"
                 android:textColor="@color/elephant_black"
                 android:textSize="@dimen/_11sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -200,7 +200,8 @@
                 android:layout_width="@dimen/_110sdp"
                 android:layout_height="@dimen/_22sdp"
                 android:layout_marginStart="@dimen/_2sdp"
-                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_22sdp"
+                android:layout_marginBottom="@dimen/_6sdp"
                 android:background="@drawable/custom_button_corner_ok"
                 android:fontFamily="@font/mulish_semi_bold"
                 android:paddingStart="@dimen/_8sdp"

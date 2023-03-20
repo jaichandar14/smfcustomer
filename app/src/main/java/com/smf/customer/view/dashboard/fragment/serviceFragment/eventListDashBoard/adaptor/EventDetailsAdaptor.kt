@@ -1,27 +1,37 @@
 package com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.adaptor
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.smf.customer.R
+import com.smf.customer.app.base.MyApplication
 import com.smf.customer.databinding.DetailscardviewBinding
-import com.smf.customer.view.dashboard.model.EventStatusDTO
+import com.smf.customer.di.sharedpreference.SharedPrefConstant
+import com.smf.customer.di.sharedpreference.SharedPrefsHelper
+import com.smf.customer.view.dashboard.model.EventServiceInfoDTO
+import javax.inject.Inject
 
 class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetailsViewHolder>() {
 
-    private var myEventsList = ArrayList<EventStatusDTO>()
+    private var myEventsList = ArrayList<EventServiceInfoDTO>()
     private var onClickListener: OnServiceClickListener? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventDetailsViewHolder
-    =
-    EventDetailsViewHolder(DetailscardviewBinding.inflate(LayoutInflater.from(parent.context), parent, false))
-//    {
-////        val itemView =
-////            LayoutInflater.from(parent.context).inflate(R.layout.detailscardview, parent, false)
-////        return EventDetailsViewHolder(itemView)
-//    }
+    init {
+        MyApplication.applicationComponent?.inject(this)
+    }
+
+    @Inject
+    lateinit var sharedPrefsHelper: SharedPrefsHelper
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventDetailsViewHolder =
+        EventDetailsViewHolder(
+            DetailscardviewBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
 
 
     override fun onBindViewHolder(holder: EventDetailsViewHolder, position: Int) {
@@ -33,31 +43,39 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
         return myEventsList.size
     }
 
-    inner class EventDetailsViewHolder( var binding: DetailscardviewBinding) : RecyclerView.ViewHolder(binding.root) {
-       // private var titleText = view.findViewById<TextView>(R.id.event_title_text)
+    inner class EventDetailsViewHolder(var binding: DetailscardviewBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        // private var titleText = view.findViewById<TextView>(R.id.event_title_text)
 
         // Method For Fixing xml views and Values
-        fun onBind(myEvents: EventStatusDTO) {
-          //  titleText.text = myEvents.title
-binding.details=myEvents
-
+        fun onBind(myEvents: EventServiceInfoDTO) {
+            //  titleText.text = myEvents.title
+            binding.details = myEvents
+            binding.eventNameTxt.text = sharedPrefsHelper[SharedPrefConstant.EVENT_NAME, ""]
+            binding.btnStartService.setOnClickListener {
+                callBackInterface?.onClickProvideDetails(myEvents)
+                Log.d("TAG", "onBind: ${myEvents.serviceName}")
+            }
         }
     }
 
     //Method For Refreshing Invoices
     @SuppressLint("NotifyDataSetChanged")
-    fun refreshItems(invoice: List<EventStatusDTO>) {
+    fun refreshItems(invoice: List<EventServiceInfoDTO>) {
         myEventsList.clear()
         myEventsList.addAll(invoice)
         notifyDataSetChanged()
     }
 
+    private var callBackInterface: OnServiceClickListener? = null
+
     // Initializing Listener Interface
     fun setOnClickListener(listener: OnServiceClickListener) {
-        onClickListener = listener
+        callBackInterface = listener
     }
 
     // Interface For Invoice Click Listener
-    interface OnServiceClickListener
-
+    interface OnServiceClickListener {
+        fun onClickProvideDetails(listMyEvents: EventServiceInfoDTO)
+    }
 }

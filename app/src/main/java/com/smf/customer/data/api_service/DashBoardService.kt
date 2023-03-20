@@ -1,6 +1,7 @@
 package com.smf.customer.data.api_service
 
 import com.smf.customer.BuildConfig
+import com.smf.customer.data.model.response.GetEventServiceInfo
 import com.smf.customer.view.dashboard.responsedto.EventCountDto
 import com.smf.customer.view.dashboard.responsedto.EventStatusResponse
 import io.reactivex.Observable
@@ -25,4 +26,11 @@ interface DashBoardService {
         @Path("event-organizer-id") username: String,
         @Query("status") status: ArrayList<String>,
     ): Observable<EventStatusResponse>
+
+
+    @GET(BuildConfig.apiType + "event/api/events/event-service-info/{event-id}")
+    fun getEventServiceInfo(
+        @Header("Authorization") idToken: String,
+        @Path("event-id") eventId: Int,
+    ): Observable<GetEventServiceInfo>
 }
