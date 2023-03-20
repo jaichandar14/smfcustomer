@@ -218,5 +218,6 @@
     <string name="select_radius">Select radius</string>
     <string name="choose_vendor_within_radius">(Choose vendor within radius)</string>
     <string name="provide_order_summary">Provide order summary</string>
+    <string name="na">NA</string>
 
 </resources>
