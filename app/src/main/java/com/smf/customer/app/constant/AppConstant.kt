@@ -103,4 +103,10 @@ object AppConstant {
 
     //3372
     const val PLAIN_SNACK_BAR = "Plain Snackbar"
+
+    // 3421
+    const val MILE_SPINNER = "MileSpinner"
+    const val TIME_SLOT = "TimeSlot"
+    const val ZIPCODE = "ZipCode"
+    const val NULL = "null"
 }

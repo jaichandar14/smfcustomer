@@ -1,9 +1,11 @@
 package com.smf.customer.view.provideservicedetails
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -13,8 +15,9 @@ import com.smf.customer.R
 import com.smf.customer.app.base.BaseActivity
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
-import com.smf.customer.data.model.dto.QuestionListItem
+import com.smf.customer.data.model.response.BudgetCalcInfoDTO
 import com.smf.customer.databinding.ActivityProvideServiceDetailsBinding
+import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.utility.DatePicker
 import com.smf.customer.view.provideservicedetails.adapter.TimeSlotsAdapter
@@ -30,15 +33,12 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
     lateinit var binding: ActivityProvideServiceDetailsBinding
     private var picker: MaterialDatePicker<Long> = DatePicker.newInstance
     lateinit var timeSlotRecycler: RecyclerView
+    lateinit var mileDistance: Spinner
     lateinit var timeSlotsAdapter: TimeSlotsAdapter
+    var estimatedBudget: String = ""
 
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
-
-    companion object {
-        var questionListItem = ArrayList<QuestionListItem>()
-        var questionNumberList = ArrayList<Int>()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,12 +63,18 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
     private fun init() {
         // Initialize recycler view
         timeSlotRecycler = binding.slotsRecyclerView
+        // Initialize mileDistance spinner view
+        mileDistance = binding.mileDistance
+        // Initialize UI value
+        setInitialValues()
         // Set timeSlots recyclerView Data
         setTimeSlotsRecycler()
         // Event date edittext Listener
         dateOnClickListeners()
         // Start question button listener
         onClickQuestionsBtn()
+        // Zipcode click listener
+        onClickZipCode()
         // Initialize Mile Distance
         initializeMileDistance()
         // Error details observer
@@ -76,8 +82,6 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
     }
 
     private fun onClickQuestionsBtn() {
-        updateListData()
-
         binding.startQusBtn.setOnClickListener {
 //            navigateQuestionsPage()
         }
@@ -120,7 +124,18 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         }
     }
 
+    private fun onClickZipCode() {
+        binding.zipCode.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                // Check and Update budget amount to UI
+                updateBudget(AppConstant.ZIPCODE)
+            }
+        }
+    }
+
     private fun showDatePickerDialog() {
+        // Check and Update budget amount to UI
+        updateBudget(AppConstant.MATERIAL_DATE_PICKER)
         viewModel.showDatePickerDialogFlag()
         picker.addOnPositiveButtonClickListener {
             verifySelectedDate(it)
@@ -144,7 +159,20 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         val arrayAdapterMile = ArrayAdapter(
             applicationContext, R.layout.spinner_text_view, viewModel.mileList
         )
-        binding.mileDistance.adapter = arrayAdapterMile
+        mileDistance.adapter = arrayAdapterMile
+        // Mile Distance spinner listener
+        mileDistance.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View, position: Int, id: Long
+            ) {
+                // Check and Update budget amount to UI
+                updateBudget(AppConstant.MILE_SPINNER)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
     }
 
     override fun onSaveClick() {
@@ -174,6 +202,65 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         viewModel.setScreenRotationValueFalse()
     }
 
+    override fun onSlotClicked(listPosition: Int, status: Boolean) {
+        Log.d(TAG, "onSlotClicked: called $status")
+        // Update selected time slots
+        viewModel.selectedSlotsPositionMap[listPosition] = status
+        // Check and Update budget amount to UI
+        updateBudget(AppConstant.TIME_SLOT)
+    }
+
+    // Load budget value when estimatedBudget edittext value changed
+    private fun updateBudget(from: String) {
+        // Verify user entered same budget
+        if (estimatedBudget == binding.estimatedBudget.text.toString().trim()) {
+            return
+        }
+        // Update user budget
+        estimatedBudget = binding.estimatedBudget.text.toString().trim()
+        // From others(Not EditText)
+        if (binding.estimatedBudget.isFocused &&
+            binding.estimatedBudget.text.toString().isNotEmpty()
+        ) {
+            viewModel.getBudgetCalcInfo(estimatedBudget.toInt())
+        }
+        // From zipCode(EditText)
+        if (binding.zipCode.isFocused && from == AppConstant.ZIPCODE) {
+            viewModel.getBudgetCalcInfo(estimatedBudget.toInt())
+        }
+        // Observe budget value
+        viewModel.budgetCalcInfo.observe(this, androidx.lifecycle.Observer {
+            if (it != null) {
+                updateBudgetToUI(it)
+            }
+        })
+    }
+
+    private fun updateBudgetToUI(budgetCalcInfoDTO: BudgetCalcInfoDTO) {
+        Log.d(
+            TAG,
+            "onSuccess: responseDTO ${budgetCalcInfoDTO.data.currencyType}"
+        )
+        // show total and remaining amount to UI
+        viewModel.remainingAmountVisibility.value = true
+        if (budgetCalcInfoDTO.data.currencyType == AppConstant.NULL) {
+            binding.totalAmount.text = "${budgetCalcInfoDTO.data.currencyType}" +
+                    "  ${budgetCalcInfoDTO.data.estimatedEventBudget}"
+            binding.remainingAmount.text = "${budgetCalcInfoDTO.data.currencyType}" +
+                    "  ${budgetCalcInfoDTO.data.remainingBudget}"
+        } else {
+            binding.totalAmount.text = "${getString(R.string.dollar)}  " +
+                    "${budgetCalcInfoDTO.data.estimatedEventBudget}"
+            binding.remainingAmount.text = "${getString(R.string.dollar)}  " +
+                    "${budgetCalcInfoDTO.data.remainingBudget}"
+        }
+    }
+
+    private fun setInitialValues() {
+        viewModel.eventDate.value = sharedPrefsHelper[SharedPrefConstant.EVENT_DATE, ""]
+        viewModel.zipCode.value = sharedPrefsHelper[SharedPrefConstant.ZIPCODE, ""]
+    }
+
     override fun onPause() {
         // Save date picker dialog flag
         if (!picker.isVisible) {
@@ -190,67 +277,6 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         super.onDestroy()
         // Update screen rotation status
         viewModel.setScreenRotationValueTrue()
-    }
-
-    override fun onSlotClicked(listPosition: Int, status: Boolean) {
-        Log.d(TAG, "onSlotClicked: called $status")
-        // Update selected time slots
-        viewModel.selectedSlotsPositionMap[listPosition] = status
-    }
-
-    private fun updateListData() {
-        val choiceList = ArrayList<String>()
-        choiceList.add("Answer1")
-        choiceList.add("Answer2")
-        val choiceList1 = ArrayList<String>()
-        choiceList1.add("Answer1")
-        choiceList1.add("Answer2")
-        choiceList1.add("Answer3")
-        choiceList1.add("Answer4")
-        choiceList1.add("Answer5")
-        choiceList1.add("Answer6")
-
-        questionListItem.clear()
-        questionListItem.add(
-            QuestionListItem("Want cake?", choiceList, "Radio Button", true)
-        )
-        questionListItem.add(
-            QuestionListItem("Want decoration?", choiceList1, "Check Box",true)
-        )
-        questionListItem.add(
-            QuestionListItem("Want drink?", null, "Edit Text", true)
-        )
-        questionListItem.add(
-            QuestionListItem("Want decoration?", choiceList1, "Check Box",true)
-        )
-        questionListItem.add(
-            QuestionListItem("Select date?", null, "Date",true)
-        )
-        questionListItem.add(
-            QuestionListItem("Select date?", null, "Date",true)
-        )
-        questionListItem.add(
-            QuestionListItem("Want drink?", null, "Edit Text",true)
-        )
-        questionListItem.add(
-            QuestionListItem("Select date?", null, "Date",true)
-        )
-        questionListItem.add(
-            QuestionListItem("Want decoration?", choiceList1, "Check Box",true)
-        )
-        questionListItem.add(
-            QuestionListItem("Select date?", null, "Date",true)
-        )
-        questionListItem.add(
-            QuestionListItem("Want cake?", choiceList, "Radio Button",true)
-        )
-        // Update Question Number
-        questionNumberList.clear()
-        for (i in 0 until questionListItem.size) {
-            questionNumberList.add(i)
-        }
-
-        Log.d(TAG, "updateListData: ${questionListItem.size} $questionNumberList")
     }
 
 }
