@@ -20,7 +20,6 @@ class ProvideServiceViewModel : BaseViewModel() {
     var totalAmount = MutableLiveData<String>("")
     var remainingAmount = MutableLiveData<String>("")
     var zipCode = MutableLiveData<String>("")
-    var milePosition = MutableLiveData<Int>(0)
 
     // Start question btn text
     var questionBtnText =
@@ -28,7 +27,8 @@ class ProvideServiceViewModel : BaseViewModel() {
 
     // Edit image icon visibility
     var editImageVisibility = MutableLiveData<Boolean>(false)
-
+    // Edit image icon visibility
+    var remainingAmountVisibility = MutableLiveData<Boolean>(false)
     // Variables for error message visibility
     var eventDateErrorVisibility = MutableLiveData<Boolean>(false)
     var amountErrorVisibility = MutableLiveData<Boolean>(false)
@@ -38,6 +38,7 @@ class ProvideServiceViewModel : BaseViewModel() {
     var screenRotationStatus = MutableLiveData<Boolean>(false)
     var timeSlotList = MutableLiveData<ArrayList<String>>()
     var selectedSlotsPositionMap = HashMap<Int, Boolean>()
+    var budgetCalcInfo = MutableLiveData<BudgetCalcInfoDTO>(null)
 
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
@@ -50,8 +51,8 @@ class ProvideServiceViewModel : BaseViewModel() {
     }
 
     fun getServiceSlots() {
-        val observable: Observable<ServiceSlotsDTO> =
-            retrofitHelper.getServiceRepository().getServiceSlots(getUserToken(), 289, "3/31/2023")
+        val observable: Observable<ServiceSlotsDTO> = retrofitHelper.getServiceRepository()
+            .getServiceSlots(getUserToken(), 289, "3/31/2023")
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
     }
@@ -71,6 +72,7 @@ class ProvideServiceViewModel : BaseViewModel() {
             }
             is BudgetCalcInfoDTO -> {
                 Log.d(TAG, "onSuccess: responseDTO $responseDTO")
+                budgetCalcInfo.value = responseDTO
             }
         }
     }
