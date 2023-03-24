@@ -240,7 +240,7 @@
                         android:layout_marginEnd="@dimen/_5sdp"
                         android:fontFamily="@font/mulish_regular"
                         android:gravity="end"
-                        android:text="@string/estimated_budget_required"
+                        android:text="@{provideServiceViewModel.amountErrorMessage}"
                         android:textColor="@color/thumbs_down_red"
                         android:textSize="@dimen/_12ssp"
                         android:visibility="@{provideServiceViewModel.amountErrorVisibility.booleanValue ? View.VISIBLE : View.GONE}"

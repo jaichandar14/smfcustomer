@@ -1,11 +1,11 @@
 package com.smf.customer.view.provideservicedetails
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseViewModel
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.data.model.response.BudgetCalcInfoDTO
+import com.smf.customer.data.model.response.BudgetCalcResDTO
 import com.smf.customer.data.model.response.ResponseDTO
 import com.smf.customer.data.model.response.ServiceSlotsDTO
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
@@ -15,11 +15,13 @@ import javax.inject.Inject
 class ProvideServiceViewModel : BaseViewModel() {
     var mileList = ArrayList<String>()
     var eventDate = MutableLiveData<String>()
-    var estimatedBudget = MutableLiveData<String>("")
+    var estimatedBudget = MutableLiveData<String>(null)
     var estimatedBudgetSymbol = MutableLiveData<String>("$")
     var totalAmount = MutableLiveData<String>("")
     var remainingAmount = MutableLiveData<String>("")
     var zipCode = MutableLiveData<String>("")
+    var amountErrorMessage =
+        MutableLiveData(MyApplication.appContext.resources.getString(R.string.estimated_budget_required))
 
     // Start question btn text
     var questionBtnText =
@@ -27,17 +29,18 @@ class ProvideServiceViewModel : BaseViewModel() {
 
     // Edit image icon visibility
     var editImageVisibility = MutableLiveData<Boolean>(false)
+
     // Edit image icon visibility
     var remainingAmountVisibility = MutableLiveData<Boolean>(false)
+
     // Variables for error message visibility
     var eventDateErrorVisibility = MutableLiveData<Boolean>(false)
     var amountErrorVisibility = MutableLiveData<Boolean>(false)
     var zipCodeErrorVisibility = MutableLiveData<Boolean>(false)
 
-    // Avoid screen rotation api call
-    var screenRotationStatus = MutableLiveData<Boolean>(false)
     var timeSlotList = MutableLiveData<ArrayList<String>>()
     var selectedSlotsPositionMap = HashMap<Int, Boolean>()
+    var doBudgetAPICall = MutableLiveData<Boolean>(false)
     var budgetCalcInfo = MutableLiveData<BudgetCalcInfoDTO>(null)
 
     @Inject
@@ -57,9 +60,17 @@ class ProvideServiceViewModel : BaseViewModel() {
         doNetworkOperation()
     }
 
-    fun getBudgetCalcInfo(amount: Int) {
+    fun getBudgetCalcInfo(amount: String) {
         val observable: Observable<BudgetCalcInfoDTO> =
             retrofitHelper.getServiceRepository().getBudgetCalcInfo(getUserToken(), amount)
+        this.observable.value = observable as Observable<ResponseDTO>
+        doNetworkOperation()
+    }
+
+    fun putBudgetCalcInfo() {
+        val observable: Observable<BudgetCalcResDTO> =
+            retrofitHelper.getServiceRepository()
+                .putBudgetCalcInfo(getUserToken(), estimatedBudget.value!!)
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
     }
@@ -71,8 +82,15 @@ class ProvideServiceViewModel : BaseViewModel() {
                 timeSlotList.value = responseDTO.data as ArrayList<String>
             }
             is BudgetCalcInfoDTO -> {
-                Log.d(TAG, "onSuccess: responseDTO $responseDTO")
                 budgetCalcInfo.value = responseDTO
+            }
+            is BudgetCalcResDTO -> {
+                // Get updated budget values
+                estimatedBudget.value?.let {
+                    if (it.isNotEmpty()) {
+                        getBudgetCalcInfo(it)
+                    }
+                }
             }
         }
     }
@@ -82,13 +100,13 @@ class ProvideServiceViewModel : BaseViewModel() {
     }
 
     fun onClickSaveBtn() {
-        if (!zipCode.value.isNullOrEmpty() && !estimatedBudget.value.isNullOrEmpty() &&
-            eventDateErrorVisibility.value == false
-        ) {
-            callBackInterface?.onSaveClick()
-        } else {
-            showError()
-        }
+//        if (!zipCode.value.isNullOrEmpty() && !estimatedBudget.value.isNullOrEmpty() &&
+//            eventDateErrorVisibility.value == false
+//        ) {
+//            callBackInterface?.onSaveClick()
+//        } else {
+//            showError()
+//        }
     }
 
     private fun showError() {
@@ -106,26 +124,42 @@ class ProvideServiceViewModel : BaseViewModel() {
         }
     }
 
-    private var datePickerDialog = MutableLiveData<Boolean>(false)
-
-    fun showDatePickerDialogFlag() {
-        datePickerDialog.value = true
+    fun showAmountErrorText(message: String) {
+        // Set error text
+        amountErrorMessage.value = message
+        amountErrorVisibility.value = true
     }
 
-    fun hideDatePickerDialogFlag() {
-        datePickerDialog.value = false
+    fun hideAmountErrorText() {
+        amountErrorVisibility.value = false
     }
 
-    fun isDatePickerDialogVisible(): Boolean {
-        return datePickerDialog.value!!
+    fun setDoBudgetAPICall(value: Boolean) {
+        doBudgetAPICall.value = value
     }
 
-    fun setScreenRotationValueTrue() {
-        screenRotationStatus.value = true
+    fun showRemainingAmountLayout() {
+        remainingAmountVisibility.value = true
     }
 
-    fun setScreenRotationValueFalse() {
-        screenRotationStatus.value = false
+    fun hideRemainingAmountLayout() {
+        remainingAmountVisibility.value = false
+    }
+
+    fun setNullToEstimatedBudget() {
+        estimatedBudget.value = null
+    }
+
+    fun setNullToBudgetCalcInfo() {
+        budgetCalcInfo.value = null
+    }
+
+    fun setTotalAmount(amount: String) {
+        totalAmount.value = amount
+    }
+
+    fun setRemainingAmount(amount: String) {
+        remainingAmount.value = amount
     }
 
     private var callBackInterface: CallBackInterface? = null

@@ -221,4 +221,8 @@
     <string name="na">NA</string>
     // 3421
     <string name="dollar">$</string>
+    <string name="service_Budget_Exceeds_">Service Budget Exceeds the Total Budget Amount to</string>
+    <string name="would_you_like_to_update_">Would you like to update the Total Budget Amount to</string>
+    <string name="do_you_want_to_Update_">Do you want to Update?</string>
+    <string name="please_enter_the_valid_">Please enter the valid estimated budget value</string>
 </resources>
