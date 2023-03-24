@@ -1,5 +1,7 @@
 package com.smf.customer.data.model.response
 
+import java.math.BigDecimal
+
 data class BudgetCalcInfoDTO(
     val `data`: DataBudget,
     val result: Result,
@@ -7,10 +9,10 @@ data class BudgetCalcInfoDTO(
 ) : ResponseDTO()
 
 data class DataBudget(
-    val currencyType: Any,
-    val estimatedEventBudget: Int,
+    val currencyType: String,
+    val estimatedEventBudget: BigDecimal,
     val eventId: Int,
-    val eventServiceDescriptionId: Int,
+    val eventServiceDescriptionId: Long,
     val eventServiceId: Int,
-    val remainingBudget: Int
+    val remainingBudget: BigDecimal
 )

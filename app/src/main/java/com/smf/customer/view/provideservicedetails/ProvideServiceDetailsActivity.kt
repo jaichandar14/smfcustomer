@@ -1,12 +1,13 @@
 package com.smf.customer.view.provideservicedetails
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.AdapterView
+import android.view.MotionEvent
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,8 +20,12 @@ import com.smf.customer.data.model.response.BudgetCalcInfoDTO
 import com.smf.customer.databinding.ActivityProvideServiceDetailsBinding
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
+import com.smf.customer.dialog.DialogConstant
+import com.smf.customer.dialog.TwoButtonDialogFragment
+import com.smf.customer.listener.DialogTwoButtonListener
 import com.smf.customer.utility.DatePicker
 import com.smf.customer.view.provideservicedetails.adapter.TimeSlotsAdapter
+import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.Period
@@ -29,13 +34,14 @@ import java.util.*
 import javax.inject.Inject
 
 class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
-    ProvideServiceViewModel.CallBackInterface, TimeSlotsAdapter.TimeSlotIconClickListener {
+    ProvideServiceViewModel.CallBackInterface, TimeSlotsAdapter.TimeSlotIconClickListener,
+    DialogTwoButtonListener {
     lateinit var binding: ActivityProvideServiceDetailsBinding
     private var picker: MaterialDatePicker<Long> = DatePicker.newInstance
     lateinit var timeSlotRecycler: RecyclerView
     lateinit var mileDistance: Spinner
     lateinit var timeSlotsAdapter: TimeSlotsAdapter
-    var estimatedBudget: String = ""
+    private var twoButtonDialog: DialogFragment? = null
 
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
@@ -52,14 +58,6 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         init()
     }
 
-    override fun onPostCreate(savedInstanceState: Bundle?) {
-        super.onPostCreate(savedInstanceState)
-        // Verify date picker dialog isVisible
-        if (viewModel.isDatePickerDialogVisible()) {
-            showDatePickerDialog()
-        }
-    }
-
     private fun init() {
         // Initialize recycler view
         timeSlotRecycler = binding.slotsRecyclerView
@@ -71,14 +69,14 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         setTimeSlotsRecycler()
         // Event date edittext Listener
         dateOnClickListeners()
+        // estimatedBudget edittext focus Listener
+        estimatedBudgetFocusListener()
         // Start question button listener
         onClickQuestionsBtn()
-        // Zipcode click listener
-        onClickZipCode()
         // Initialize Mile Distance
         initializeMileDistance()
         // Error details observer
-        errorDetailsObserver()
+        liveDataObservers()
     }
 
     private fun onClickQuestionsBtn() {
@@ -113,35 +111,26 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
 
     private fun dateOnClickListeners() {
         binding.eventDate.setOnClickListener {
-            if (!picker.isVisible) {
-                showDatePickerDialog()
-            }
+            showDatePickerDialog()
         }
         binding.calendarImage.setOnClickListener {
-            if (!picker.isVisible) {
-                showDatePickerDialog()
-            }
-        }
-    }
-
-    private fun onClickZipCode() {
-        binding.zipCode.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                // Check and Update budget amount to UI
-                updateBudget(AppConstant.ZIPCODE)
-            }
+            showDatePickerDialog()
         }
     }
 
     private fun showDatePickerDialog() {
-        // Check and Update budget amount to UI
-        updateBudget(AppConstant.MATERIAL_DATE_PICKER)
-        viewModel.showDatePickerDialogFlag()
-        picker.addOnPositiveButtonClickListener {
-            verifySelectedDate(it)
+        if (binding.estimatedBudget.isFocused) {
+            binding.estimatedBudget.clearFocus()
+            return
+        } else {
+            if (!picker.isVisible) {
+                picker.addOnPositiveButtonClickListener {
+                    verifySelectedDate(it)
+                }
+                // show picker using this
+                picker.show(supportFragmentManager, AppConstant.MATERIAL_DATE_PICKER)
+            }
         }
-        // show picker using this
-        picker.show(supportFragmentManager, AppConstant.MATERIAL_DATE_PICKER)
     }
 
     private fun verifySelectedDate(it: Long) {
@@ -155,23 +144,22 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
             Period.between(LocalDate.now(), serviceDate).days <= 3
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initializeMileDistance() {
         val arrayAdapterMile = ArrayAdapter(
             applicationContext, R.layout.spinner_text_view, viewModel.mileList
         )
         mileDistance.adapter = arrayAdapterMile
-        // Mile Distance spinner listener
-        mileDistance.onItemSelectedListener = object :
-            AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>,
-                view: View, position: Int, id: Long
-            ) {
-                // Check and Update budget amount to UI
-                updateBudget(AppConstant.MILE_SPINNER)
-            }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        mileDistance.setOnTouchListener { _, event ->
+            var returnValue = false
+            if (event.action == MotionEvent.ACTION_UP) {
+                if (binding.estimatedBudget.isFocused) {
+                    binding.estimatedBudget.clearFocus()
+                    returnValue = true
+                }
+            }
+            returnValue
         }
     }
 
@@ -183,100 +171,155 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
 //    TODO Next - Move to previous screen
     }
 
-    private fun errorDetailsObserver() {
-        viewModel.estimatedBudget.observe(this, androidx.lifecycle.Observer {
-            if (viewModel.screenRotationStatus.value == false) {
-                viewModel.amountErrorVisibility.value = false
+    private fun estimatedBudgetFocusListener() {
+        binding.estimatedBudget.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus.not()) {
+                viewModel.setDoBudgetAPICall(true)
             }
-        })
-        viewModel.zipCode.observe(this, androidx.lifecycle.Observer {
-            if (viewModel.screenRotationStatus.value == false) {
-                viewModel.zipCodeErrorVisibility.value = false
-            }
-        })
+        }
     }
 
-    override fun onResume() {
-        super.onResume()
-        // For Error visibility after screen rotation
-        viewModel.setScreenRotationValueFalse()
+    private fun liveDataObservers() {
+        // Observer for budget value
+        viewModel.estimatedBudget.observe(this, androidx.lifecycle.Observer {
+            if (it != null) {
+                // Refresh error message visibility
+                if (it.isNotEmpty() && viewModel.amountErrorVisibility.value == true) {
+                    viewModel.hideAmountErrorText()
+                }
+            }
+        })
+
+        // Observer for execute BudgetCalcInfo api call
+        viewModel.doBudgetAPICall.observe(this, androidx.lifecycle.Observer {
+            if (it) {
+                viewModel.estimatedBudget.value?.let { it1 ->
+                    if (it1.isNotEmpty()) {
+                        viewModel.getBudgetCalcInfo(it1)
+                    }
+                }
+                // Reset livedata value
+                viewModel.setDoBudgetAPICall(false)
+            }
+        })
+
+        // Observe for get and update budget value
+        viewModel.budgetCalcInfo.observe(this, androidx.lifecycle.Observer {
+            if (it != null) {
+                updateBudget(it)
+                // Reset livedata value
+                viewModel.setNullToBudgetCalcInfo()
+            }
+
+        })
     }
 
     override fun onSlotClicked(listPosition: Int, status: Boolean) {
         Log.d(TAG, "onSlotClicked: called $status")
         // Update selected time slots
         viewModel.selectedSlotsPositionMap[listPosition] = status
-        // Check and Update budget amount to UI
-        updateBudget(AppConstant.TIME_SLOT)
+        // Verify slot clicked while estimatedBudget focused
+        if (binding.estimatedBudget.isFocused) {
+            binding.estimatedBudget.clearFocus()
+        }
     }
 
-    // Load budget value when estimatedBudget edittext value changed
-    private fun updateBudget(from: String) {
-        // Verify user entered same budget
-        if (estimatedBudget == binding.estimatedBudget.text.toString().trim()) {
-            return
+    private fun updateBudget(budgetCalcInfoDTO: BudgetCalcInfoDTO) {
+        // Verify remaining budget
+        if (verifyRemainingBudget(budgetCalcInfoDTO)) {
+            updateBudgetToUI(budgetCalcInfoDTO)
         }
-        // Update user budget
-        estimatedBudget = binding.estimatedBudget.text.toString().trim()
-        // From others(Not EditText)
-        if (binding.estimatedBudget.isFocused &&
-            binding.estimatedBudget.text.toString().isNotEmpty()
-        ) {
-            viewModel.getBudgetCalcInfo(estimatedBudget.toInt())
+    }
+
+    private fun verifyRemainingBudget(budgetCalcInfoDTO: BudgetCalcInfoDTO): Boolean {
+        return if (budgetCalcInfoDTO.data.remainingBudget.toString().startsWith("-").not()) {
+            true
+        } else {
+            showEstimationDialog(budgetCalcInfoDTO)
+            Log.d(TAG, "verifyRemainingBudget: else called")
+            false
         }
-        // From zipCode(EditText)
-        if (binding.zipCode.isFocused && from == AppConstant.ZIPCODE) {
-            viewModel.getBudgetCalcInfo(estimatedBudget.toInt())
-        }
-        // Observe budget value
-        viewModel.budgetCalcInfo.observe(this, androidx.lifecycle.Observer {
-            if (it != null) {
-                updateBudgetToUI(it)
-            }
-        })
     }
 
     private fun updateBudgetToUI(budgetCalcInfoDTO: BudgetCalcInfoDTO) {
-        Log.d(
-            TAG,
-            "onSuccess: responseDTO ${budgetCalcInfoDTO.data.currencyType}"
-        )
         // show total and remaining amount to UI
-        viewModel.remainingAmountVisibility.value = true
+        viewModel.showRemainingAmountLayout()
+
+        val totalBudget = getExactAmountToUI(budgetCalcInfoDTO.data.estimatedEventBudget)
+        val remainingBudget = getExactAmountToUI(budgetCalcInfoDTO.data.remainingBudget)
+
         if (budgetCalcInfoDTO.data.currencyType == AppConstant.NULL) {
-            binding.totalAmount.text = "${budgetCalcInfoDTO.data.currencyType}" +
-                    "  ${budgetCalcInfoDTO.data.estimatedEventBudget}"
-            binding.remainingAmount.text = "${budgetCalcInfoDTO.data.currencyType}" +
-                    "  ${budgetCalcInfoDTO.data.remainingBudget}"
+            viewModel.setTotalAmount(budgetCalcInfoDTO.data.currencyType + "  $totalBudget")
+            viewModel.setRemainingAmount(budgetCalcInfoDTO.data.currencyType + "  $remainingBudget")
         } else {
-            binding.totalAmount.text = "${getString(R.string.dollar)}  " +
-                    "${budgetCalcInfoDTO.data.estimatedEventBudget}"
-            binding.remainingAmount.text = "${getString(R.string.dollar)}  " +
-                    "${budgetCalcInfoDTO.data.remainingBudget}"
+            viewModel.setTotalAmount("${getString(R.string.dollar)}  " + totalBudget)
+            viewModel.setRemainingAmount("${getString(R.string.dollar)}  " + remainingBudget)
+        }
+    }
+
+    // Get exact value to show UI
+    private fun getExactAmountToUI(amount: BigDecimal): String {
+        return if (amount.toString().contains("E")) {
+            amount.longValueExact().toString()
+        } else {
+            amount.toString()
+        }
+    }
+
+    private fun showEstimationDialog(budgetCalcInfoDTO: BudgetCalcInfoDTO) {
+        var remainingBudgetAmount = budgetCalcInfoDTO.data.remainingBudget.toString()
+        if (remainingBudgetAmount.startsWith("-")) {
+            remainingBudgetAmount =
+                remainingBudgetAmount.substring(1, remainingBudgetAmount.length - 1)
+        }
+        val message =
+            "${getString(R.string.service_Budget_Exceeds_)} $remainingBudgetAmount ${
+                getString(R.string.would_you_like_to_update_)
+            } ${budgetCalcInfoDTO.data.estimatedEventBudget}"
+        Log.d(TAG, "showEstimationDialog: ${twoButtonDialog.hashCode()}")
+        if (twoButtonDialog == null) {
+            twoButtonDialog = TwoButtonDialogFragment.newInstance(
+                message,
+                getString(R.string.do_you_want_to_Update_),
+                this@ProvideServiceDetailsActivity,
+                false
+            )
+        }
+        if (twoButtonDialog?.isVisible != true) {
+            twoButtonDialog?.show(supportFragmentManager, DialogConstant.ESTIMATION_DIALOG)
+        }
+    }
+
+    override fun onNegativeClick(dialogFragment: DialogFragment) {
+        super.onNegativeClick(dialogFragment)
+        Log.d(TAG, "onNegativeClick: called")
+        // Dismiss dialog
+        dismissEstimationDialog()
+        // Update error value
+        viewModel.showAmountErrorText(getString(R.string.please_enter_the_valid_))
+        viewModel.setNullToEstimatedBudget()
+        // Hide total and remaining amount to UI
+        viewModel.hideRemainingAmountLayout()
+    }
+
+    override fun onPositiveClick(dialogFragment: DialogFragment) {
+        super.onPositiveClick(dialogFragment)
+        Log.d(TAG, "onPositiveClick: called")
+        dismissEstimationDialog()
+        viewModel.putBudgetCalcInfo()
+    }
+
+    private fun dismissEstimationDialog() {
+        twoButtonDialog?.let {
+            if (it.isVisible) {
+                it.dismiss()
+            }
         }
     }
 
     private fun setInitialValues() {
         viewModel.eventDate.value = sharedPrefsHelper[SharedPrefConstant.EVENT_DATE, ""]
         viewModel.zipCode.value = sharedPrefsHelper[SharedPrefConstant.ZIPCODE, ""]
-    }
-
-    override fun onPause() {
-        // Save date picker dialog flag
-        if (!picker.isVisible) {
-            viewModel.hideDatePickerDialogFlag()
-        }
-        super.onPause()
-        if (picker.isVisible) {
-            // Date picker dialog state loss
-            picker.dismissAllowingStateLoss()
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        // Update screen rotation status
-        viewModel.setScreenRotationValueTrue()
     }
 
 }

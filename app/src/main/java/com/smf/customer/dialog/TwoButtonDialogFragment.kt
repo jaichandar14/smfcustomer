@@ -12,6 +12,7 @@ import com.smf.customer.listener.DialogTwoButtonListener
 
 class TwoButtonDialogFragment : BaseDialogFragment() {
     private lateinit var twoButtonListener: DialogTwoButtonListener
+    private lateinit var dataBinding: FragmentDialogTwoButtonBinding
 
     companion object {
         private const val KEY_TITLE = "KEY_TITLE"
@@ -39,7 +40,6 @@ class TwoButtonDialogFragment : BaseDialogFragment() {
         }
     }
 
-    private lateinit var dataBinding: FragmentDialogTwoButtonBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,24 +51,24 @@ class TwoButtonDialogFragment : BaseDialogFragment() {
     }
 
     override fun setData() {
-//        dataBinding.tvTitle.text = requireArguments().getString(KEY_TITLE)
-//        dataBinding.tvMessage.text = requireArguments().getString(KEY_SUBTITLE)
-//        dataBinding.btnPositive.text = getString(requireArguments().getInt(KEY_BUTTON_1))
-//        dataBinding.btnNegative.text = getString(requireArguments().getInt(KEY_BUTTON_2))
+        dataBinding.messageText.text = requireArguments().getString(KEY_TITLE)
+        dataBinding.subText.text = requireArguments().getString(KEY_SUBTITLE)
+        dataBinding.yesBtn.text = getString(requireArguments().getInt(KEY_BUTTON_1))
+        dataBinding.noBtn.text = getString(requireArguments().getInt(KEY_BUTTON_2))
     }
 
     override fun setupClickListeners() {
-//        dataBinding.btnNegative.setOnClickListener {
-//            twoButtonListener.onNegativeClick(this)
-//        }
-//        dataBinding.btnPositive.setOnClickListener {
-//            twoButtonListener.onPositiveClick(this)
-//        }
+        dataBinding.noBtn.setOnClickListener {
+            twoButtonListener.onNegativeClick(this)
+        }
+        dataBinding.yesBtn.setOnClickListener {
+            twoButtonListener.onPositiveClick(this)
+        }
     }
 
-    override fun onPause() {
-        super.onPause()
-        dismissAllowingStateLoss()
-    }
+//    override fun onPause() {
+//        super.onPause()
+//        dismissAllowingStateLoss()
+//    }
 
 }

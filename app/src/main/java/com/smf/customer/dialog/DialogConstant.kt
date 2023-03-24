@@ -55,4 +55,7 @@ object DialogConstant {
 
     val INTERNET_DIALOG: String
         get() = "INTERNET_DIALOG"
+
+    val ESTIMATION_DIALOG: String
+        get() = "ESTIMATION_DIALOG"
 }
