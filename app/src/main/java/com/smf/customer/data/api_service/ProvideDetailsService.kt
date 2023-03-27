@@ -3,6 +3,7 @@ package com.smf.customer.data.api_service
 import com.smf.customer.BuildConfig
 import com.smf.customer.data.model.response.BudgetCalcInfoDTO
 import com.smf.customer.data.model.response.BudgetCalcResDTO
+import com.smf.customer.data.model.response.EventQuestionsResponseDTO
 import com.smf.customer.data.model.response.ServiceSlotsDTO
 import io.reactivex.Observable
 import retrofit2.http.*
@@ -30,5 +31,12 @@ interface ProvideDetailsService {
         @Header("Authorization") idToken: String,
         @Path("amount") amount: String,
     ): Observable<BudgetCalcResDTO>
+
+    // 3431 - Get Service Detail Questions
+    @GET(BuildConfig.apiType + "event/api/events/event-service-questionnaire/{service-id}")
+    fun getServiceDetailQuestions(
+        @Header("Authorization") idToken: String,
+        @Path("service-id") serviceId: Int,
+    ): Observable<EventQuestionsResponseDTO>
 
 }

@@ -16,6 +16,7 @@ import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.data.model.dto.QuestionListItem
 import com.smf.customer.databinding.ActivityQuestionsBinding
 import com.smf.customer.view.eventDetails.EventDetailsActivity
+import com.smf.customer.view.provideservicedetails.ProvideServiceDetailsActivity
 
 class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
     QuestionsAdapter.UpdateAnswerListener {
@@ -125,7 +126,7 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
         }
         binding.cancelBtn.setOnClickListener {
             // Method for move event details page
-            backToEventDetailsPage()
+            backToDetailsPage()
         }
         binding.saveBtn.setOnClickListener {
             // Verify current page mandatory questions answered
@@ -135,27 +136,36 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
             // Verify all mandatory questions answered
             if (verifyAllMandatoryQuesAnswered()) {
                 // Method for move event details page
-                backToEventDetailsPage()
+                backToDetailsPage()
             } else {
                 viewModel.showToastMessage(getString(R.string.please_answer_all_mandatory_questions))
             }
         }
         binding.closeBtn.setOnClickListener {
             // Method for move event details page
-            backToEventDetailsPage()
+            backToDetailsPage()
         }
     }
 
     override fun onBackPressed() {
         // Method for move event details page
-        backToEventDetailsPage()
+        backToDetailsPage()
     }
 
-    private fun backToEventDetailsPage() {
-        val intent = Intent(this, EventDetailsActivity::class.java)
-        intent.putExtra(AppConstant.EVENT_QUESTIONS, AppConstant.EVENT_QUESTIONS)
-        intent.putExtra(AppConstant.SELECTED_ANSWER_MAP, viewModel.selectedAnswerMap)
-        startActivity(intent)
+    private fun backToDetailsPage() {
+        if (fromActivity == AppConstant.EVENT_DETAILS_ACTIVITY) {
+            Intent(this, EventDetailsActivity::class.java).apply {
+                this.putExtra(AppConstant.EVENT_QUESTIONS, AppConstant.EVENT_QUESTIONS)
+                this.putExtra(AppConstant.SELECTED_ANSWER_MAP, viewModel.selectedAnswerMap)
+                startActivity(this)
+            }
+        } else {
+            Intent(this, ProvideServiceDetailsActivity::class.java).apply {
+                this.putExtra(AppConstant.SERVICE_QUESTIONS, AppConstant.SERVICE_QUESTIONS)
+                this.putExtra(AppConstant.SELECTED_ANSWER_MAP, viewModel.selectedAnswerMap)
+                startActivity(this)
+            }
+        }
         finish()
     }
 

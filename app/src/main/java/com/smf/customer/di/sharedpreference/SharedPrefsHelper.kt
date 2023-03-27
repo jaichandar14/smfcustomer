@@ -1,7 +1,9 @@
 package com.smf.customer.di.sharedpreference
 
 import android.content.SharedPreferences
-import com.smf.customer.data.model.request.EventInfoDTO
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.lang.reflect.Type
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -43,6 +45,20 @@ constructor(private val mSharedPreferences: SharedPreferences) {
         editor.commit()
     }
 
+    fun putHashMap(key: String, obj: Any) {
+        val gson = Gson()
+        val json = gson.toJson(obj)
+        editor.putString(key, json)
+        editor.apply()
+    }
+
+    fun getHashMap(key: String): HashMap<Int, Any> {
+        val gson = Gson()
+        val json = mSharedPreferences.getString(key, "")
+        val type: Type = object : TypeToken<HashMap<Int, Any>>() {}.type
+        return gson.fromJson(json, type)
+    }
+
     operator fun get(key: String, defaultValue: String): String {
         return mSharedPreferences.getString(key, defaultValue.toString())!!
     }
@@ -63,8 +79,11 @@ constructor(private val mSharedPreferences: SharedPreferences) {
         return mSharedPreferences.getBoolean(key, defaultValue)
     }
 
-    fun getFullName() : String {
-        return get(SharedPrefConstant.FIRST_NAME, "Guest")!! + " "+get(SharedPrefConstant.LAST_NAME, "User")
+    fun getFullName(): String {
+        return get(
+            SharedPrefConstant.FIRST_NAME,
+            "Guest"
+        )!! + " " + get(SharedPrefConstant.LAST_NAME, "User")
     }
 
     fun deleteSavedData(key: String) {

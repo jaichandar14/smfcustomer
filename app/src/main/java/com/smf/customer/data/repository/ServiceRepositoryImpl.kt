@@ -3,6 +3,7 @@ package com.smf.customer.data.repository
 import com.smf.customer.data.api_service.ProvideDetailsService
 import com.smf.customer.data.model.response.BudgetCalcInfoDTO
 import com.smf.customer.data.model.response.BudgetCalcResDTO
+import com.smf.customer.data.model.response.EventQuestionsResponseDTO
 import com.smf.customer.data.model.response.ServiceSlotsDTO
 import io.reactivex.Observable
 import javax.inject.Inject
@@ -26,6 +27,13 @@ class ServiceRepositoryImpl @Inject constructor(provideDetailsService: ProvideDe
 
     override fun putBudgetCalcInfo(idToken: String, amount: String): Observable<BudgetCalcResDTO> {
         return mProvideDetailsService.putBudgetCalcInfo(idToken, amount)
+    }
+
+    override fun getServiceDetailQuestions(
+        idToken: String,
+        serviceId: Int
+    ): Observable<EventQuestionsResponseDTO> {
+        return mProvideDetailsService.getServiceDetailQuestions(idToken, serviceId)
     }
 
 }
