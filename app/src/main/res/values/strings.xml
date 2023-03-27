@@ -165,7 +165,6 @@
     <string name="event_dates">Event date:</string>
     <string name="_12_02_2022">12/02/2022</string>
     <string name="view_event_details">View/Modify event details</string>
-    <string name="add_or_remove_services">Add or remove services</string>
     <string name="admin_approval">Admin approval</string>
     <string name="order_details">Order details</string>
     <string name="dotted_line">dotted_line</string>
@@ -225,4 +224,14 @@
     <string name="would_you_like_to_update_">Would you like to update the Total Budget Amount to</string>
     <string name="do_you_want_to_Update_">Do you want to Update?</string>
     <string name="please_enter_the_valid_">Please enter the valid estimated budget value</string>
+    //3429
+    <string name="add_or_remove_services">Add/remove services</string>
+    <string name="add_service_details">Add service Details</string>
+    <string name="submit_">Submit</string>
+    <string name="_request">Request</string>
+    <string name="vendor_">Vendor</string>
+    <string name="_response">Response</string>
+    <string name="servicing_in_progress">Servicing in progress</string>
+    <string name="closer_">Closer</string>
+
 </resources>

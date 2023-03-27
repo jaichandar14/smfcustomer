@@ -10,4 +10,4 @@ data class GetResults(
 )
 data class GetEventServiceDataDto(val eventStatus:String, val eventTrackStatus:String, val eventServiceDtos:ArrayList<EventServiceDtos>)
 
-data class EventServiceDtos(val serviceName:String,val biddingCutOffDate : String, val serviceDate:String,val eventServiceId:String,val serviceCategoryId:String,val leadPeriod:String)
+data class EventServiceDtos(val serviceName:String,val biddingCutOffDate : String, val serviceDate:String,val eventServiceId:String,val serviceCategoryId:String,val leadPeriod:String,val eventServiceDescriptionId:String)

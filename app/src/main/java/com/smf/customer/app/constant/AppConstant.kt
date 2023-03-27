@@ -112,4 +112,14 @@ object AppConstant {
     const val TIME_SLOT = "TimeSlot"
     const val ZIPCODE = "ZipCode"
     const val NULL = "null"
+
+    // 3429
+    const val LAYOUTONE=0
+    const val LAYOUTTWO=1
+    const val EVENT_ID="Event_Id"
+    const val EVENT_SERVICE_ID="Event_ServiceId"
+    const val EVENT_SERVICE_DESCRIPTION_ID="Event_ServiceDescriptionId"
+    const val LEAD_PERIOD="Lead_Period"
+
+
 }
