@@ -55,10 +55,10 @@ object SharedPrefConstant {
         get() = "No Of Attendees"
 
     val BUDGET: String
-        get() ="Budget"
+        get() = "Budget"
 
     val ZIPCODE: String
-        get() ="ZipCode"
+        get() = "ZipCode"
 
     val VENUE: String
         get() = "Venue"
@@ -96,4 +96,25 @@ object SharedPrefConstant {
     // 3420
     val EVENT_ID: String
         get() = "Event Id"
+
+    val SERVICE_DATE: String
+        get() = "ServiceDate"
+
+    val SELECTED_SLOT_POSITION_MAP: String
+        get() = "selectedSlotsPositionMap"
+
+    val ESTIMATED_BUDGET: String
+        get() = "estimatedBudget"
+
+    val TOTAL_AMOUNT: String
+        get() = "totalAmount"
+
+    val REMAINING_AMOUNT: String
+        get() = "remainingAmount"
+
+    val SERVICE_ZIPCODE: String
+        get() = "serviceZipCode"
+
+    val SERVICE_MILES: String
+        get() = "serviceMiles"
 }

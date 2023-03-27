@@ -1,6 +1,7 @@
 package com.smf.customer.view.provideservicedetails
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
@@ -16,7 +17,9 @@ import com.smf.customer.R
 import com.smf.customer.app.base.BaseActivity
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
+import com.smf.customer.data.model.dto.QuestionListItem
 import com.smf.customer.data.model.response.BudgetCalcInfoDTO
+import com.smf.customer.data.model.response.EventQuestionsResponseDTO
 import com.smf.customer.databinding.ActivityProvideServiceDetailsBinding
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
@@ -25,6 +28,7 @@ import com.smf.customer.dialog.TwoButtonDialogFragment
 import com.smf.customer.listener.DialogTwoButtonListener
 import com.smf.customer.utility.DatePicker
 import com.smf.customer.view.provideservicedetails.adapter.TimeSlotsAdapter
+import com.smf.customer.view.questions.QuestionsActivity
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -71,28 +75,10 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         dateOnClickListeners()
         // estimatedBudget edittext focus Listener
         estimatedBudgetFocusListener()
-        // Start question button listener
-        onClickQuestionsBtn()
         // Initialize Mile Distance
         initializeMileDistance()
         // Error details observer
         liveDataObservers()
-    }
-
-    private fun onClickQuestionsBtn() {
-        binding.startQusBtn.setOnClickListener {
-//            navigateQuestionsPage()
-        }
-        binding.editImage.setOnClickListener {
-
-        }
-    }
-
-    private fun navigateQuestionsPage() {
-//        val intent = Intent(this, QuestionsActivity::class.java)
-//        intent.putExtra("questionListItem", questionListItem)
-//        intent.putIntegerArrayListExtra("questionNumberList", questionNumberList)
-//        startActivity(intent)
     }
 
     private fun setTimeSlotsRecycler() {
@@ -106,6 +92,8 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         viewModel.timeSlotList.observe(this, androidx.lifecycle.Observer {
             Log.d(TAG, "setTimeSlotsRecycler: $it")
             timeSlotsAdapter.setTimeSlotList(it, viewModel.selectedSlotsPositionMap)
+            // Get Service Questions
+            viewModel.getServiceDetailQuestions()
         })
     }
 
@@ -138,7 +126,7 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         val sdf = SimpleDateFormat(myFormat)
         val date = Date(it)
         val formattedDate = sdf.format(date) // date selected by the user
-        viewModel.eventDate.value = formattedDate
+        viewModel.serviceDate.value = formattedDate
         val serviceDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
         viewModel.eventDateErrorVisibility.value =
             Period.between(LocalDate.now(), serviceDate).days <= 3
@@ -169,6 +157,22 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
 
     override fun onCancelClick() {
 //    TODO Next - Move to previous screen
+    }
+
+    override fun onClickQuestionsBtn(from: String) {
+        val intent = Intent(this, QuestionsActivity::class.java)
+        intent.putExtra(AppConstant.FROM_ACTIVITY, this::class.java.simpleName)
+        intent.putExtra(AppConstant.QUESTION_LIST_ITEM, viewModel.questionListItem)
+        intent.putIntegerArrayListExtra(
+            AppConstant.QUESTION_NUMBER_LIST, viewModel.questionNumberList
+        )
+        intent.putExtra(AppConstant.SELECTED_ANSWER_MAP, viewModel.eventSelectedAnswerMap)
+        intent.putExtra(
+            AppConstant.QUESTION_BTN_TEXT,
+            if (from != AppConstant.EDIT_BUTTON) viewModel.questionBtnText.value else ""
+        )
+        finish()
+        startActivity(intent)
     }
 
     private fun estimatedBudgetFocusListener() {
@@ -210,8 +214,25 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
                 // Reset livedata value
                 viewModel.setNullToBudgetCalcInfo()
             }
-
         })
+
+        viewModel.eventQuestionsResponseDTO.observe(
+            this,
+            androidx.lifecycle.Observer { eventQuestionsResponseDTO ->
+                if (eventQuestionsResponseDTO != null) {
+                    viewModel.questionListItem.clear()
+                    if (eventQuestionsResponseDTO.data.questionnaireDtos.isEmpty()) {
+                        viewModel.hideStartQuestionsBtn()
+                    } else {
+                        viewModel.showStartQuestionsBtn()
+                        editButtonVisibility()
+                        // Update Questions
+                        updateQuestionsList(eventQuestionsResponseDTO)
+                        // Update Question Number
+                        updateQuestionNumberList()
+                    }
+                }
+            })
     }
 
     override fun onSlotClicked(listPosition: Int, status: Boolean) {
@@ -317,9 +338,65 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         }
     }
 
+    private fun updateQuestionsList(eventQuestionsResponseDTO: EventQuestionsResponseDTO) {
+        eventQuestionsResponseDTO.data.questionnaireDtos.forEach {
+            viewModel.questionListItem.add(
+                QuestionListItem(
+                    it.questionMetadata.question,
+                    it.questionMetadata.choices as ArrayList<String>,
+                    it.questionMetadata.questionType,
+                    it.questionMetadata.isMandatory
+                )
+            )
+        }
+    }
+
+    private fun updateQuestionNumberList() {
+        viewModel.questionNumberList.clear()
+        for (i in 0 until viewModel.questionListItem.size) {
+            viewModel.questionNumberList.add(i)
+        }
+    }
+
     private fun setInitialValues() {
-        viewModel.eventDate.value = sharedPrefsHelper[SharedPrefConstant.EVENT_DATE, ""]
-        viewModel.zipCode.value = sharedPrefsHelper[SharedPrefConstant.ZIPCODE, ""]
+        if (intent.extras?.get(AppConstant.SERVICE_QUESTIONS) != AppConstant.SERVICE_QUESTIONS) {
+            viewModel.serviceDate.value = sharedPrefsHelper[SharedPrefConstant.EVENT_DATE, ""]
+            viewModel.zipCode.value = sharedPrefsHelper[SharedPrefConstant.ZIPCODE, ""]
+        } else {
+            updateEnteredValues()
+        }
+    }
+
+    private fun updateEnteredValues() {
+        viewModel.serviceDate.value = sharedPrefsHelper[SharedPrefConstant.SERVICE_DATE, ""]
+        viewModel.selectedSlotsPositionMap =
+            sharedPrefsHelper.getHashMap(SharedPrefConstant.SELECTED_SLOT_POSITION_MAP) as HashMap<Int, Boolean>
+        viewModel.zipCode.value = sharedPrefsHelper[SharedPrefConstant.SERVICE_ZIPCODE, ""]
+        viewModel.estimatedBudget.value = sharedPrefsHelper[SharedPrefConstant.ESTIMATED_BUDGET, ""]
+        viewModel.totalAmount.value = sharedPrefsHelper[SharedPrefConstant.TOTAL_AMOUNT, ""]
+        viewModel.remainingAmount.value = sharedPrefsHelper[SharedPrefConstant.REMAINING_AMOUNT, ""]
+        // show total and remaining amount to UI
+        if (viewModel.estimatedBudget.value.isNullOrEmpty()) {
+            viewModel.hideRemainingAmountLayout()
+        } else {
+            viewModel.showRemainingAmountLayout()
+        }
+        viewModel.milePosition.value = sharedPrefsHelper[SharedPrefConstant.SERVICE_MILES, 0]
+        // Update selected questions answers
+        viewModel.eventSelectedAnswerMap =
+            intent.getSerializableExtra(AppConstant.SELECTED_ANSWER_MAP) as HashMap<Int, ArrayList<String>>
+    }
+
+    private fun editButtonVisibility() {
+        // Update questions button text
+        if (viewModel.eventSelectedAnswerMap.isNotEmpty()) {
+            viewModel.questionBtnText.value =
+                getString(R.string.view_order) + " {${viewModel.eventSelectedAnswerMap.keys.size}}"
+            viewModel.editImageVisibility.value = true
+        } else {
+            viewModel.questionBtnText.value = getString(R.string.start_questions)
+            viewModel.editImageVisibility.value = false
+        }
     }
 
 }

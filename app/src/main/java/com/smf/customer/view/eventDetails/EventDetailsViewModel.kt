@@ -105,12 +105,8 @@ class EventDetailsViewModel : BaseViewModel() {
                     zipCode.value.isNullOrEmpty().not() && name.value.isNullOrEmpty().not() &&
                     mobileNumber.value.isNullOrEmpty().not() && emailId.value.isNullOrEmpty().not()
                 ) {
-                    if (questionListItem.size == eventSelectedAnswerMap.keys.size) {
-                        // Post Event info details
-                        postEventInfo(createEventInfoDto())
-                    } else {
-                        showToastMessage("Please submit all questions")
-                    }
+                    // Post Event info details
+                    postEventInfo(createEventInfoDto())
                 } else {
                     // Set error
                     setIWillBeSelectingErrorVisible()
@@ -125,12 +121,8 @@ class EventDetailsViewModel : BaseViewModel() {
                     name.value.isNullOrEmpty().not() && mobileNumber.value.isNullOrEmpty().not() &&
                     emailId.value.isNullOrEmpty().not()
                 ) {
-                    if (questionListItem.size == eventSelectedAnswerMap.keys.size) {
-                        // Post Event info details
-                        postEventInfo(createEventInfoDto())
-                    } else {
-                        showToastMessage("Please submit all questions")
-                    }
+                    // Post Event info details
+                    postEventInfo(createEventInfoDto())
                 } else {
                     // Set error
                     setIWillBeSelectingErrorVisible()
@@ -154,7 +146,7 @@ class EventDetailsViewModel : BaseViewModel() {
             return if (eventSelectedAnswerMap.keys.containsAll(mandatoryQuesIndexList)) {
                 true
             } else {
-                if (MyApplication.getAppContextInitialization()){
+                if (MyApplication.getAppContextInitialization()) {
                     showToastMessage(MyApplication.appContext.resources.getString(R.string.please_answer_all_mandatory_questions))
                 }
                 false
@@ -249,7 +241,7 @@ class EventDetailsViewModel : BaseViewModel() {
             }
             is EventInfoResponseDto -> {
                 // 3420 responseDTO.data.key is  event id we getting from event_info post response
-                val response= responseDTO.data.key
+                val response = responseDTO.data.key
                 response.let {
                     sharedPrefsHelper.put(SharedPrefConstant.EVENT_ID, it)
                 }

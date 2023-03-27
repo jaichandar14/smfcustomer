@@ -4,17 +4,18 @@ import androidx.lifecycle.MutableLiveData
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseViewModel
 import com.smf.customer.app.base.MyApplication
-import com.smf.customer.data.model.response.BudgetCalcInfoDTO
-import com.smf.customer.data.model.response.BudgetCalcResDTO
-import com.smf.customer.data.model.response.ResponseDTO
-import com.smf.customer.data.model.response.ServiceSlotsDTO
+import com.smf.customer.app.constant.AppConstant
+import com.smf.customer.data.model.dto.QuestionListItem
+import com.smf.customer.data.model.response.*
+import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import io.reactivex.Observable
 import javax.inject.Inject
 
 class ProvideServiceViewModel : BaseViewModel() {
     var mileList = ArrayList<String>()
-    var eventDate = MutableLiveData<String>()
+    var milePosition = MutableLiveData(0)
+    var serviceDate = MutableLiveData<String>()
     var estimatedBudget = MutableLiveData<String>(null)
     var estimatedBudgetSymbol = MutableLiveData<String>("$")
     var totalAmount = MutableLiveData<String>("")
@@ -28,9 +29,6 @@ class ProvideServiceViewModel : BaseViewModel() {
         MutableLiveData(MyApplication.appContext.resources.getString(R.string.start_questions))
 
     // Edit image icon visibility
-    var editImageVisibility = MutableLiveData<Boolean>(false)
-
-    // Edit image icon visibility
     var remainingAmountVisibility = MutableLiveData<Boolean>(false)
 
     // Variables for error message visibility
@@ -42,6 +40,15 @@ class ProvideServiceViewModel : BaseViewModel() {
     var selectedSlotsPositionMap = HashMap<Int, Boolean>()
     var doBudgetAPICall = MutableLiveData<Boolean>(false)
     var budgetCalcInfo = MutableLiveData<BudgetCalcInfoDTO>(null)
+
+    // Questions
+    var eventQuestionsResponseDTO = MutableLiveData<EventQuestionsResponseDTO>(null)
+    var questionListItem = ArrayList<QuestionListItem>()
+    var questionNumberList = ArrayList<Int>()
+    var eventSelectedAnswerMap = HashMap<Int, ArrayList<String>>()
+    var startQuestionsBtnVisibility = MutableLiveData<Boolean>(false)
+    var provideSummaryTxtVisibility = MutableLiveData<Boolean>(false)
+    var editImageVisibility = MutableLiveData<Boolean>(false)
 
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
@@ -75,6 +82,14 @@ class ProvideServiceViewModel : BaseViewModel() {
         doNetworkOperation()
     }
 
+    fun getServiceDetailQuestions() {
+        val observable: Observable<EventQuestionsResponseDTO> =
+            retrofitHelper.getServiceRepository()
+                .getServiceDetailQuestions(getUserToken(), 3724)
+        this.observable.value = observable as Observable<ResponseDTO>
+        doNetworkOperation()
+    }
+
     override fun onSuccess(responseDTO: ResponseDTO) {
         super.onSuccess(responseDTO)
         when (responseDTO) {
@@ -92,7 +107,20 @@ class ProvideServiceViewModel : BaseViewModel() {
                     }
                 }
             }
+            is EventQuestionsResponseDTO -> {
+                eventQuestionsResponseDTO.value = responseDTO
+            }
         }
+    }
+
+    fun onClickQuestionsBtn() {
+        // Update entered values to shared preference
+        setServiceSharedPreference()
+        callBackInterface?.onClickQuestionsBtn(AppConstant.QUESTION_BUTTON)
+    }
+
+    fun onClickQuesEditBtn() {
+        callBackInterface?.onClickQuestionsBtn(AppConstant.EDIT_BUTTON)
     }
 
     fun onClickCancelBtn() {
@@ -107,6 +135,25 @@ class ProvideServiceViewModel : BaseViewModel() {
 //        } else {
 //            showError()
 //        }
+    }
+
+    private fun setServiceSharedPreference() {
+        sharedPrefsHelper.put(SharedPrefConstant.SERVICE_DATE, serviceDate.value?.trim() ?: "")
+        sharedPrefsHelper.putHashMap(
+            SharedPrefConstant.SELECTED_SLOT_POSITION_MAP,
+            selectedSlotsPositionMap
+        )
+        sharedPrefsHelper.put(
+            SharedPrefConstant.ESTIMATED_BUDGET,
+            estimatedBudget.value?.trim() ?: ""
+        )
+        sharedPrefsHelper.put(SharedPrefConstant.TOTAL_AMOUNT, totalAmount.value?.trim() ?: "")
+        sharedPrefsHelper.put(
+            SharedPrefConstant.REMAINING_AMOUNT,
+            remainingAmount.value?.trim() ?: ""
+        )
+        sharedPrefsHelper.put(SharedPrefConstant.SERVICE_ZIPCODE, zipCode.value?.trim() ?: "")
+        sharedPrefsHelper.put(SharedPrefConstant.SERVICE_MILES, milePosition.value ?: 0)
     }
 
     private fun showError() {
@@ -162,6 +209,16 @@ class ProvideServiceViewModel : BaseViewModel() {
         remainingAmount.value = amount
     }
 
+    fun showStartQuestionsBtn() {
+        startQuestionsBtnVisibility.value = true
+        provideSummaryTxtVisibility.value = true
+    }
+
+    fun hideStartQuestionsBtn() {
+        startQuestionsBtnVisibility.value = false
+        provideSummaryTxtVisibility.value = false
+    }
+
     private var callBackInterface: CallBackInterface? = null
 
     // Initializing CallBack Interface Method
@@ -173,5 +230,6 @@ class ProvideServiceViewModel : BaseViewModel() {
     interface CallBackInterface {
         fun onSaveClick()
         fun onCancelClick()
+        fun onClickQuestionsBtn(from: String)
     }
 }
