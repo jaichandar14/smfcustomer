@@ -117,4 +117,16 @@ object SharedPrefConstant {
 
     val SERVICE_MILES: String
         get() = "serviceMiles"
+
+    val EVENT_SERVICE_ID: String
+        get() = "eventServiceId"
+
+    val SERVICE_CATEGORY_ID: String
+        get() = "serviceCategoryId"
+
+    val EVENT_SERVICE_DESCRIPTION_ID: String
+        get() = "eventServiceDescriptionId"
+
+    val LEAD_PERIOD: String
+        get() = "leadPeriod"
 }

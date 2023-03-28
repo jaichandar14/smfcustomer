@@ -1,42 +1,46 @@
 package com.smf.customer.data.api_service
 
 import com.smf.customer.BuildConfig
-import com.smf.customer.data.model.response.BudgetCalcInfoDTO
-import com.smf.customer.data.model.response.BudgetCalcResDTO
-import com.smf.customer.data.model.response.EventQuestionsResponseDTO
-import com.smf.customer.data.model.response.ServiceSlotsDTO
+import com.smf.customer.data.model.request.ServiceInfoDTO
+import com.smf.customer.data.model.response.*
 import io.reactivex.Observable
 import retrofit2.http.*
 
 interface ProvideDetailsService {
 
-    @GET(BuildConfig.apiType + "event/api/events/event-service-slots/{service-id}")
+    @GET(BuildConfig.apiType + "event/api/events/event-service-slots/{service-category-id}")
     fun getServiceSlots(
         @Header("Authorization") idToken: String,
-        @Path("service-id") serviceId: Int,
+        @Path("service-category-id") serviceCategoryId: Int,
         @Query("serviceDate") serviceDate: String,
     ): Observable<ServiceSlotsDTO>
 
-//    @PathVariable("event-id") int eventId,
-//    @PathVariable("event-service-description-id") long eventServiceDescriptionId,
-//    @PathVariable("estimated-budget") String estimatedBudget)
-    @GET(BuildConfig.apiType + "event/api/events/budget-calculation-info/1320/0/{amount}")
+    @GET(BuildConfig.apiType + "event/api/events/budget-calculation-info/{event-id}/{event-service-description-id}/{estimated-budget}")
     fun getBudgetCalcInfo(
         @Header("Authorization") idToken: String,
-        @Path("amount") amount: String,
+        @Path("event-id") eventId: Int,
+        @Path("event-service-description-id") eventServiceDescriptionId: Long,
+        @Path("estimated-budget") estimatedBudget: String,
     ): Observable<BudgetCalcInfoDTO>
 
-    @PUT(BuildConfig.apiType + "event/api/events/budget-calculation-info/1320/{amount}")
+    @PUT(BuildConfig.apiType + "event/api/events/budget-calculation-info/{event-id}/{estimated-budget}")
     fun putBudgetCalcInfo(
         @Header("Authorization") idToken: String,
-        @Path("amount") amount: String,
+        @Path("event-id") eventId: Int,
+        @Path("estimated-budget") estimatedBudget: String,
     ): Observable<BudgetCalcResDTO>
 
     // 3431 - Get Service Detail Questions
-    @GET(BuildConfig.apiType + "event/api/events/event-service-questionnaire/{service-id}")
+    @GET(BuildConfig.apiType + "event/api/events/event-service-questionnaire/{event-service-id}")
     fun getServiceDetailQuestions(
         @Header("Authorization") idToken: String,
-        @Path("service-id") serviceId: Int,
+        @Path("event-service-id") eventServiceId: Int,
     ): Observable<EventQuestionsResponseDTO>
+
+    // 3434 - Post Service description
+    @POST(BuildConfig.apiType + "event/api/events/event-service-description")
+    fun postServiceDescription(
+        @Header("Authorization") idToken: String, @Body serviceInfo: ServiceInfoDTO
+    ): Observable<EventInfoResponseDto>
 
 }

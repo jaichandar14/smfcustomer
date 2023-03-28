@@ -31,9 +31,6 @@ import com.smf.customer.view.provideservicedetails.adapter.TimeSlotsAdapter
 import com.smf.customer.view.questions.QuestionsActivity
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.Period
-import java.time.ZoneId
 import java.util.*
 import javax.inject.Inject
 
@@ -125,11 +122,19 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         val myFormat = AppConstant.DATE_FORMAT
         val sdf = SimpleDateFormat(myFormat)
         val date = Date(it)
+        Log.d(TAG, "verifySelectedDate: date $date")
         val formattedDate = sdf.format(date) // date selected by the user
-        viewModel.serviceDate.value = formattedDate
-        val serviceDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-        viewModel.eventDateErrorVisibility.value =
-            Period.between(LocalDate.now(), serviceDate).days <= 3
+        Log.d(TAG, "verifySelectedDate: formattedDate $formattedDate")
+//        viewModel.serviceDate.value = formattedDate
+//        val serviceDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+        Log.d(TAG, "verifySelectedDate: Date() ${Date()}")
+        if (Date() < date) {
+            Log.d(TAG, "verifySelectedDate: if")
+        } else {
+            Log.d(TAG, "verifySelectedDate: else")
+        }
+//        viewModel.eventDateErrorVisibility.value =
+//            Period.between(LocalDate.now(), serviceDate).days <= 3
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -362,6 +367,22 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         if (intent.extras?.get(AppConstant.SERVICE_QUESTIONS) != AppConstant.SERVICE_QUESTIONS) {
             viewModel.serviceDate.value = sharedPrefsHelper[SharedPrefConstant.EVENT_DATE, ""]
             viewModel.zipCode.value = sharedPrefsHelper[SharedPrefConstant.ZIPCODE, ""]
+            sharedPrefsHelper.put(
+                SharedPrefConstant.EVENT_SERVICE_ID,
+                intent.getStringExtra(AppConstant.EVENT_SERVICE_ID) ?: "0"
+            )
+            sharedPrefsHelper.put(
+                SharedPrefConstant.SERVICE_CATEGORY_ID,
+                intent.getStringExtra(AppConstant.SERVICE_CATEGORY_ID) ?: "0"
+            )
+            sharedPrefsHelper.put(
+                SharedPrefConstant.EVENT_SERVICE_DESCRIPTION_ID,
+                intent.getStringExtra(AppConstant.EVENT_SERVICE_DESCRIPTION_ID) ?: "0"
+            )
+            sharedPrefsHelper.put(
+                SharedPrefConstant.LEAD_PERIOD,
+                intent.getStringExtra(AppConstant.LEAD_PERIOD) ?: "0"
+            )
         } else {
             updateEnteredValues()
         }

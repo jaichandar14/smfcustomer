@@ -1,11 +1,13 @@
 package com.smf.customer.view.provideservicedetails
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseViewModel
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.data.model.dto.QuestionListItem
+import com.smf.customer.data.model.request.ServiceInfoDTO
 import com.smf.customer.data.model.response.*
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
@@ -62,14 +64,23 @@ class ProvideServiceViewModel : BaseViewModel() {
 
     fun getServiceSlots() {
         val observable: Observable<ServiceSlotsDTO> = retrofitHelper.getServiceRepository()
-            .getServiceSlots(getUserToken(), 289, "3/31/2023")
+            .getServiceSlots(
+                getUserToken(),
+                sharedPrefsHelper[SharedPrefConstant.SERVICE_CATEGORY_ID, "0"].toInt(),
+                serviceDate.value!!
+            )
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
     }
 
-    fun getBudgetCalcInfo(amount: String) {
+    fun getBudgetCalcInfo(estimatedBudget: String) {
         val observable: Observable<BudgetCalcInfoDTO> =
-            retrofitHelper.getServiceRepository().getBudgetCalcInfo(getUserToken(), amount)
+            retrofitHelper.getServiceRepository().getBudgetCalcInfo(
+                getUserToken(),
+                sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0],
+                sharedPrefsHelper[SharedPrefConstant.EVENT_SERVICE_DESCRIPTION_ID, "0"].toLong(),
+                estimatedBudget
+            )
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
     }
@@ -77,7 +88,11 @@ class ProvideServiceViewModel : BaseViewModel() {
     fun putBudgetCalcInfo() {
         val observable: Observable<BudgetCalcResDTO> =
             retrofitHelper.getServiceRepository()
-                .putBudgetCalcInfo(getUserToken(), estimatedBudget.value!!)
+                .putBudgetCalcInfo(
+                    getUserToken(),
+                    sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0],
+                    estimatedBudget.value!!
+                )
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
     }
@@ -85,7 +100,18 @@ class ProvideServiceViewModel : BaseViewModel() {
     fun getServiceDetailQuestions() {
         val observable: Observable<EventQuestionsResponseDTO> =
             retrofitHelper.getServiceRepository()
-                .getServiceDetailQuestions(getUserToken(), 3724)
+                .getServiceDetailQuestions(
+                    getUserToken(),
+                    sharedPrefsHelper[SharedPrefConstant.EVENT_SERVICE_ID, "0"].toInt()
+                )
+        this.observable.value = observable as Observable<ResponseDTO>
+        doNetworkOperation()
+    }
+
+    fun postServiceDescription(serviceInfo: ServiceInfoDTO) {
+        val observable: Observable<EventInfoResponseDto> =
+            retrofitHelper.getServiceRepository()
+                .postServiceDescription(getUserToken(), serviceInfo)
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
     }
@@ -110,6 +136,9 @@ class ProvideServiceViewModel : BaseViewModel() {
             is EventQuestionsResponseDTO -> {
                 eventQuestionsResponseDTO.value = responseDTO
             }
+            is EventInfoResponseDto -> {
+                Log.d(TAG, "onSuccess: post success called $responseDTO")
+            }
         }
     }
 
@@ -128,6 +157,8 @@ class ProvideServiceViewModel : BaseViewModel() {
     }
 
     fun onClickSaveBtn() {
+        //    TODO post API call implementation
+//        createServiceInfoDto()
 //        if (!zipCode.value.isNullOrEmpty() && !estimatedBudget.value.isNullOrEmpty() &&
 //            eventDateErrorVisibility.value == false
 //        ) {
@@ -218,6 +249,17 @@ class ProvideServiceViewModel : BaseViewModel() {
         startQuestionsBtnVisibility.value = false
         provideSummaryTxtVisibility.value = false
     }
+
+//    TODO post API call implementation after user details validation
+//    fun createServiceInfoDto(): ServiceInfoDTO{
+//        val eventId: Int = 0
+//        val eventMetaDataDto = createEventMetaDataDto()
+//        val eventOrganizerId: String = sharedPrefsHelper[SharedPrefConstant.USER_ID, ""]
+//        val eventQuestionMetaDataDto = createEventQuestionMetaDataDto()
+//        val eventTypeId: Int = templateId!!
+//        val id: String = ""
+//        return ServiceInfoDTO()
+//    }
 
     private var callBackInterface: CallBackInterface? = null
 

@@ -1,10 +1,8 @@
 package com.smf.customer.data.repository
 
 import com.smf.customer.data.api_service.ProvideDetailsService
-import com.smf.customer.data.model.response.BudgetCalcInfoDTO
-import com.smf.customer.data.model.response.BudgetCalcResDTO
-import com.smf.customer.data.model.response.EventQuestionsResponseDTO
-import com.smf.customer.data.model.response.ServiceSlotsDTO
+import com.smf.customer.data.model.request.ServiceInfoDTO
+import com.smf.customer.data.model.response.*
 import io.reactivex.Observable
 import javax.inject.Inject
 
@@ -15,25 +13,46 @@ class ServiceRepositoryImpl @Inject constructor(provideDetailsService: ProvideDe
 
     override fun getServiceSlots(
         idToken: String,
-        serviceId: Int,
+        serviceCategoryId: Int,
         serviceDate: String
     ): Observable<ServiceSlotsDTO> {
-        return mProvideDetailsService.getServiceSlots(idToken, serviceId, serviceDate)
+        return mProvideDetailsService.getServiceSlots(idToken, serviceCategoryId, serviceDate)
     }
 
-    override fun getBudgetCalcInfo(idToken: String, amount: String): Observable<BudgetCalcInfoDTO> {
-        return mProvideDetailsService.getBudgetCalcInfo(idToken, amount)
+    override fun getBudgetCalcInfo(
+        idToken: String,
+        eventId: Int,
+        eventServiceDescriptionId: Long,
+        estimatedBudget: String
+    ): Observable<BudgetCalcInfoDTO> {
+        return mProvideDetailsService.getBudgetCalcInfo(
+            idToken,
+            eventId,
+            eventServiceDescriptionId,
+            estimatedBudget
+        )
     }
 
-    override fun putBudgetCalcInfo(idToken: String, amount: String): Observable<BudgetCalcResDTO> {
-        return mProvideDetailsService.putBudgetCalcInfo(idToken, amount)
+    override fun putBudgetCalcInfo(
+        idToken: String,
+        eventId: Int,
+        estimatedBudget: String
+    ): Observable<BudgetCalcResDTO> {
+        return mProvideDetailsService.putBudgetCalcInfo(idToken, eventId, estimatedBudget)
     }
 
     override fun getServiceDetailQuestions(
         idToken: String,
-        serviceId: Int
+        eventServiceId: Int
     ): Observable<EventQuestionsResponseDTO> {
-        return mProvideDetailsService.getServiceDetailQuestions(idToken, serviceId)
+        return mProvideDetailsService.getServiceDetailQuestions(idToken, eventServiceId)
+    }
+
+    override fun postServiceDescription(
+        idToken: String,
+        serviceInfo: ServiceInfoDTO
+    ): Observable<EventInfoResponseDto> {
+        return mProvideDetailsService.postServiceDescription(idToken, serviceInfo)
     }
 
 }

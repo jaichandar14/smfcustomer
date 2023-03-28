@@ -222,6 +222,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
     override fun onClickProvideDetails(listMyEvents: EventServiceInfoDTO) {
         val intent = Intent(requireActivity(), ProvideServiceDetailsActivity::class.java)
         intent.putExtra(AppConstant.EVENT_ID, sharedPrefsHelper[SharedPrefConstant.EVENT_ID, ""])
+        intent.putExtra(AppConstant.SERVICE_CATEGORY_ID, listMyEvents.serviceCategoryId)
         intent.putExtra(AppConstant.EVENT_SERVICE_ID, listMyEvents.eventServiceId)
         intent.putExtra(AppConstant.EVENT_SERVICE_DESCRIPTION_ID, listMyEvents.eventServiceDescriptionId)
         intent.putExtra(AppConstant.LEAD_PERIOD, listMyEvents.leadPeriod)

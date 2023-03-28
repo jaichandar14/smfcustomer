@@ -118,6 +118,7 @@ object AppConstant {
     const val LAYOUTTWO=1
     const val EVENT_ID="Event_Id"
     const val EVENT_SERVICE_ID="Event_ServiceId"
+    const val SERVICE_CATEGORY_ID="serviceCategoryId"
     const val EVENT_SERVICE_DESCRIPTION_ID="Event_ServiceDescriptionId"
     const val LEAD_PERIOD="Lead_Period"
 
