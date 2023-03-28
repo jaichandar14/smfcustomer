@@ -157,6 +157,7 @@ class ProvideServiceViewModel : BaseViewModel() {
     }
 
     fun onClickSaveBtn() {
+        //    TODO post API call implementation
 //        createServiceInfoDto()
 //        if (!zipCode.value.isNullOrEmpty() && !estimatedBudget.value.isNullOrEmpty() &&
 //            eventDateErrorVisibility.value == false
@@ -249,6 +250,7 @@ class ProvideServiceViewModel : BaseViewModel() {
         provideSummaryTxtVisibility.value = false
     }
 
+//    TODO post API call implementation after user details validation
 //    fun createServiceInfoDto(): ServiceInfoDTO{
 //        val eventId: Int = 0
 //        val eventMetaDataDto = createEventMetaDataDto()
