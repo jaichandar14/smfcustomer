@@ -8,8 +8,9 @@ import com.smf.customer.view.dashboard.DashBoardViewModel
 import com.smf.customer.view.dashboard.fragment.MainDashBoardFragment
 import com.smf.customer.view.dashboard.fragment.MainDashBoardViewModel
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.EventsDashBoardFragment
-import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.EventsDashBoardViewModel
+import com.smf.customer.view.dashboard.fragment.serviceFragment.sharedviewmodel.EventsDashBoardViewModel
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.adaptor.EventDetailsAdaptor
+import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.ServiceDetailDashboardFragment
 import com.smf.customer.view.emailotp.EmailOTPActivity
 import com.smf.customer.view.emailotp.EmailOTPViewModel
 import com.smf.customer.view.eventDetails.EventDetailsActivity
@@ -51,4 +52,5 @@ interface AppComponent {
     fun inject(viewModel: QuestionsViewModel)
     fun inject(token: Tokens)
     fun inject(eventDetailsAdaptor: EventDetailsAdaptor)
+    fun inject(serviceDetailDashboardFragment: ServiceDetailDashboardFragment)
 }

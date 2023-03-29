@@ -15,7 +15,7 @@ import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.model.ItemClass
 
-class StatusDetailsAdaptor : RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
+public class StatusDetailsAdaptor : RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
     private var itemClassList = ArrayList<ItemClass>()
 
     override fun getItemViewType(position: Int): Int {

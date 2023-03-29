@@ -233,5 +233,18 @@
     <string name="_response">Response</string>
     <string name="servicing_in_progress">Servicing in progress</string>
     <string name="closer_">Closer</string>
-
+    //3438
+    <string name="expandable">expandable</string>
+    <string name="_12_26">12:26AM</string>
+    <string name="george_town">George Town</string>
+    <string name="bid">Bid</string>
+    <string name="cut_off_date">Cut off date</string>
+    <string name="_11_bidders">11 bidders</string>
+    <string name="request_posted">Request posted</string>
+    <string name="responses_received">Responses received</string>
+    <string name="_mar">MAR</string>
+    <string name="_22">22</string>
+    <string name="time_left">Time left</string>
+    <string name="_4_days">4 days</string>
+    <string name="preferred_slots">Preferred slots</string>
 </resources>

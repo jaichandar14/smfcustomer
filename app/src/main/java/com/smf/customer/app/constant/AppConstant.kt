@@ -122,5 +122,11 @@ object AppConstant {
     const val EVENT_SERVICE_DESCRIPTION_ID="Event_ServiceDescriptionId"
     const val LEAD_PERIOD="Lead_Period"
 
+    //3438
+    const val PARENT = 0
+    const val CHILD = 1
+    const val BIDDING_RESPONSE = "Bidding response"
+    const val PAYMENT ="Payment"
+    const val REVIEW_AND_FEEDBACK = "Review and Feedback"
 
 }

@@ -23,7 +23,7 @@ import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.adaptor.EventDetailsAdaptor
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.adaptor.StatusDetailsAdaptor
-import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.model.ItemClass
+import com.smf.customer.view.dashboard.fragment.serviceFragment.sharedviewmodel.EventsDashBoardViewModel
 import com.smf.customer.view.dashboard.model.EventServiceInfoDTO
 import com.smf.customer.view.eventDetails.EventDetailsActivity
 import com.smf.customer.view.provideservicedetails.ProvideServiceDetailsActivity
@@ -47,13 +47,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
     private var eventServiceDetails = ArrayList<EventServiceInfoDTO>()
     private val formatter: DateTimeFormatter =
         DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.ENGLISH)
-    private val itemClasses: MutableList<ItemClass> = ArrayList()
 
-    companion object {
-        const val LayoutTwo = 1
-        var stepOne = arrayListOf(0, 1, 2, 2, 2, 2)
-        var stepTwo = arrayListOf(0, 0, 0, 1, 2, 2)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,7 +65,6 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.onPending()
         mRecyclerViewIntializer()
         // 3420 Initialize the call back listeners
         viewModel.setOnClickListener(this)
@@ -115,7 +108,6 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
             getServiceList()
         )
         mStatusFlowRecycler()
-        mAdapterStatusDetails.refreshItems(setStatusFlowDetails(stepOne))
     }
 
     private fun mEventDetailsRecycler() {
@@ -135,48 +127,10 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
         mStatusDetailsRecyclerView.adapter = mAdapterStatusDetails
     }
 
-    private fun setStatusFlowDetails(status: ArrayList<Int>): MutableList<ItemClass> {
-
-        // pass the arguments
-        itemClasses.run {
-            // pass the arguments
-            add(
-                ItemClass(
-                    getString(R.string.add_or_remove_services), status[0]
-                )
-            )
-            add(
-                ItemClass(
-                    getString(R.string.add_service_details), status[1]
-                )
-            )
-            add(
-                ItemClass(
-                    "${getString(R.string.submit_)}\n${getString(R.string._request)}", status[2]
-                )
-            )
-            add(
-                ItemClass(
-                    "${getString(R.string.vendor_)}\n${getString(R.string._response)}", status[3]
-                )
-            )
-            add(
-                ItemClass(
-                    getString(R.string.servicing_in_progress), status[4]
-                )
-            )
-            add(
-                ItemClass(
-                    "",0,"${getString(R.string.closer_)}\n ${""}", LayoutTwo, status[5]
-                )
-            )
-        }
-        return itemClasses
-    }
 
     override fun getEventServiceInfo(listMyEvents: GetEventServiceDataDto) {
         Log.d(TAG, "getEventServiceInfo: $listMyEvents")
-      //  setEventStatus(listMyEvents.eventStatus, listMyEvents.eventTrackStatus)
+        setEventStatus(listMyEvents.eventStatus, listMyEvents.eventTrackStatus)
         listMyEvents.eventServiceDtos.forEach {
             if (!it.serviceDate.isNullOrEmpty()) {
                 val date = LocalDate.parse(it.serviceDate, formatter)
@@ -192,9 +146,9 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
 
     private fun setEventStatus(eventStatus: String, eventTrackStatus: String) {
         if (eventStatus == "NEW" || eventTrackStatus == "Add/Remove Services" || eventTrackStatus == "Order Details") {
-            mAdapterStatusDetails.refreshItems(setStatusFlowDetails(stepOne))
+            mAdapterStatusDetails.refreshItems(viewModel.setStatusFlowDetails(viewModel.stepOne))
         } else if (eventStatus == "PENDING ADMIN APPROVAL" && eventTrackStatus == "Admin Approval") {
-            mAdapterStatusDetails.refreshItems(setStatusFlowDetails(stepTwo))
+            mAdapterStatusDetails.refreshItems(viewModel.setStatusFlowDetails(viewModel.stepTwo))
         }
 
     }
@@ -224,7 +178,10 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
         intent.putExtra(AppConstant.EVENT_ID, sharedPrefsHelper[SharedPrefConstant.EVENT_ID, ""])
         intent.putExtra(AppConstant.SERVICE_CATEGORY_ID, listMyEvents.serviceCategoryId)
         intent.putExtra(AppConstant.EVENT_SERVICE_ID, listMyEvents.eventServiceId)
-        intent.putExtra(AppConstant.EVENT_SERVICE_DESCRIPTION_ID, listMyEvents.eventServiceDescriptionId)
+        intent.putExtra(
+            AppConstant.EVENT_SERVICE_DESCRIPTION_ID,
+            listMyEvents.eventServiceDescriptionId
+        )
         intent.putExtra(AppConstant.LEAD_PERIOD, listMyEvents.leadPeriod)
         startActivity(intent)
     }
