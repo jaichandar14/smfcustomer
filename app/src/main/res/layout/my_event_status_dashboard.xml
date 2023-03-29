@@ -6,7 +6,7 @@
     <data>
         <variable
             name="events_dashboard_view_model"
-            type="com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.EventsDashBoardViewModel" />
+            type="com.smf.customer.view.dashboard.fragment.serviceFragment.sharedviewmodel.EventsDashBoardViewModel" />
 
     </data>
 

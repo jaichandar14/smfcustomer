@@ -14,6 +14,7 @@ import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.databinding.ActivityDashBoardBinding
 import com.smf.customer.view.dashboard.fragment.MainDashBoardFragment
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.EventsDashBoardFragment
+import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.ServiceDetailDashboardFragment
 
 // 3262
 class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
@@ -79,6 +80,22 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
         transaction.replace(
             R.id.main_dashboard_ui,
             frag as EventsDashBoardFragment,
+            "Frag_Bottom_tag"
+        )
+        transaction.commit()
+    }
+    // 3438 service dashboard call
+    private fun serviceDetailsFragment() {
+        Log.d(TAG, "mainFragment:  called")
+        //frag = MainDashBoardFragment() //create the fragment instance for the middle fragment
+        frag = ServiceDetailDashboardFragment()
+        val manager: FragmentManager =
+            supportFragmentManager //create an instance of fragment manager
+        var transaction =
+            manager.beginTransaction() //create an instance of Fragment-transaction
+        transaction.replace(
+            R.id.main_dashboard_ui,
+            frag as ServiceDetailDashboardFragment,
             "Frag_Bottom_tag"
         )
         transaction.commit()
