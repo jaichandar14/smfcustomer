@@ -93,6 +93,9 @@ object SharedPrefConstant {
     val HOST_EMAIL: String
         get() = "hostEmail"
 
+    val EVENT_SELECTED_ANSWER_MAP: String
+        get() = "eventSelectedAnswerMap"
+
     // 3420
     val EVENT_ID: String
         get() = "Event Id"
@@ -129,4 +132,7 @@ object SharedPrefConstant {
 
     val LEAD_PERIOD: String
         get() = "leadPeriod"
+
+    val SERVICE_SELECTED_ANSWER_MAP: String
+        get() = "serviceSelectedAnswerMap"
 }

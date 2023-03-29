@@ -33,7 +33,6 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
     lateinit var binding: EventDetailsBinding
     private var picker: MaterialDatePicker<Long> = DatePicker.newInstance
     var currentCountryName = ""
-    var token = ""
 
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
@@ -353,7 +352,6 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
     }
 
     private fun setEditTextFilter() {
-//        binding.eventName.filters = arrayOf(Util.filterTextWithSpace())
         binding.city.filters = arrayOf(Util.filterText())
     }
 
@@ -374,13 +372,15 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
         }
     }
 
+    // For Update page title
     private fun updateSharedPrefValues() {
         sharedPrefsHelper.put(
             SharedPrefConstant.EVENT_TITLE,
-            intent.getStringExtra(AppConstant.TITLE) + " " + getString(R.string.event_Details)
+            intent.getStringExtra(AppConstant.TITLE).toString().replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+            } + " " + getString(R.string.event_Details)
         )
         intent.getStringExtra(AppConstant.TEMPLATE_ID)?.let {
-            Log.d(TAG, "updateSharedPrefValues: $it")
             sharedPrefsHelper.put(SharedPrefConstant.TEMPLATE_ID, it.toInt())
         }
     }
@@ -388,7 +388,6 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
     private fun setInitialUserDetails(from: String) {
         binding.pageTitleText.text = sharedPrefsHelper[SharedPrefConstant.EVENT_TITLE, ""]
         viewModel.templateId = sharedPrefsHelper[SharedPrefConstant.TEMPLATE_ID, 0]
-        token = sharedPrefsHelper[SharedPrefConstant.ACCESS_TOKEN, ""]
         if (from == getString(R.string.initial)) {
             viewModel.name.value =
                 sharedPrefsHelper[SharedPrefConstant.FIRST_NAME, ""] + " " + sharedPrefsHelper[SharedPrefConstant.LAST_NAME, ""]
@@ -420,7 +419,7 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
         viewModel.zipCode.value = sharedPrefsHelper[SharedPrefConstant.ZIPCODE, ""]
         // Update selected questions answers
         viewModel.eventSelectedAnswerMap =
-            intent.getSerializableExtra(AppConstant.SELECTED_ANSWER_MAP) as HashMap<Int, ArrayList<String>>
+            sharedPrefsHelper.getHashMap(SharedPrefConstant.EVENT_SELECTED_ANSWER_MAP) as HashMap<Int, ArrayList<String>>
         // Update questions button text
         if (viewModel.eventSelectedAnswerMap.isNotEmpty()) {
             viewModel.questionBtnText.value =

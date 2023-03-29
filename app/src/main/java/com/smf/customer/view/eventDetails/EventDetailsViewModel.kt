@@ -284,6 +284,9 @@ class EventDetailsViewModel : BaseViewModel() {
             sharedPrefsHelper.put(SharedPrefConstant.HOST_NUMBER, it.trim())
         }
         emailId.value?.let { sharedPrefsHelper.put(SharedPrefConstant.HOST_EMAIL, it.trim()) }
+        sharedPrefsHelper.putHashMap(
+            SharedPrefConstant.EVENT_SELECTED_ANSWER_MAP, eventSelectedAnswerMap
+        )
     }
 
     override fun onError(throwable: Throwable) {

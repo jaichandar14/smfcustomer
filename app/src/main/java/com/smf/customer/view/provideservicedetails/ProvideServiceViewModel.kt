@@ -161,6 +161,8 @@ class ProvideServiceViewModel : BaseViewModel() {
             }
             is EventInfoResponseDto -> {
                 Log.d(TAG, "onSuccess: post success called $responseDTO")
+                // Delete specific service details from shared preference
+                removeServiceSharedPreference()
                 callBackInterface?.onSaveClick()
             }
         }
@@ -218,6 +220,20 @@ class ProvideServiceViewModel : BaseViewModel() {
         )
         sharedPrefsHelper.put(SharedPrefConstant.SERVICE_ZIPCODE, zipCode.value?.trim() ?: "")
         sharedPrefsHelper.put(SharedPrefConstant.SERVICE_MILES, milePosition.value ?: 0)
+        sharedPrefsHelper.putHashMap(
+            SharedPrefConstant.SERVICE_SELECTED_ANSWER_MAP, eventSelectedAnswerMap
+        )
+    }
+
+    private fun removeServiceSharedPreference() {
+        sharedPrefsHelper.remove(SharedPrefConstant.SERVICE_DATE)
+        sharedPrefsHelper.remove(SharedPrefConstant.SELECTED_SLOT_POSITION_MAP)
+        sharedPrefsHelper.remove(SharedPrefConstant.ESTIMATED_BUDGET)
+        sharedPrefsHelper.remove(SharedPrefConstant.TOTAL_AMOUNT)
+        sharedPrefsHelper.remove(SharedPrefConstant.REMAINING_AMOUNT)
+        sharedPrefsHelper.remove(SharedPrefConstant.SERVICE_ZIPCODE)
+        sharedPrefsHelper.remove(SharedPrefConstant.SERVICE_MILES)
+        sharedPrefsHelper.remove(SharedPrefConstant.SERVICE_SELECTED_ANSWER_MAP)
     }
 
     fun verifyMandatoryQuesAnswered(

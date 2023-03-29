@@ -15,8 +15,11 @@ import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.data.model.dto.QuestionListItem
 import com.smf.customer.databinding.ActivityQuestionsBinding
+import com.smf.customer.di.sharedpreference.SharedPrefConstant
+import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.view.eventDetails.EventDetailsActivity
 import com.smf.customer.view.provideservicedetails.ProvideServiceDetailsActivity
+import javax.inject.Inject
 
 class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
     QuestionsAdapter.UpdateAnswerListener {
@@ -37,6 +40,9 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
     companion object {
         var pagination = 0
     }
+
+    @Inject
+    lateinit var sharedPrefsHelper: SharedPrefsHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -154,15 +160,23 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
 
     private fun backToDetailsPage() {
         if (fromActivity == AppConstant.EVENT_DETAILS_ACTIVITY) {
+            // Update selectedAnswerMap for event details page
+            sharedPrefsHelper.putHashMap(
+                SharedPrefConstant.EVENT_SELECTED_ANSWER_MAP,
+                viewModel.selectedAnswerMap
+            )
             Intent(this, EventDetailsActivity::class.java).apply {
                 this.putExtra(AppConstant.EVENT_QUESTIONS, AppConstant.EVENT_QUESTIONS)
-                this.putExtra(AppConstant.SELECTED_ANSWER_MAP, viewModel.selectedAnswerMap)
                 startActivity(this)
             }
         } else {
+            // Update selectedAnswerMap for service details page
+            sharedPrefsHelper.putHashMap(
+                SharedPrefConstant.SERVICE_SELECTED_ANSWER_MAP,
+                viewModel.selectedAnswerMap
+            )
             Intent(this, ProvideServiceDetailsActivity::class.java).apply {
                 this.putExtra(AppConstant.SERVICE_QUESTIONS, AppConstant.SERVICE_QUESTIONS)
-                this.putExtra(AppConstant.SELECTED_ANSWER_MAP, viewModel.selectedAnswerMap)
                 startActivity(this)
             }
         }

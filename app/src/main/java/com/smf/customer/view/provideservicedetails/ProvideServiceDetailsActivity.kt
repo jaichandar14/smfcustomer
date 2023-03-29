@@ -443,7 +443,7 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         viewModel.milePosition.value = sharedPrefsHelper[SharedPrefConstant.SERVICE_MILES, 0]
         // Update selected questions answers
         viewModel.eventSelectedAnswerMap =
-            intent.getSerializableExtra(AppConstant.SELECTED_ANSWER_MAP) as HashMap<Int, ArrayList<String>>
+            sharedPrefsHelper.getHashMap(SharedPrefConstant.SERVICE_SELECTED_ANSWER_MAP) as HashMap<Int, ArrayList<String>>
     }
 
     private fun editButtonVisibility() {
