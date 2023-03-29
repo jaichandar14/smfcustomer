@@ -134,10 +134,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:fontFamily="@font/mulish_regular"
-                    android:text="@string/sorry_you_cannot_add_this_as_service_date_it_needs_at_least_3_days_lead_period_from_current_date"
+                    android:text="@={provideServiceViewModel.serviceDateErrorText}"
                     android:textColor="@color/thumbs_down_red"
                     android:textSize="@dimen/_12ssp"
-                    android:visibility="@{provideServiceViewModel.eventDateErrorVisibility.booleanValue ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{provideServiceViewModel.serviceDateErrorVisibility.booleanValue ? View.VISIBLE : View.GONE}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -170,6 +170,22 @@
                     app:layout_constraintVertical_bias="0.0"
                     tools:listitem="@layout/radio_btn_list_item" />
 
+                <TextView
+                    android:id="@+id/time_slot_error_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="@font/mulish_regular"
+                    android:text="@string/slot_is_required"
+                    android:textColor="@color/thumbs_down_red"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="@{provideServiceViewModel.timeSlotErrorVisibility.booleanValue ? View.VISIBLE : View.GONE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/slots_recycler_view"
+                    app:layout_constraintVertical_bias="0.0" />
+
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/estimated_budget_layout"
                     android:layout_width="match_parent"
@@ -180,7 +196,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/slots_recycler_view"
+                    app:layout_constraintTop_toBottomOf="@+id/time_slot_error_text"
                     app:layout_constraintVertical_bias="0.0">
 
                     <TextView
@@ -511,7 +527,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/button_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_23sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -522,8 +538,9 @@
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/cancel_btn"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/_35sdp"
+                        android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/_8sdp"
+                        android:background="@drawable/custom_button_corner_ok_fade"
                         android:fontFamily="@font/mulish_bold"
                         android:onClick="@{() -> provideServiceViewModel.onClickCancelBtn()}"
                         android:text="@string/cancel"
@@ -538,8 +555,9 @@
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/save_btn"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/_35sdp"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_8sdp"
+                        android:background="@drawable/custom_button_corner_ok_fade"
                         android:fontFamily="@font/mulish_bold"
                         android:onClick="@{() -> provideServiceViewModel.onClickSaveBtn()}"
                         android:text="@string/save"

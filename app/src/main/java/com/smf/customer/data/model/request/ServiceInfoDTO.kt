@@ -1,5 +1,7 @@
 package com.smf.customer.data.model.request
 
+import java.math.BigDecimal
+
 data class ServiceInfoDTO(
     val eventServiceDescriptionDto: EventServiceDescriptionDto,
     val eventServiceId: Int,
@@ -45,7 +47,7 @@ data class EventServiceDescriptionDto(
 )
 
 data class EventServiceDateDto(
-    val biddingCutOffDate: Any,
+    val biddingCutOffDate: Any?,
     val leadPeriod: Int,
     val preferredSlots: List<String>,
     val serviceDate: String
@@ -53,5 +55,5 @@ data class EventServiceDateDto(
 
 data class EventServiceBudgetDto(
     val currencyType: String,
-    val estimatedBudget: Int
+    val estimatedBudget: BigDecimal
 )

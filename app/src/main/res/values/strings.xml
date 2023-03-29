@@ -87,6 +87,9 @@
         <item>GBP(\u00a3)</item>
         <item>INR(\u20B9)</item>
     </string-array>
+    <string name="USD">USD($)</string>
+    <string name="GBP">GBP(\u00a3)</string>
+    <string name="INR">INR(\u20B9)</string>
     <string name="show_event_questions_dialog">showEventQuestionsDialog</string>
     <string name="birthday_event_details">Birthday Event Details</string>
     <string name="event">Event</string>
@@ -207,8 +210,9 @@
     // 3421
     <string name="set_date">Set date</string>
     <string name="set_service_date">Set service date</string>
-    <string name="sorry_you_cannot_add_this_as_service_date_it_needs_at_least_3_days_lead_period_from_current_date">
-        Sorry you cannot add this as service date it needs at least 3 days lead period from current date.</string>
+    <string name="sorry_you_cannot_add_this_as_service_date_it_needs_at_least_">Sorry you cannot add this as service date it needs at least</string>
+    <string name="days_lead_period_from_current_date">days lead period from current date.</string>
+    <string name="slot_is_required">Slot is required</string>
     <string name="choose_your_preferred_slots_for_service">Choose your preferred slots for service</string>
     <string name="estimated_budget">Estimated budget</string>
     <string name="estimated_budget_required">Estimated budget required</string>
