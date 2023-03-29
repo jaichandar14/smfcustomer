@@ -7,17 +7,21 @@ import com.smf.customer.app.base.BaseViewModel
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.data.model.dto.QuestionListItem
-import com.smf.customer.data.model.request.ServiceInfoDTO
+import com.smf.customer.data.model.request.*
 import com.smf.customer.data.model.response.*
+import com.smf.customer.data.model.response.QuestionnaireDto
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import io.reactivex.Observable
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class ProvideServiceViewModel : BaseViewModel() {
     var mileList = ArrayList<String>()
     var milePosition = MutableLiveData(0)
     var serviceDate = MutableLiveData<String>()
+    var serviceDateErrorText = MutableLiveData("")
     var estimatedBudget = MutableLiveData<String>(null)
     var estimatedBudgetSymbol = MutableLiveData<String>("$")
     var totalAmount = MutableLiveData<String>("")
@@ -34,7 +38,8 @@ class ProvideServiceViewModel : BaseViewModel() {
     var remainingAmountVisibility = MutableLiveData<Boolean>(false)
 
     // Variables for error message visibility
-    var eventDateErrorVisibility = MutableLiveData<Boolean>(false)
+    var serviceDateErrorVisibility = MutableLiveData<Boolean>(false)
+    var timeSlotErrorVisibility = MutableLiveData<Boolean>(false)
     var amountErrorVisibility = MutableLiveData<Boolean>(false)
     var zipCodeErrorVisibility = MutableLiveData<Boolean>(false)
 
@@ -60,6 +65,24 @@ class ProvideServiceViewModel : BaseViewModel() {
         // Update CurrencyType ArrayList
         mileList = MyApplication.appContext.resources.getStringArray(R.array.mile_distance)
             .toList() as ArrayList<String>
+        setCurrencyType()
+    }
+
+    private fun setCurrencyType() {
+        val currencyTypeList =
+            MyApplication.appContext.resources.getStringArray(R.array.currency_type)
+                .toList() as ArrayList<String>
+        when (currencyTypeList[sharedPrefsHelper[SharedPrefConstant.CURRENCY_TYPE, 0]]) {
+            MyApplication.appContext.resources.getString(R.string.USD) -> {
+                estimatedBudgetSymbol.value = "$"
+            }
+            MyApplication.appContext.resources.getString(R.string.GBP) -> {
+                estimatedBudgetSymbol.value = "£"
+            }
+            MyApplication.appContext.resources.getString(R.string.INR) -> {
+                estimatedBudgetSymbol.value = "₹"
+            }
+        }
     }
 
     fun getServiceSlots() {
@@ -108,7 +131,7 @@ class ProvideServiceViewModel : BaseViewModel() {
         doNetworkOperation()
     }
 
-    fun postServiceDescription(serviceInfo: ServiceInfoDTO) {
+    private fun postServiceDescription(serviceInfo: ServiceInfoDTO) {
         val observable: Observable<EventInfoResponseDto> =
             retrofitHelper.getServiceRepository()
                 .postServiceDescription(getUserToken(), serviceInfo)
@@ -138,6 +161,7 @@ class ProvideServiceViewModel : BaseViewModel() {
             }
             is EventInfoResponseDto -> {
                 Log.d(TAG, "onSuccess: post success called $responseDTO")
+                callBackInterface?.onSaveClick()
             }
         }
     }
@@ -157,15 +181,24 @@ class ProvideServiceViewModel : BaseViewModel() {
     }
 
     fun onClickSaveBtn() {
-        //    TODO post API call implementation
-//        createServiceInfoDto()
-//        if (!zipCode.value.isNullOrEmpty() && !estimatedBudget.value.isNullOrEmpty() &&
-//            eventDateErrorVisibility.value == false
-//        ) {
-//            callBackInterface?.onSaveClick()
-//        } else {
-//            showError()
-//        }
+        // Verify all mandatory questions answered before submit
+        if (verifyMandatoryQuesAnswered(questionListItem, eventSelectedAnswerMap)) {
+            if (userDetailsValidation()) {
+                postServiceDescription(createServiceInfoDto())
+            } else {
+                showError()
+            }
+        } else {
+            showToastMessage(MyApplication.appContext.resources.getString(R.string.please_answer_all_mandatory_questions))
+        }
+    }
+
+    fun userDetailsValidation(): Boolean {
+        return (serviceDate.value.isNullOrEmpty().not() &&
+                serviceDate.value?.let { leadPeriodVerification(it) } == true &&
+                selectedSlotsPositionMap.isEmpty().not()
+                && estimatedBudget.value.isNullOrEmpty().not() &&
+                zipCode.value.isNullOrEmpty().not())
     }
 
     private fun setServiceSharedPreference() {
@@ -187,18 +220,36 @@ class ProvideServiceViewModel : BaseViewModel() {
         sharedPrefsHelper.put(SharedPrefConstant.SERVICE_MILES, milePosition.value ?: 0)
     }
 
+    fun verifyMandatoryQuesAnswered(
+        questionListItem: ArrayList<QuestionListItem>,
+        eventSelectedAnswerMap: HashMap<Int, ArrayList<String>>
+    ): Boolean {
+        return if (questionListItem.isNotEmpty()) {
+            val mandatoryQuesIndexList = ArrayList<Int>().apply {
+                questionListItem.filter { it.isMandatory }.forEach {
+                    add(questionListItem.indexOf(it))
+                }
+            }
+            // Verify all mandatory questions are answered
+            eventSelectedAnswerMap.keys.containsAll(mandatoryQuesIndexList)
+        } else {
+            true
+        }
+    }
+
     private fun showError() {
-        if (zipCode.value.isNullOrEmpty()) {
-            zipCodeErrorVisibility.value = true
+        if (serviceDate.value.isNullOrEmpty()) {
+            setServiceDateErrorText(MyApplication.appContext.resources.getString(R.string.please_select_valid_date))
+            showServiceDateError()
+        }
+        if (selectedSlotsPositionMap.isEmpty()) {
+            showTimeSlotError()
         }
         if (estimatedBudget.value.isNullOrEmpty()) {
-            amountErrorVisibility.value = true
+            showAmountErrorText(MyApplication.appContext.resources.getString(R.string.please_enter_the_valid_))
         }
-        if (eventDateErrorVisibility.value == true) {
-            showToastMessage(
-                MyApplication.appContext
-                    .resources.getString(R.string.please_select_valid_date)
-            )
+        if (zipCode.value.isNullOrEmpty()) {
+            showZipCodeError()
         }
     }
 
@@ -250,16 +301,120 @@ class ProvideServiceViewModel : BaseViewModel() {
         provideSummaryTxtVisibility.value = false
     }
 
-//    TODO post API call implementation after user details validation
-//    fun createServiceInfoDto(): ServiceInfoDTO{
-//        val eventId: Int = 0
-//        val eventMetaDataDto = createEventMetaDataDto()
-//        val eventOrganizerId: String = sharedPrefsHelper[SharedPrefConstant.USER_ID, ""]
-//        val eventQuestionMetaDataDto = createEventQuestionMetaDataDto()
-//        val eventTypeId: Int = templateId!!
-//        val id: String = ""
-//        return ServiceInfoDTO()
-//    }
+    fun setServiceDateErrorText(message: String) {
+        serviceDateErrorText.value = message
+    }
+
+    fun showServiceDateError() {
+        serviceDateErrorVisibility.value = true
+    }
+
+    fun hideServiceDateError() {
+        serviceDateErrorVisibility.value = false
+    }
+
+    private fun showTimeSlotError() {
+        timeSlotErrorVisibility.value = true
+    }
+
+    fun hideTimeSlotError() {
+        timeSlotErrorVisibility.value = false
+    }
+
+    private fun showZipCodeError() {
+        zipCodeErrorVisibility.value = true
+    }
+
+    fun hideZipCodeError() {
+        zipCodeErrorVisibility.value = false
+    }
+
+    // Lead period verification
+    fun leadPeriodVerification(dateString: String): Boolean {
+        val formatter = DateTimeFormatter.ofPattern(AppConstant.DATE_FORMAT)
+        val date = LocalDate.parse(dateString, formatter)
+        val leadPeriod = sharedPrefsHelper[SharedPrefConstant.LEAD_PERIOD, "0"].toLong()
+        return LocalDate.now().plusDays(leadPeriod) < date
+    }
+
+    private fun createServiceInfoDto(): ServiceInfoDTO {
+        val eventServiceDescriptionDto = createEventServiceDescriptionDto()
+        val eventServiceId = sharedPrefsHelper[SharedPrefConstant.EVENT_SERVICE_ID, "0"].toInt()
+        val questionnaireWrapperDto = QuestionnaireWrapperDto(
+            eventQuestionsResponseDTO.value?.data?.noOfEventOrganizers ?: 0,
+            eventQuestionsResponseDTO.value?.data?.noOfVendors ?: 0,
+            createQuestionnaireDtoService()
+        )
+        return ServiceInfoDTO(eventServiceDescriptionDto, eventServiceId, questionnaireWrapperDto)
+    }
+
+    private fun createEventServiceDescriptionDto(): EventServiceDescriptionDto {
+        val eventServiceBudgetDto =
+            EventServiceBudgetDto(
+                estimatedBudgetSymbol.value ?: "$",
+                estimatedBudget.value?.toBigDecimal() ?: "0".toBigDecimal()
+            )
+        val eventServiceDateDto = createEventServiceDateDto()
+        val eventServiceVenueDto =
+            EventServiceVenueDto(mileList[milePosition.value ?: 0], zipCode.value!!)
+        return EventServiceDescriptionDto(
+            eventServiceBudgetDto,
+            eventServiceDateDto,
+            eventServiceVenueDto
+        )
+    }
+
+    private fun createEventServiceDateDto(): EventServiceDateDto {
+        val preferredSlots = ArrayList<String>()
+        selectedSlotsPositionMap.keys.forEach {
+            if (selectedSlotsPositionMap[it] == true) {
+                timeSlotList.value?.let { it1 -> preferredSlots.add(it1[it]) }
+            }
+        }
+        return EventServiceDateDto(
+            null, sharedPrefsHelper[SharedPrefConstant.LEAD_PERIOD, "0"].toInt(),
+            preferredSlots,
+            serviceDate.value!!
+        )
+    }
+
+    private fun createQuestionnaireDtoService(): List<QuestionnaireDtoService> {
+        val questionnaireDtoServiceList = ArrayList<QuestionnaireDtoService>()
+        eventQuestionsResponseDTO.value?.data?.questionnaireDtos?.forEach {
+            val qusNumber = eventQuestionsResponseDTO.value!!.data.questionnaireDtos.indexOf(it)
+            val answer = eventSelectedAnswerMap[qusNumber]
+            questionnaireDtoServiceList.add(
+                QuestionnaireDtoService(
+                    it.active,
+                    answer ?: ArrayList(),
+                    it.eventTemplateId,
+                    it.id,
+                    "Q${qusNumber + 1} - ${it.questionMetadata.question}",
+                    createQuestionMetadataService(qusNumber, it),
+                    sharedPrefsHelper[SharedPrefConstant.SERVICE_CATEGORY_ID, "0"].toInt()
+                )
+            )
+
+        }
+        return questionnaireDtoServiceList
+    }
+
+    private fun createQuestionMetadataService(
+        qusNumber: Int,
+        questionnaireDto: QuestionnaireDto
+    ): QuestionMetadataService {
+        val answer = eventSelectedAnswerMap[qusNumber]
+        return QuestionMetadataService(
+            answer?.joinToString() ?: "",
+            questionnaireDto.questionMetadata.choices,
+            questionnaireDto.questionMetadata.eventOrganizer,
+            questionnaireDto.questionMetadata.filter,
+            questionnaireDto.questionMetadata.isMandatory,
+            questionnaireDto.questionMetadata.question,
+            questionnaireDto.questionMetadata.questionType,
+            questionnaireDto.questionMetadata.vendor
+        )
+    }
 
     private var callBackInterface: CallBackInterface? = null
 
