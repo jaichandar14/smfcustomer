@@ -52,7 +52,7 @@ constructor(private val mSharedPreferences: SharedPreferences) {
         editor.apply()
     }
 
-    fun getHashMap(key: String): HashMap<Int, Any> {
+    fun getHashMap(key: String): HashMap<Int, Any>? {
         val gson = Gson()
         val json = mSharedPreferences.getString(key, "")
         val type: Type = object : TypeToken<HashMap<Int, Any>>() {}.type
