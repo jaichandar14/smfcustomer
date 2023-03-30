@@ -3,6 +3,8 @@ package com.smf.customer.di
 import com.smf.customer.di.retrofit.NetworkModule
 import com.smf.customer.di.sharedpreference.SharedPreferencesModule
 import com.smf.customer.utility.Tokens
+import com.smf.customer.view.addServices.AddServiceActivity
+import com.smf.customer.view.addServices.AddServiceViewModel
 import com.smf.customer.view.dashboard.DashBoardActivity
 import com.smf.customer.view.dashboard.DashBoardViewModel
 import com.smf.customer.view.dashboard.fragment.MainDashBoardFragment
@@ -53,4 +55,6 @@ interface AppComponent {
     fun inject(token: Tokens)
     fun inject(eventDetailsAdaptor: EventDetailsAdaptor)
     fun inject(serviceDetailDashboardFragment: ServiceDetailDashboardFragment)
+    fun inject(activity: AddServiceActivity)
+    fun inject(viewModel: AddServiceViewModel)
 }

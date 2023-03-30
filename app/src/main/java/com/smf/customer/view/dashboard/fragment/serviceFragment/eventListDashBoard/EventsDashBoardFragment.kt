@@ -21,6 +21,7 @@ import com.smf.customer.data.model.response.GetEventServiceDataDto
 import com.smf.customer.databinding.FragmentEventsDashBoardBinding
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
+import com.smf.customer.view.addServices.AddServiceActivity
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.adaptor.EventDetailsAdaptor
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.adaptor.StatusDetailsAdaptor
 import com.smf.customer.view.dashboard.fragment.serviceFragment.sharedviewmodel.EventsDashBoardViewModel
@@ -73,7 +74,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
         // 3426 Initialize data in Ui
         setEventServiceDetails()
         mDataBinding.addServiceIcon.setOnClickListener {
-            val intent = Intent(requireActivity(), ProvideServiceDetailsActivity::class.java)
+            val intent = Intent(requireActivity(), AddServiceActivity::class.java)
             startActivity(intent)
         }
         onClickViewDetails()

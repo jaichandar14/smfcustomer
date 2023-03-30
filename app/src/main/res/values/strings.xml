@@ -251,4 +251,5 @@
     <string name="time_left">Time left</string>
     <string name="_4_days">4 days</string>
     <string name="preferred_slots">Preferred slots</string>
+    <string name="data">data</string>
 </resources>

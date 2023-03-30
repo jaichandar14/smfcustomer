@@ -5,6 +5,7 @@ import com.smf.customer.data.model.request.EventInfoDTO
 import com.smf.customer.data.model.response.EventInfoResponseDto
 import com.smf.customer.data.model.response.EventQuestionsResponseDTO
 import com.smf.customer.data.model.response.GetEventInfo
+import com.smf.customer.data.model.response.GetServicesDTO
 import com.smf.customer.view.myevents.model.MyEventsDto
 import io.reactivex.Observable
 import javax.inject.Inject
@@ -35,5 +36,9 @@ class EventRepositoryImpl @Inject constructor(eventService: EventService) : Even
         eventId: Int
     ): Observable<GetEventInfo> {
         return mEventService.getEventInfo(idToken, eventId).doOnNext {}
+    }
+
+    override fun getAddServices(idToken: String, eventId: Int): Observable<GetServicesDTO> {
+        return mEventService.getAddServices(idToken, eventId)
     }
 }
