@@ -1,5 +1,6 @@
 package com.smf.customer.view.addServices
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.databinding.DataBindingUtil
@@ -10,13 +11,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseActivity
 import com.smf.customer.app.base.MyApplication
+import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.databinding.ActivityAddServiceBinding
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.view.addServices.adapter.AddServiceAdapter
+import com.smf.customer.view.dashboard.DashBoardActivity
 import javax.inject.Inject
 
 class AddServiceActivity : BaseActivity<AddServiceViewModel>(),
-    AddServiceAdapter.ServiceClickListener {
+    AddServiceViewModel.CallBackInterface, AddServiceAdapter.ServiceClickListener {
 
     lateinit var binding: ActivityAddServiceBinding
     lateinit var serviceRecycler: RecyclerView
@@ -33,6 +36,7 @@ class AddServiceActivity : BaseActivity<AddServiceViewModel>(),
         binding.addServiceViewModel = viewModel
         binding.lifecycleOwner = this@AddServiceActivity
         MyApplication.applicationComponent?.inject(this)
+        viewModel.setCallBackInterface(this)
 
         init()
     }
@@ -55,14 +59,10 @@ class AddServiceActivity : BaseActivity<AddServiceViewModel>(),
         serviceRecycler.adapter = addServiceAdapter
         addServiceAdapter.setOnClickListener(this)
         // API call for services list
-        viewModel.getAddServices(187)
+        viewModel.getAddServices()
         // Observer for update services to UI
         viewModel.servicesList.observe(this, Observer {
-            addServiceAdapter.updateServicesList(
-                it,
-                viewModel.selectedServicePositionMap,
-                viewModel.preSelectedServices
-            )
+            addServiceAdapter.updateServicesList(it, viewModel.selectedServices)
         })
     }
 
@@ -71,29 +71,31 @@ class AddServiceActivity : BaseActivity<AddServiceViewModel>(),
             finish()
         }
         binding.saveBtn.setOnClickListener {
+            viewModel.postAddServices()
+        }
+    }
 
+    override fun onClickSaveService() {
+        Intent(this, DashBoardActivity::class.java).apply {
+            putExtra(AppConstant.ON_EVENT, AppConstant.ON_EVENT)
+            startActivity(this)
         }
     }
 
     override fun onServiceClicked(listPosition: Int, status: Boolean) {
-        Log.d(TAG, "onServiceClicked: $listPosition $status")
         // Update and remove time slots based on user selection
         if (status) {
-            // Update selected time slots
-            viewModel.selectedServicePositionMap[listPosition] = true
-        } else {
-            viewModel.selectedServicePositionMap.remove(listPosition)
+            viewModel.servicesList.value?.get(listPosition)?.serviceName?.let {
+                viewModel.selectedServices.add(it)
+            }
         }
     }
 
     private fun setInitialDetails() {
-        // TODO Next task
-        // list of services in previous page
-//        viewModel.selectedServicePositionMap[1] = true
-//        viewModel.selectedServicePositionMap[5] = true
-        viewModel.preSelectedServices.add("De Papel fixed")
-        viewModel.preSelectedServices.add("Venue")
-        // id - get api call
+        viewModel.eventId = intent.getIntExtra(AppConstant.EVENT_ID, 0)
+        viewModel.eventTemplateId = intent.getIntExtra(AppConstant.TEMPLATE_ID, 0)
+        viewModel.selectedServices =
+            intent.getStringArrayListExtra(AppConstant.SERVICE_NAME_LIST) as ArrayList<String>
     }
 
 }

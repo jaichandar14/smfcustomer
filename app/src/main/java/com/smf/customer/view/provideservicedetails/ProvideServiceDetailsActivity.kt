@@ -30,6 +30,7 @@ import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.dialog.DialogConstant
 import com.smf.customer.dialog.TwoButtonDialogFragment
 import com.smf.customer.listener.DialogTwoButtonListener
+import com.smf.customer.view.dashboard.DashBoardActivity
 import com.smf.customer.view.provideservicedetails.adapter.TimeSlotsAdapter
 import com.smf.customer.view.questions.QuestionsActivity
 import java.math.BigDecimal
@@ -80,6 +81,8 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         setTimeSlotsRecycler()
         // Event date edittext Listener
         dateOnClickListeners()
+        // Save and cancel Listener
+        clickListeners()
         // estimatedBudget edittext focus Listener
         estimatedBudgetFocusListener()
         // Initialize Mile Distance
@@ -131,6 +134,21 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         }
     }
 
+    private fun clickListeners() {
+        binding.cancelBtn.setOnClickListener {
+            finish()
+        }
+
+        binding.saveBtn.setOnClickListener {
+            if (binding.estimatedBudget.isFocused) {
+                binding.estimatedBudget.clearFocus()
+                return@setOnClickListener
+            } else {
+                viewModel.onClickSaveBtn()
+            }
+        }
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     private fun initializeMileDistance() {
         val arrayAdapterMile = ArrayAdapter(
@@ -151,12 +169,10 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
     }
 
     override fun onSaveClick() {
-//       TODO Next - Move to next screen
-        Log.d(TAG, "onSaveClick: called")
-    }
-
-    override fun onCancelClick() {
-//    TODO Next - Move to previous screen
+        Intent(this, DashBoardActivity::class.java).apply {
+            this.putExtra(AppConstant.ON_EVENT, AppConstant.ON_EVENT)
+            startActivity(this)
+        }
     }
 
     override fun onClickQuestionsBtn(from: String) {
@@ -209,6 +225,8 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
                 if (it.isNotEmpty() && viewModel.amountErrorVisibility.value == true) {
                     viewModel.hideAmountErrorText()
                 }
+                // Update submit button background color
+                submitBtnColorVisibility()
             }
         })
 
@@ -402,7 +420,7 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
     }
 
     private fun setInitialValues() {
-        if (intent.extras?.get(AppConstant.SERVICE_QUESTIONS) != AppConstant.SERVICE_QUESTIONS) {
+        if (intent.extras?.getString(AppConstant.SERVICE_QUESTIONS) != AppConstant.SERVICE_QUESTIONS) {
             sharedPrefsHelper.put(
                 SharedPrefConstant.EVENT_SERVICE_ID,
                 intent.getStringExtra(AppConstant.EVENT_SERVICE_ID) ?: "0"

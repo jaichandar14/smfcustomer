@@ -178,10 +178,6 @@ class ProvideServiceViewModel : BaseViewModel() {
         callBackInterface?.onClickQuestionsBtn(AppConstant.EDIT_BUTTON)
     }
 
-    fun onClickCancelBtn() {
-        callBackInterface?.onCancelClick()
-    }
-
     fun onClickSaveBtn() {
         // Verify all mandatory questions answered before submit
         if (verifyMandatoryQuesAnswered(questionListItem, eventSelectedAnswerMap)) {
@@ -198,7 +194,11 @@ class ProvideServiceViewModel : BaseViewModel() {
     fun userDetailsValidation(): Boolean {
         return (serviceDate.value.isNullOrEmpty().not() &&
                 serviceDate.value?.let { leadPeriodVerification(it) } == true &&
-                selectedSlotsPositionMap.isEmpty().not()
+                if (timeSlotList.value?.isNotEmpty() == true) {
+                    selectedSlotsPositionMap.isEmpty().not()
+                } else {
+                    true
+                }
                 && estimatedBudget.value.isNullOrEmpty().not() &&
                 zipCode.value.isNullOrEmpty().not())
     }
@@ -442,7 +442,6 @@ class ProvideServiceViewModel : BaseViewModel() {
     // CallBack Interface
     interface CallBackInterface {
         fun onSaveClick()
-        fun onCancelClick()
         fun onClickQuestionsBtn(from: String)
     }
 }
