@@ -52,13 +52,7 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
         // Method For Fixing xml views and Values
         fun onBind(myEvents: EventServiceInfoDTO) {
             //  titleText.text = myEvents.title
-            if (myEvents.eventServiceStatus == AppConstant.NEW) {
-                binding.statusTxt.visibility = View.VISIBLE
-                binding.btnStartService.visibility = View.INVISIBLE
-            }else{
-                binding.statusTxt.visibility = View.INVISIBLE
-                binding.btnStartService.visibility = View.VISIBLE
-            }
+            binding.status = myEvents.eventServiceStatus == AppConstant.NEW
             binding.details = myEvents
             binding.progressBar.progress = myEvents.leadPeriod.toInt() * 10
             binding.eventNameTxt.text = sharedPrefsHelper[SharedPrefConstant.EVENT_NAME, ""]

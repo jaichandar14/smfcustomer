@@ -5,10 +5,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <import type="android.view.View" />
         <variable
             name="details"
             type="com.smf.customer.view.dashboard.model.EventServiceInfoDTO" />
+        <variable
+            name="status"
+            type="java.lang.Boolean" />
+
     </data>
 
     <androidx.cardview.widget.CardView
@@ -197,6 +201,7 @@
                 app:layout_constraintVertical_bias="0.0" />
 
             <TextView
+                app:visibility="@{ status.booleanValue ? View.VISIBLE : View.GONE}"
                 android:visibility="invisible"
                 android:id="@+id/status_txt"
                 android:layout_width="wrap_content"
@@ -219,6 +224,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/service_date"
                 app:layout_constraintVertical_bias="0.437"/>
             <androidx.appcompat.widget.AppCompatButton
+                app:visibility="@{ status.booleanValue ? View.GONE : View.VISIBLE}"
                 android:id="@+id/btn_start_service"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/_25sdp"

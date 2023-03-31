@@ -80,7 +80,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
         setEventServiceDetails()
         mDataBinding.addServiceIcon.setOnClickListener {
             val intent = Intent(requireActivity(), AddServiceActivity::class.java)
-            intent.putExtra(AppConstant.SERVICE_NAME_LIST, servicesName)
+            intent.putStringArrayListExtra(AppConstant.SERVICE_NAME_LIST, servicesName)
             intent.putExtra(
                 AppConstant.EVENT_ID,
                 sharedPrefsHelper[SharedPrefConstant.EVENT_NAME, ""]
@@ -226,7 +226,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
                 it.leadPeriod,
                 it.eventServiceDescriptionId,
                 it.eventServiceStatus,
-                sharedPrefsHelper[SharedPrefConstant.EVENT_NAME, ""]
+                sharedPrefsHelper[SharedPrefConstant.EVENT_NAME, ""],
             )
         )
     }
@@ -238,22 +238,28 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
 
     // 3426 service event details on click provide details button
     override fun onClickProvideDetails(listMyEvents: EventServiceInfoDTO) {
-        val intent = Intent(requireActivity(), ProvideServiceDetailsActivity::class.java)
-        intent.putExtra(AppConstant.EVENT_ID, sharedPrefsHelper[SharedPrefConstant.EVENT_ID, ""])
-        intent.putExtra(AppConstant.SERVICE_CATEGORY_ID, listMyEvents.serviceCategoryId)
-        intent.putExtra(AppConstant.EVENT_SERVICE_ID, listMyEvents.eventServiceId)
-        intent.putExtra(
-            AppConstant.EVENT_SERVICE_DESCRIPTION_ID,
-            listMyEvents.eventServiceDescriptionId
-        )
-        intent.putExtra(AppConstant.LEAD_PERIOD, listMyEvents.leadPeriod)
-        startActivity(intent)
+         Intent(requireActivity(), ProvideServiceDetailsActivity::class.java).apply {
+             this.putExtra(
+                 AppConstant.EVENT_ID,
+                 sharedPrefsHelper[SharedPrefConstant.EVENT_ID, ""]
+             )
+             this.putExtra(AppConstant.SERVICE_CATEGORY_ID, listMyEvents.serviceCategoryId)
+             this.putExtra(AppConstant.EVENT_SERVICE_ID, listMyEvents.eventServiceId)
+             this.putExtra(
+                 AppConstant.EVENT_SERVICE_DESCRIPTION_ID,
+                 listMyEvents.eventServiceDescriptionId
+             )
+             this.putExtra(AppConstant.LEAD_PERIOD, listMyEvents.leadPeriod)
+             startActivity(this)
+         }
     }
 
     override fun onPositiveClick(dialogFragment: DialogFragment) {
         super.onPositiveClick(dialogFragment)
-        val intent = Intent(requireActivity(), DashBoardActivity::class.java)
-        intent.putExtra(AppConstant.ON_EVENT, AppConstant.ON_EVENT)
-        startActivity(intent)
+        Intent(requireActivity(), DashBoardActivity::class.java).apply {
+            this.putExtra(AppConstant.ON_EVENT, AppConstant.ON_EVENT)
+            startActivity(this)
+        }
+
     }
 }
