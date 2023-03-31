@@ -4,23 +4,27 @@ import com.smf.customer.R
 import com.smf.customer.app.base.BaseDashboardViewModel
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
-import com.smf.customer.data.model.response.GetEventInfo
-import com.smf.customer.data.model.response.GetEventServiceDataDto
-import com.smf.customer.data.model.response.GetEventServiceInfo
-import com.smf.customer.data.model.response.ResponseDTO
-import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.EventsDashBoardFragment
+import com.smf.customer.data.model.response.*
+import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.model.ItemClass
 import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.expandablelist.ChildData
 import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.expandablelist.ParentData
 import io.reactivex.Observable
+import javax.inject.Inject
 
 class EventsDashBoardViewModel : BaseDashboardViewModel() {
 
     private val itemClasses: MutableList<ItemClass> = ArrayList()
     val listData: MutableList<ParentData> = ArrayList()
 
+    @Inject
+    lateinit var sharedPrefsHelper: SharedPrefsHelper
+    var countApi: Int = 1
+    private var eventTrackStatus: String? = null
+
     init {
         MyApplication.applicationComponent?.inject(this)
+        countApi = 1
     }
 
     val LayoutTwo = 1
@@ -42,6 +46,22 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
         doNetworkOperation()
     }
 
+    fun sendForApproval(eventId: Int) {
+        val observable: Observable<EventInfoResponseDto> =
+            retrofitHelper.getDashBoardRepository()
+                .sendForApproval((getUserToken()), eventId, "undefined")
+        this.observable.value = observable as Observable<ResponseDTO>
+        doNetworkOperation()
+    }
+
+    fun sendEventTrackStatus(eventId: Int, eventTrackStatus: String) {
+        val observable: Observable<ServiceInfoResponse> =
+            retrofitHelper.getDashBoardRepository()
+                .sendEventTrackStatus((getUserToken()), eventId, eventTrackStatus)
+        this.observable.value = observable as Observable<ResponseDTO>
+        doNetworkOperation()
+    }
+
     override fun onSuccess(responseDTO: ResponseDTO) {
         super.onSuccess(responseDTO)
         when (responseDTO) {
@@ -50,10 +70,20 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
             }
             is GetEventServiceInfo -> {
                 var response = responseDTO.data
+                eventTrackStatus = response.eventTrackStatus
                 callBackInterface?.getEventServiceInfo(response)
             }
+            is EventInfoResponseDto -> {
+                var response = responseDTO.data
+                callBackInterface?.sendForApproval()
+            }
+            is ServiceInfoResponse -> {
+                callBackInterface?.sendForTrackStatus()
+            }
         }
+
     }
+
 
     fun setStatusFlowDetails(status: ArrayList<Int>): MutableList<ItemClass> {
 
@@ -110,7 +140,11 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
     fun setBiddingDetails(): MutableList<ParentData> {
 
         val parentData: Array<String> =
-            arrayOf(AppConstant.BIDDING_RESPONSE,AppConstant.PAYMENT ,AppConstant.REVIEW_AND_FEEDBACK )
+            arrayOf(
+                AppConstant.BIDDING_RESPONSE,
+                AppConstant.PAYMENT,
+                AppConstant.REVIEW_AND_FEEDBACK
+            )
 
         // 3438 Currently using manual data
         val childDataData1: MutableList<ChildData> = mutableListOf(
@@ -143,6 +177,8 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
     // Interface For Invoice Click Listener
     interface OnServiceClickListener {
         fun getEventServiceInfo(listMyEvents: GetEventServiceDataDto)
+        fun sendForApproval()
+        fun sendForTrackStatus()
     }
 
 }

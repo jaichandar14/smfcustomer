@@ -3,9 +3,11 @@ package com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBo
 import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.smf.customer.app.base.MyApplication
+import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.databinding.DetailscardviewBinding
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
@@ -50,7 +52,9 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
         // Method For Fixing xml views and Values
         fun onBind(myEvents: EventServiceInfoDTO) {
             //  titleText.text = myEvents.title
+            binding.status = myEvents.eventServiceStatus == AppConstant.NEW
             binding.details = myEvents
+            binding.progressBar.progress = myEvents.leadPeriod.toInt() * 10
             binding.eventNameTxt.text = sharedPrefsHelper[SharedPrefConstant.EVENT_NAME, ""]
             binding.btnStartService.setOnClickListener {
                 callBackInterface?.onClickProvideDetails(myEvents)

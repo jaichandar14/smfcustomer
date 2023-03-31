@@ -252,4 +252,9 @@
     <string name="_4_days">4 days</string>
     <string name="preferred_slots">Preferred slots</string>
     <string name="data">data</string>
+    <string name="admin_approve">Admin Approval</string>
+    <string name="admin_approval_ifo">Your event and services has been sent for admin approval and you will get responses from service provider after admin approval</string>
+    <string name="before_provide_details">are not updated with the order requirement,please update to proceed</string>
+    <string name="the_service">The service</string>
+    <string name="send_for_approval">Send for approval</string>
 </resources>

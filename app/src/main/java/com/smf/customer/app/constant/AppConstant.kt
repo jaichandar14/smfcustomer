@@ -129,4 +129,6 @@ object AppConstant {
     const val PAYMENT ="Payment"
     const val REVIEW_AND_FEEDBACK = "Review and Feedback"
 
+    //3439
+    const val SERVICE_NAME_LIST="Service_Name_List"
 }

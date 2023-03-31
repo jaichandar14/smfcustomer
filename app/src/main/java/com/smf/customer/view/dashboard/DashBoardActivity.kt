@@ -37,11 +37,15 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
 
         val intent = intent
         var fragIntent=intent.getStringExtra(AppConstant.ON_EVENT)
-        if (fragIntent==getString(R.string.event_dt)){
+        if (fragIntent==AppConstant.ON_EVENT){
             eventListFragment()
+        }
+        else if(fragIntent=="serviceDashboard") {
+            serviceDetailsFragment()
         }else{
             mainFragment()
         }
+
 
     }
 

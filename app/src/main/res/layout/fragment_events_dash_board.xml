@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="android.view.View" />
 
 
@@ -139,6 +140,7 @@
 
 
         </androidx.core.widget.NestedScrollView>
+
         <include
             layout="@layout/progressbar"
             app:visibility="@{ events_dashboard_view_model.showLoading.booleanValue ? View.VISIBLE : View.GONE}" />

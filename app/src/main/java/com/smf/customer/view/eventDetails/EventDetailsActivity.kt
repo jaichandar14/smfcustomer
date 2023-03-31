@@ -130,9 +130,11 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
     }
 
     override fun onClickNext() {
-        val intent = Intent(this, DashBoardActivity::class.java)
-        intent.putExtra(AppConstant.ON_EVENT, getString(R.string.event_dt))
-        startActivity(intent)
+        Intent(this, DashBoardActivity::class.java).apply{
+            this.putExtra(AppConstant.ON_EVENT, AppConstant.ON_EVENT)
+            startActivity(this)
+        }
+
     }
 
     override fun onClickQuestionsBtn() {
