@@ -1,6 +1,7 @@
 package com.smf.customer.data.repository
 
 import com.smf.customer.data.api_service.EventService
+import com.smf.customer.data.model.request.AddServicesReqDTO
 import com.smf.customer.data.model.request.EventInfoDTO
 import com.smf.customer.data.model.response.EventInfoResponseDto
 import com.smf.customer.data.model.response.EventQuestionsResponseDTO
@@ -38,7 +39,15 @@ class EventRepositoryImpl @Inject constructor(eventService: EventService) : Even
         return mEventService.getEventInfo(idToken, eventId).doOnNext {}
     }
 
-    override fun getAddServices(idToken: String, eventId: Int): Observable<GetServicesDTO> {
-        return mEventService.getAddServices(idToken, eventId)
+    override fun getAddServices(idToken: String, eventTemplateId: Int): Observable<GetServicesDTO> {
+        return mEventService.getAddServices(idToken, eventTemplateId)
+    }
+
+    override fun postAddServices(
+        idToken: String,
+        eventId: Int,
+        addServicesReqDTO: List<AddServicesReqDTO>
+    ): Observable<EventInfoResponseDto> {
+        return mEventService.postAddServices(idToken, eventId, addServicesReqDTO)
     }
 }

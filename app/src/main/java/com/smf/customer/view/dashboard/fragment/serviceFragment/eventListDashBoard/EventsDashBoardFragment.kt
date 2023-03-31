@@ -79,17 +79,18 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
         // 3426 Initialize data in Ui
         setEventServiceDetails()
         mDataBinding.addServiceIcon.setOnClickListener {
-            val intent = Intent(requireActivity(), AddServiceActivity::class.java)
-            intent.putStringArrayListExtra(AppConstant.SERVICE_NAME_LIST, servicesName)
-            intent.putExtra(
-                AppConstant.EVENT_ID,
-                sharedPrefsHelper[SharedPrefConstant.EVENT_NAME, ""]
-            )
-            intent.putExtra(
-                AppConstant.TEMPLATE_ID,
-                sharedPrefsHelper[SharedPrefConstant.TEMPLATE_ID, ""]
-            )
-            startActivity(intent)
+            Intent(requireActivity(), AddServiceActivity::class.java).apply {
+                putStringArrayListExtra(AppConstant.SERVICE_NAME_LIST, servicesName)
+                putExtra(
+                    AppConstant.EVENT_ID,
+                    sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0]
+                )
+                putExtra(
+                    AppConstant.TEMPLATE_ID,
+                    sharedPrefsHelper[SharedPrefConstant.TEMPLATE_ID, 0]
+                )
+                startActivity(this)
+            }
         }
         onClickViewDetails()
         // 3426 getEventServiceInfo api call
@@ -100,10 +101,6 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
 
     private fun onSubmitBtnClick() {
         mDataBinding.saveBtn.setOnClickListener {
-
-            eventServiceDetails.forEach {
-                it.serviceName?.let { it1 -> servicesName.add(it1) }
-            }
             if (provideDetailsCount != 0) {
                 OneButtonDialogFragment.newInstance(
                     "message",
@@ -184,11 +181,15 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
             }
         }
         mAdapterEventDetails.refreshItems(getServiceList())
+        // Update selected service name
+        eventServiceDetails.forEach {
+            it.serviceName?.let { it1 -> servicesName.add(it1) }
+        }
     }
 
     override fun sendForApproval() {
         viewModel.sendEventTrackStatus(
-            sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 1218], getString(
+            sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0], getString(
                 R.string.admin_approve
             )
         )
@@ -238,20 +239,20 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
 
     // 3426 service event details on click provide details button
     override fun onClickProvideDetails(listMyEvents: EventServiceInfoDTO) {
-         Intent(requireActivity(), ProvideServiceDetailsActivity::class.java).apply {
-             this.putExtra(
-                 AppConstant.EVENT_ID,
-                 sharedPrefsHelper[SharedPrefConstant.EVENT_ID, ""]
-             )
-             this.putExtra(AppConstant.SERVICE_CATEGORY_ID, listMyEvents.serviceCategoryId)
-             this.putExtra(AppConstant.EVENT_SERVICE_ID, listMyEvents.eventServiceId)
-             this.putExtra(
-                 AppConstant.EVENT_SERVICE_DESCRIPTION_ID,
-                 listMyEvents.eventServiceDescriptionId
-             )
-             this.putExtra(AppConstant.LEAD_PERIOD, listMyEvents.leadPeriod)
-             startActivity(this)
-         }
+        Intent(requireActivity(), ProvideServiceDetailsActivity::class.java).apply {
+            this.putExtra(
+                AppConstant.EVENT_ID,
+                sharedPrefsHelper[SharedPrefConstant.EVENT_ID, ""]
+            )
+            this.putExtra(AppConstant.SERVICE_CATEGORY_ID, listMyEvents.serviceCategoryId)
+            this.putExtra(AppConstant.EVENT_SERVICE_ID, listMyEvents.eventServiceId)
+            this.putExtra(
+                AppConstant.EVENT_SERVICE_DESCRIPTION_ID,
+                listMyEvents.eventServiceDescriptionId
+            )
+            this.putExtra(AppConstant.LEAD_PERIOD, listMyEvents.leadPeriod)
+            startActivity(this)
+        }
     }
 
     override fun onPositiveClick(dialogFragment: DialogFragment) {

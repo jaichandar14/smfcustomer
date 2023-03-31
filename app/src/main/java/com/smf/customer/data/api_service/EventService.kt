@@ -1,6 +1,7 @@
 package com.smf.customer.data.api_service
 
 import com.smf.customer.BuildConfig
+import com.smf.customer.data.model.request.AddServicesReqDTO
 import com.smf.customer.data.model.request.EventInfoDTO
 import com.smf.customer.data.model.response.EventInfoResponseDto
 import com.smf.customer.data.model.response.EventQuestionsResponseDTO
@@ -34,9 +35,16 @@ interface EventService {
         @Path("event-id") eventId: Int,
     ): Observable<GetEventInfo>
 
-    @GET(BuildConfig.apiType + "event/api/events/event-services/{event-id}")
+    @GET(BuildConfig.apiType + "event/api/events/event-services/{event-template-id}")
     fun getAddServices(
         @Header("Authorization") idToken: String,
-        @Path("event-id") eventId: Int,
+        @Path("event-template-id") eventTemplateId: Int,
     ): Observable<GetServicesDTO>
+
+    @POST(BuildConfig.apiType + "event/api/events/event-service-info/{event-id}")
+    fun postAddServices(
+        @Header("Authorization") idToken: String,
+        @Path("event-id") eventId: Int,
+        @Body addServicesReqDTO: List<AddServicesReqDTO>
+    ): Observable<EventInfoResponseDto>
 }
