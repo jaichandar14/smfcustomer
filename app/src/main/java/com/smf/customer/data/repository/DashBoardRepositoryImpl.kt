@@ -1,7 +1,9 @@
 package com.smf.customer.data.repository
 
 import com.smf.customer.data.api_service.DashBoardService
+import com.smf.customer.data.model.response.EventInfoResponseDto
 import com.smf.customer.data.model.response.GetEventServiceInfo
+import com.smf.customer.data.model.response.ServiceInfoResponse
 import com.smf.customer.view.dashboard.responsedto.EventCountDto
 import com.smf.customer.view.dashboard.responsedto.EventStatusResponse
 import io.reactivex.Observable
@@ -28,5 +30,22 @@ class DashBoardRepositoryImpl @Inject constructor(dashBoardService: DashBoardSer
         eventId: Int
     ): Observable<GetEventServiceInfo> {
         return mDashBoardService.getEventServiceInfo(idToken,eventId).doOnNext { }
+    }
+
+    override fun sendForApproval(
+        idToken: String,
+        eventId: Int,
+        status: String
+    ): Observable<EventInfoResponseDto> {
+        return mDashBoardService.sendForApproval(idToken,eventId,status).doOnNext { }
+    }
+
+    override fun sendEventTrackStatus(
+        idToken: String,
+        eventId: Int,
+        eventTrackStatus: String
+    ): Observable<ServiceInfoResponse> {
+        return mDashBoardService.sendEventTrackStatus(idToken,eventId,eventTrackStatus).doOnNext { }
+
     }
 }

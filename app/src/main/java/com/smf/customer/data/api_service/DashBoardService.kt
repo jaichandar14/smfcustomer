@@ -1,14 +1,13 @@
 package com.smf.customer.data.api_service
 
 import com.smf.customer.BuildConfig
+import com.smf.customer.data.model.response.EventInfoResponseDto
 import com.smf.customer.data.model.response.GetEventServiceInfo
+import com.smf.customer.data.model.response.ServiceInfoResponse
 import com.smf.customer.view.dashboard.responsedto.EventCountDto
 import com.smf.customer.view.dashboard.responsedto.EventStatusResponse
 import io.reactivex.Observable
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface DashBoardService {
     // 3275
@@ -33,4 +32,20 @@ interface DashBoardService {
         @Header("Authorization") idToken: String,
         @Path("event-id") eventId: Int,
     ): Observable<GetEventServiceInfo>
+
+    // 3439
+    @PUT(BuildConfig.apiType + "event/api/events/send-for-approval/{event-id}")
+    fun sendForApproval(
+        @Header("Authorization") idToken: String,
+        @Path("event-id") eventId: Int,
+        @Query("comment") status: String
+    ): Observable<EventInfoResponseDto>
+
+    //3439
+    @PUT(BuildConfig.apiType + "event/api/events/event-track-status/{event-id}/{event-stepper-status}")
+    fun sendEventTrackStatus(
+        @Header("Authorization") idToken: String,
+        @Path("event-id") eventId: Int,
+        @Path("event-stepper-status") eventTrackStatus: String
+    ): Observable<ServiceInfoResponse>
 }

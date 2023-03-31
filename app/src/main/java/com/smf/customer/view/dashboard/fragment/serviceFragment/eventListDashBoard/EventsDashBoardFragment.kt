@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.OrientationHelper
@@ -16,12 +17,15 @@ import com.smf.customer.R
 import com.smf.customer.app.base.BaseFragment
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
+import com.smf.customer.app.listener.DialogOneButtonListener
 import com.smf.customer.data.model.response.EventServiceDtos
 import com.smf.customer.data.model.response.GetEventServiceDataDto
 import com.smf.customer.databinding.FragmentEventsDashBoardBinding
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
+import com.smf.customer.dialog.OneButtonDialogFragment
 import com.smf.customer.view.addServices.AddServiceActivity
+import com.smf.customer.view.dashboard.DashBoardActivity
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.adaptor.EventDetailsAdaptor
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.adaptor.StatusDetailsAdaptor
 import com.smf.customer.view.dashboard.fragment.serviceFragment.sharedviewmodel.EventsDashBoardViewModel
@@ -36,7 +40,7 @@ import javax.inject.Inject
 
 class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
     EventsDashBoardViewModel.OnServiceClickListener,
-    EventDetailsAdaptor.OnServiceClickListener {
+    EventDetailsAdaptor.OnServiceClickListener, DialogOneButtonListener {
 
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
@@ -48,7 +52,8 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
     private var eventServiceDetails = ArrayList<EventServiceInfoDTO>()
     private val formatter: DateTimeFormatter =
         DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.ENGLISH)
-
+    private var provideDetailsCount: Int? = null
+    private var servicesName = ArrayList<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -75,11 +80,46 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
         setEventServiceDetails()
         mDataBinding.addServiceIcon.setOnClickListener {
             val intent = Intent(requireActivity(), AddServiceActivity::class.java)
+            intent.putExtra(AppConstant.SERVICE_NAME_LIST, servicesName)
+            intent.putExtra(
+                AppConstant.EVENT_ID,
+                sharedPrefsHelper[SharedPrefConstant.EVENT_NAME, ""]
+            )
+            intent.putExtra(
+                AppConstant.TEMPLATE_ID,
+                sharedPrefsHelper[SharedPrefConstant.TEMPLATE_ID, ""]
+            )
             startActivity(intent)
         }
         onClickViewDetails()
         // 3426 getEventServiceInfo api call
         viewModel.getEventServiceInfo(sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 1218])
+        // 3439 onSubmit btn click for put api cal
+        onSubmitBtnClick()
+    }
+
+    private fun onSubmitBtnClick() {
+        mDataBinding.saveBtn.setOnClickListener {
+
+            eventServiceDetails.forEach {
+                it.serviceName?.let { it1 -> servicesName.add(it1) }
+            }
+            if (provideDetailsCount != 0) {
+                OneButtonDialogFragment.newInstance(
+                    "message",
+                    getString(R.string.the_service) +
+                            " $servicesName " +
+                            getString(R.string.before_provide_details),
+                    "ok",
+                    this,
+                    false
+                ).show(requireActivity().supportFragmentManager, "")
+
+            } else {
+                viewModel.sendForApproval(sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 1218])
+            }
+
+        }
     }
 
     private fun setEventServiceDetails() {
@@ -132,6 +172,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
     override fun getEventServiceInfo(listMyEvents: GetEventServiceDataDto) {
         Log.d(TAG, "getEventServiceInfo: $listMyEvents")
         setEventStatus(listMyEvents.eventStatus, listMyEvents.eventTrackStatus)
+        provideDetailsCount = listMyEvents.eventServiceCountsDto.provideOrderDetails
         listMyEvents.eventServiceDtos.forEach {
             if (!it.serviceDate.isNullOrEmpty()) {
                 val date = LocalDate.parse(it.serviceDate, formatter)
@@ -145,13 +186,33 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
         mAdapterEventDetails.refreshItems(getServiceList())
     }
 
+    override fun sendForApproval() {
+        viewModel.sendEventTrackStatus(
+            sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 1218], getString(
+                R.string.admin_approve
+            )
+        )
+    }
+
+    override fun sendForTrackStatus() {
+
+        if (provideDetailsCount == 0) {
+            OneButtonDialogFragment.newInstance(
+                "message",
+                getString(R.string.admin_approval_ifo),
+                "ok",
+                this,
+                false
+            ).show(requireActivity().supportFragmentManager, "")
+        }
+    }
+
     private fun setEventStatus(eventStatus: String, eventTrackStatus: String) {
         if (eventStatus == "NEW" || eventTrackStatus == "Add/Remove Services" || eventTrackStatus == "Order Details") {
             mAdapterStatusDetails.refreshItems(viewModel.setStatusFlowDetails(viewModel.stepOne))
         } else if (eventStatus == "PENDING ADMIN APPROVAL" && eventTrackStatus == "Admin Approval") {
             mAdapterStatusDetails.refreshItems(viewModel.setStatusFlowDetails(viewModel.stepTwo))
         }
-
     }
 
     private fun addEventServiceDetails(it: EventServiceDtos, formattedDate: String) {
@@ -163,7 +224,9 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
                 it.eventServiceId,
                 it.serviceCategoryId,
                 it.leadPeriod,
-                it.eventServiceDescriptionId
+                it.eventServiceDescriptionId,
+                it.eventServiceStatus,
+                sharedPrefsHelper[SharedPrefConstant.EVENT_NAME, ""]
             )
         )
     }
@@ -184,6 +247,13 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
             listMyEvents.eventServiceDescriptionId
         )
         intent.putExtra(AppConstant.LEAD_PERIOD, listMyEvents.leadPeriod)
+        startActivity(intent)
+    }
+
+    override fun onPositiveClick(dialogFragment: DialogFragment) {
+        super.onPositiveClick(dialogFragment)
+        val intent = Intent(requireActivity(), DashBoardActivity::class.java)
+        intent.putExtra(AppConstant.ON_EVENT, AppConstant.ON_EVENT)
         startActivity(intent)
     }
 }
