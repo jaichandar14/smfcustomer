@@ -18,15 +18,17 @@ class AddServiceAdapter(val context: Context) :
     RecyclerView.Adapter<AddServiceAdapter.AddServiceViewHolder>() {
 
     private var servicesList = ArrayList<ServiceData>()
+    var preSelectedServices = ArrayList<String>()
     var selectedServices = ArrayList<String>()
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateServicesList(
-        timeSlotList: ArrayList<ServiceData>,
+        servicesList: ArrayList<ServiceData>,
+        preSelectedServices: ArrayList<String>,
         selectedServices: ArrayList<String>
     ) {
-        this.servicesList.clear()
-        this.servicesList = timeSlotList
+        this.servicesList = servicesList
+        this.preSelectedServices = preSelectedServices
         this.selectedServices = selectedServices
         notifyDataSetChanged()
     }
@@ -57,7 +59,9 @@ class AddServiceAdapter(val context: Context) :
             tvItem.text = serviceData.serviceName
             setServiceIcon(serviceData.serviceTemplateIcon, serviceIconView)
             // and Update service selection images
-            if (selectedServices.contains(serviceData.serviceName)) {
+            if (preSelectedServices.contains(serviceData.serviceName) ||
+                selectedServices.contains(serviceData.serviceName)
+            ) {
                 serviceSelectionImage.setImageResource(R.drawable.new_selection)
                 serviceSelectionImage.tag = R.drawable.new_selection
             } else {
@@ -67,7 +71,7 @@ class AddServiceAdapter(val context: Context) :
             // Initialize onClick listener
             itemView.setOnClickListener {
                 // Avoid preSelectedService clickable
-                if (selectedServices.contains(serviceData.serviceName).not()) {
+                if (preSelectedServices.contains(serviceData.serviceName).not()) {
                     updateData(position)
                 }
             }
