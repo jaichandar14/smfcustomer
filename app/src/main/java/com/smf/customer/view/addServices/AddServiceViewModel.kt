@@ -18,6 +18,7 @@ class AddServiceViewModel : BaseViewModel() {
     var eventId = 0
     var eventTemplateId = 0
     var servicesList = MutableLiveData<ArrayList<ServiceData>>()
+    var preSelectedServices = ArrayList<String>()
     var selectedServices = ArrayList<String>()
 
     @Inject
@@ -99,7 +100,14 @@ class AddServiceViewModel : BaseViewModel() {
 
     private fun getSelectedServices(): List<ServiceData> {
         val serviceDataList = ArrayList<ServiceData>()
-        selectedServices.forEach { selectedServiceName ->
+        serviceDataList.addAll(createSelectedServices(preSelectedServices))
+        serviceDataList.addAll(createSelectedServices(selectedServices))
+        return serviceDataList
+    }
+
+    private fun createSelectedServices(list: ArrayList<String>): ArrayList<ServiceData> {
+        val serviceDataList = ArrayList<ServiceData>()
+        list.forEach { selectedServiceName ->
             servicesList.value?.filter { serviceData ->
                 serviceData.serviceName == selectedServiceName
             }?.forEach {

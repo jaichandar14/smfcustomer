@@ -2,7 +2,6 @@ package com.smf.customer.view.addServices
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -62,7 +61,11 @@ class AddServiceActivity : BaseActivity<AddServiceViewModel>(),
         viewModel.getAddServices()
         // Observer for update services to UI
         viewModel.servicesList.observe(this, Observer {
-            addServiceAdapter.updateServicesList(it, viewModel.selectedServices)
+            addServiceAdapter.updateServicesList(
+                it,
+                viewModel.preSelectedServices,
+                viewModel.selectedServices
+            )
         })
     }
 
@@ -88,13 +91,23 @@ class AddServiceActivity : BaseActivity<AddServiceViewModel>(),
             viewModel.servicesList.value?.get(listPosition)?.serviceName?.let {
                 viewModel.selectedServices.add(it)
             }
+        } else {
+            viewModel.servicesList.value?.get(listPosition)?.serviceName?.let {
+                viewModel.selectedServices.remove(it)
+            }
         }
+        // Update Adapter value
+        addServiceAdapter.updateServicesList(
+            viewModel.servicesList.value!!,
+            viewModel.preSelectedServices,
+            viewModel.selectedServices
+        )
     }
 
     private fun setInitialDetails() {
         viewModel.eventId = intent.getIntExtra(AppConstant.EVENT_ID, 0)
         viewModel.eventTemplateId = intent.getIntExtra(AppConstant.TEMPLATE_ID, 0)
-        viewModel.selectedServices =
+        viewModel.preSelectedServices =
             intent.getStringArrayListExtra(AppConstant.SERVICE_NAME_LIST) as ArrayList<String>
     }
 
