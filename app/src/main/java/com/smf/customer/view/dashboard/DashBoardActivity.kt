@@ -30,6 +30,12 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
     override fun onBackPressed() {
         super.onBackPressed()
         finishAffinity()
+        // 3443 on back press futhur implementatiton
+//        val fragment =
+//            this.supportFragmentManager.findFragmentById(R.id.main_dashboard_ui)
+//        (fragment as? IOnBackPressed)?.onBackPressed()?.not()?.let {
+//            super.onBackPressed()
+//        }
     }
 
     override fun onStart() {

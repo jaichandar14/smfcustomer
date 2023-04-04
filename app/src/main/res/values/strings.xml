@@ -258,4 +258,7 @@
     <string name="the_service">The service</string>
     <string name="send_for_approval">Send for approval</string>
     <string name="no_service_is_available_">No Service is available for this date, You cannot proceed further" Contact Admin. You may want to remove this service from the event and continue with rest.</string>
+// 3443
+    <string name="waiting_for_aprproval">Waiting for Approval</string>
+
 </resources>
