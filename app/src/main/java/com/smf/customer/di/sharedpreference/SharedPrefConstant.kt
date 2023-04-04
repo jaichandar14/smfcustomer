@@ -103,6 +103,9 @@ object SharedPrefConstant {
     val SERVICE_DATE: String
         get() = "ServiceDate"
 
+    val TIME_SLOT_LIST: String
+        get() = "timeSlotList"
+
     val SELECTED_SLOT_POSITION_MAP: String
         get() = "selectedSlotsPositionMap"
 
@@ -135,4 +138,10 @@ object SharedPrefConstant {
 
     val SERVICE_SELECTED_ANSWER_MAP: String
         get() = "serviceSelectedAnswerMap"
+
+    val QUESTION_LIST_ITEM: String
+        get() = "questionListItemSharedPref"
+
+    val QUESTION_NUMBER_LIST: String
+        get() = "questionNumberListSharedPerf"
 }

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -65,6 +66,8 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
         buttonListener()
         // Button visibility observer
         setButtonVisibility()
+        // adding onbackpressed callback listener.
+        onBackPressedDispatcher.addCallback(this,onBackPressedCallback)
     }
 
     private fun setQuestionsRecycler() {
@@ -153,9 +156,11 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
         }
     }
 
-    override fun onBackPressed() {
-        // Method for move event details page
-        backToDetailsPage()
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            // Method for move event details page
+            backToDetailsPage()
+        }
     }
 
     private fun backToDetailsPage() {

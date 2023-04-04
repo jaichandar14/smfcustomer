@@ -20,11 +20,12 @@
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/button_layout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -47,7 +48,6 @@
                     android:text="@string/birthday_event_details"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_15ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
@@ -58,7 +58,7 @@
                     android:id="@+id/set_data_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_12sdp"
+                    android:layout_marginTop="@dimen/_15sdp"
                     android:fontFamily="@font/mulish_bold"
                     android:text="@string/set_date"
                     android:textColor="@color/gray_text"
@@ -73,7 +73,7 @@
                     android:id="@+id/set_date_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
                     android:fontFamily="@font/mulish_regular"
                     android:text="@string/set_service_date"
                     android:textColor="@color/gray_text"
@@ -88,7 +88,7 @@
                     android:id="@+id/date_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_8sdp"
                     android:background="@drawable/event_details_et_background"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -132,7 +132,7 @@
                     android:id="@+id/date_error_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_6sdp"
                     android:fontFamily="@font/mulish_regular"
                     android:text="@={provideServiceViewModel.serviceDateErrorText}"
                     android:textColor="@color/thumbs_down_red"
@@ -148,11 +148,12 @@
                     android:id="@+id/slot_title_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_18sdp"
                     android:fontFamily="@font/mulish_bold"
                     android:text="@string/choose_your_preferred_slots_for_service"
                     android:textColor="@color/gray_text"
                     android:textSize="@dimen/_14ssp"
+                    android:visibility="@{provideServiceViewModel.timeSlotTitleVisibility.booleanValue ? View.VISIBLE : View.GONE}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -163,7 +164,8 @@
                     android:id="@+id/slots_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_12sdp"
+                    android:visibility="@{provideServiceViewModel.timeSlotVisibility.booleanValue ? View.VISIBLE : View.GONE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/slot_title_text"
@@ -174,7 +176,7 @@
                     android:id="@+id/time_slot_error_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_6sdp"
                     android:fontFamily="@font/mulish_regular"
                     android:text="@string/slot_is_required"
                     android:textColor="@color/thumbs_down_red"
@@ -193,11 +195,9 @@
                     android:layout_marginTop="@dimen/_18sdp"
                     android:background="@color/browser_actions_bg_grey"
                     android:padding="@dimen/_4sdp"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/time_slot_error_text"
-                    app:layout_constraintVertical_bias="0.0">
+                    app:layout_constraintTop_toBottomOf="@+id/time_slot_error_text">
 
                     <TextView
                         android:id="@+id/estimated_budget_text"
@@ -270,7 +270,7 @@
                     android:id="@+id/total_and_remaining_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_13sdp"
                     android:visibility="@{provideServiceViewModel.remainingAmountVisibility.booleanValue ? View.VISIBLE : View.GONE}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -380,7 +380,7 @@
                     android:id="@+id/zip_code_text"
                     android:layout_width="@dimen/_100sdp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_12sdp"
+                    android:layout_marginTop="@dimen/_13sdp"
                     android:fontFamily="@font/mulish_regular"
                     android:text="@string/zip_code"
                     android:textColor="@color/gray_text"
@@ -430,7 +430,7 @@
                     android:id="@+id/select_radius_text"
                     android:layout_width="@dimen/_100sdp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_18sdp"
+                    android:layout_marginTop="@dimen/_22sdp"
                     android:fontFamily="@font/mulish_regular"
                     android:text="@string/select_radius"
                     android:textColor="@color/gray_text"
@@ -479,7 +479,7 @@
                     android:id="@+id/provide_order_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_18sdp"
                     android:fontFamily="@font/mulish_bold"
                     android:text="@string/provide_order_summary"
                     android:textColor="@color/gray_text"
@@ -495,7 +495,8 @@
                     android:id="@+id/start_qus_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginBottom="@dimen/_28sdp"
                     android:fontFamily="@font/mulish_medium"
                     android:onClick="@{() -> provideServiceViewModel.onClickQuestionsBtn()}"
                     android:text="@{provideServiceViewModel.questionBtnText}"
@@ -524,51 +525,54 @@
                     app:layout_constraintStart_toEndOf="@+id/start_qus_btn"
                     app:layout_constraintTop_toTopOf="@+id/start_qus_btn" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/button_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_23sdp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/start_qus_btn"
-                    app:layout_constraintVertical_bias="0.0">
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/cancel_btn"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/_8sdp"
-                        android:background="@drawable/custom_button_corner_ok_fade"
-                        android:fontFamily="@font/mulish_bold"
-                        android:text="@string/cancel"
-                        android:textAllCaps="false"
-                        android:textColor="@color/gray_text"
-                        android:textSize="@dimen/_14ssp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintHorizontal_chainStyle="spread"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toLeftOf="@+id/save_btn" />
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/save_btn"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_8sdp"
-                        android:background="@drawable/custom_button_corner_ok_fade"
-                        android:fontFamily="@font/mulish_bold"
-                        android:text="@string/save"
-                        android:textAllCaps="false"
-                        android:textColor="@color/gray_text"
-                        android:textSize="@dimen/_14ssp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintLeft_toRightOf="@+id/cancel_btn"
-                        app:layout_constraintRight_toRightOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/button_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_18sdp"
+            android:padding="@dimen/_2sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintVertical_bias="0.0">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/cancel_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:background="@drawable/custom_button_corner_ok_fade"
+                android:fontFamily="@font/mulish_bold"
+                android:text="@string/cancel"
+                android:textAllCaps="false"
+                android:textColor="@color/gray_text"
+                android:textSize="@dimen/_14ssp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/save_btn" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/save_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_8sdp"
+                android:background="@drawable/custom_button_corner_ok_fade"
+                android:fontFamily="@font/mulish_bold"
+                android:text="@string/save"
+                android:textAllCaps="false"
+                android:textColor="@color/gray_text"
+                android:textSize="@dimen/_14ssp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/cancel_btn"
+                app:layout_constraintRight_toRightOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <include
             layout="@layout/progressbar"
