@@ -97,6 +97,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
         viewModel.getEventServiceInfo(sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 1218])
         // 3439 onSubmit btn click for put api cal
         onSubmitBtnClick()
+       
     }
 
     private fun onSubmitBtnClick() {
@@ -261,6 +262,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
             this.putExtra(AppConstant.ON_EVENT, AppConstant.ON_EVENT)
             startActivity(this)
         }
-
     }
+
+
 }
