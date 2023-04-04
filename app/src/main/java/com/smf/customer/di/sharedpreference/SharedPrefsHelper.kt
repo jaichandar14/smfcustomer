@@ -3,6 +3,7 @@ package com.smf.customer.di.sharedpreference
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.smf.customer.data.model.dto.QuestionListItem
 import java.lang.reflect.Type
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -56,6 +57,34 @@ constructor(private val mSharedPreferences: SharedPreferences) {
         val gson = Gson()
         val json = mSharedPreferences.getString(key, "")
         val type: Type = object : TypeToken<HashMap<Int, Any>>() {}.type
+        return gson.fromJson(json, type)
+    }
+
+    fun putArrayList(key: String, obj: Any) {
+        val gson = Gson()
+        val json = gson.toJson(obj)
+        editor.putString(key, json)
+        editor.apply()
+    }
+
+    fun getArrayList(key: String): ArrayList<Any> {
+        val gson = Gson()
+        val json = mSharedPreferences.getString(key, "")
+        val type: Type = object : TypeToken<ArrayList<Any>>() {}.type
+        return gson.fromJson(json, type)
+    }
+
+    fun getArrayIntList(key: String): ArrayList<Int> {
+        val gson = Gson()
+        val json = mSharedPreferences.getString(key, "")
+        val type: Type = object : TypeToken<ArrayList<Int>>() {}.type
+        return gson.fromJson(json, type)
+    }
+
+    fun getQuestionsList(key: String): ArrayList<QuestionListItem> {
+        val gson = Gson()
+        val json = mSharedPreferences.getString(key, "")
+        val type: Type = object : TypeToken<ArrayList<QuestionListItem>>() {}.type
         return gson.fromJson(json, type)
     }
 

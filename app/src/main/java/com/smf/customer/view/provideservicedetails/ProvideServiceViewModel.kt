@@ -21,10 +21,13 @@ class ProvideServiceViewModel : BaseViewModel() {
     var mileList = ArrayList<String>()
     var milePosition = MutableLiveData(0)
     var serviceDate = MutableLiveData<String>()
+    var updateServiceDate = MutableLiveData(false)
     var serviceDateErrorText = MutableLiveData("")
     var estimatedBudget = MutableLiveData<String>(null)
     var estimatedBudgetSymbol = MutableLiveData<String>("$")
     var totalAmount = MutableLiveData<String>("")
+    var updateTotalAmount: Any =
+        0 // For update totalAmount while serviceAmount exceeds the totalAmount
     var remainingAmount = MutableLiveData<String>("")
     var zipCode = MutableLiveData<String>("")
     var amountErrorMessage =
@@ -33,6 +36,10 @@ class ProvideServiceViewModel : BaseViewModel() {
     // Start question btn text
     var questionBtnText =
         MutableLiveData(MyApplication.appContext.resources.getString(R.string.start_questions))
+
+    // TimeSlot title visibility
+    var timeSlotTitleVisibility = MutableLiveData(true)
+    var timeSlotVisibility = MutableLiveData(true)
 
     // Edit image icon visibility
     var remainingAmountVisibility = MutableLiveData<Boolean>(false)
@@ -49,6 +56,7 @@ class ProvideServiceViewModel : BaseViewModel() {
     var budgetCalcInfo = MutableLiveData<BudgetCalcInfoDTO>(null)
 
     // Questions
+    var updateQuestions = MutableLiveData(false)
     var eventQuestionsResponseDTO = MutableLiveData<EventQuestionsResponseDTO>(null)
     var questionListItem = ArrayList<QuestionListItem>()
     var questionNumberList = ArrayList<Int>()
@@ -114,7 +122,7 @@ class ProvideServiceViewModel : BaseViewModel() {
                 .putBudgetCalcInfo(
                     getUserToken(),
                     sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0],
-                    estimatedBudget.value!!
+                    updateTotalAmount.toString()
                 )
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
@@ -197,7 +205,7 @@ class ProvideServiceViewModel : BaseViewModel() {
                 if (timeSlotList.value?.isNotEmpty() == true) {
                     selectedSlotsPositionMap.isEmpty().not()
                 } else {
-                    true
+                    false
                 }
                 && estimatedBudget.value.isNullOrEmpty().not() &&
                 zipCode.value.isNullOrEmpty().not())
@@ -205,6 +213,10 @@ class ProvideServiceViewModel : BaseViewModel() {
 
     private fun setServiceSharedPreference() {
         sharedPrefsHelper.put(SharedPrefConstant.SERVICE_DATE, serviceDate.value?.trim() ?: "")
+        sharedPrefsHelper.putArrayList(
+            SharedPrefConstant.TIME_SLOT_LIST,
+            timeSlotList.value ?: ArrayList<String>()
+        )
         sharedPrefsHelper.putHashMap(
             SharedPrefConstant.SELECTED_SLOT_POSITION_MAP,
             selectedSlotsPositionMap
@@ -220,6 +232,8 @@ class ProvideServiceViewModel : BaseViewModel() {
         )
         sharedPrefsHelper.put(SharedPrefConstant.SERVICE_ZIPCODE, zipCode.value?.trim() ?: "")
         sharedPrefsHelper.put(SharedPrefConstant.SERVICE_MILES, milePosition.value ?: 0)
+        sharedPrefsHelper.putArrayList(SharedPrefConstant.QUESTION_LIST_ITEM, questionListItem)
+        sharedPrefsHelper.putArrayList(SharedPrefConstant.QUESTION_NUMBER_LIST, questionNumberList)
         sharedPrefsHelper.putHashMap(
             SharedPrefConstant.SERVICE_SELECTED_ANSWER_MAP, eventSelectedAnswerMap
         )
@@ -227,12 +241,15 @@ class ProvideServiceViewModel : BaseViewModel() {
 
     private fun removeServiceSharedPreference() {
         sharedPrefsHelper.remove(SharedPrefConstant.SERVICE_DATE)
+        sharedPrefsHelper.remove(SharedPrefConstant.TIME_SLOT_LIST)
         sharedPrefsHelper.remove(SharedPrefConstant.SELECTED_SLOT_POSITION_MAP)
         sharedPrefsHelper.remove(SharedPrefConstant.ESTIMATED_BUDGET)
         sharedPrefsHelper.remove(SharedPrefConstant.TOTAL_AMOUNT)
         sharedPrefsHelper.remove(SharedPrefConstant.REMAINING_AMOUNT)
         sharedPrefsHelper.remove(SharedPrefConstant.SERVICE_ZIPCODE)
         sharedPrefsHelper.remove(SharedPrefConstant.SERVICE_MILES)
+        sharedPrefsHelper.remove(SharedPrefConstant.QUESTION_LIST_ITEM)
+        sharedPrefsHelper.remove(SharedPrefConstant.QUESTION_NUMBER_LIST)
         sharedPrefsHelper.remove(SharedPrefConstant.SERVICE_SELECTED_ANSWER_MAP)
     }
 
@@ -258,8 +275,10 @@ class ProvideServiceViewModel : BaseViewModel() {
             setServiceDateErrorText(MyApplication.appContext.resources.getString(R.string.please_select_valid_date))
             showServiceDateError()
         }
-        if (selectedSlotsPositionMap.isEmpty()) {
-            showTimeSlotError()
+        if (timeSlotList.value?.isNotEmpty() == true) {
+            if (selectedSlotsPositionMap.isEmpty()) {
+                showTimeSlotError()
+            }
         }
         if (estimatedBudget.value.isNullOrEmpty()) {
             showAmountErrorText(MyApplication.appContext.resources.getString(R.string.please_enter_the_valid_))
@@ -267,6 +286,14 @@ class ProvideServiceViewModel : BaseViewModel() {
         if (zipCode.value.isNullOrEmpty()) {
             showZipCodeError()
         }
+    }
+
+    fun updateServiceDate(value: Boolean) {
+        updateServiceDate.value = value
+    }
+
+    fun updateQuestions(value: Boolean) {
+        updateQuestions.value = value
     }
 
     fun showAmountErrorText(message: String) {
@@ -343,6 +370,16 @@ class ProvideServiceViewModel : BaseViewModel() {
 
     fun hideZipCodeError() {
         zipCodeErrorVisibility.value = false
+    }
+
+    fun showTimeSlot() {
+        timeSlotTitleVisibility.value = true
+        timeSlotVisibility.value = true
+    }
+
+    fun hideTimeSlot() {
+        timeSlotTitleVisibility.value = false
+        timeSlotVisibility.value = false
     }
 
     // Lead period verification

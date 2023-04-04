@@ -50,9 +50,9 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         MaterialDatePicker.Builder.datePicker().setTitleText(getString(R.string.service_date))
             .setCalendarConstraints(constraintsBuilder.build()).build()
     }
-    lateinit var timeSlotRecycler: RecyclerView
-    lateinit var mileDistance: Spinner
-    lateinit var timeSlotsAdapter: TimeSlotsAdapter
+    private lateinit var timeSlotRecycler: RecyclerView
+    private lateinit var mileDistance: Spinner
+    private lateinit var timeSlotsAdapter: TimeSlotsAdapter
     private var twoButtonDialog: DialogFragment? = null
 
     @Inject
@@ -96,15 +96,6 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         timeSlotRecycler.layoutManager = GridLayoutManager(this, 2)
         timeSlotRecycler.adapter = timeSlotsAdapter
         timeSlotsAdapter.setOnClickListener(this)
-        // API call for service time slots
-        viewModel.getServiceSlots()
-        // Observer for update service time slots to UI
-        viewModel.timeSlotList.observe(this, androidx.lifecycle.Observer {
-            Log.d(TAG, "setTimeSlotsRecycler: $it")
-            timeSlotsAdapter.setTimeSlotList(it, viewModel.selectedSlotsPositionMap)
-            // Get Service Questions
-            viewModel.getServiceDetailQuestions()
-        })
     }
 
     private fun dateOnClickListeners() {
@@ -113,6 +104,10 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
             val date = Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
                 .format(formatter)
             viewModel.serviceDate.value = date
+            // Get Questions API call
+            viewModel.updateQuestions(true)
+            // Get slots based on selected date
+            viewModel.updateServiceDate(true)
         }
         binding.eventDate.setOnClickListener {
             showDatePickerDialog()
@@ -176,19 +171,24 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
     }
 
     override fun onClickQuestionsBtn(from: String) {
-        val intent = Intent(this, QuestionsActivity::class.java)
-        intent.putExtra(AppConstant.FROM_ACTIVITY, this::class.java.simpleName)
-        intent.putExtra(AppConstant.QUESTION_LIST_ITEM, viewModel.questionListItem)
-        intent.putIntegerArrayListExtra(
-            AppConstant.QUESTION_NUMBER_LIST, viewModel.questionNumberList
-        )
-        intent.putExtra(AppConstant.SELECTED_ANSWER_MAP, viewModel.eventSelectedAnswerMap)
-        intent.putExtra(
-            AppConstant.QUESTION_BTN_TEXT,
-            if (from != AppConstant.EDIT_BUTTON) viewModel.questionBtnText.value else ""
-        )
-        finish()
-        startActivity(intent)
+        if (binding.estimatedBudget.isFocused) {
+            binding.estimatedBudget.clearFocus()
+            return
+        } else {
+            val intent = Intent(this, QuestionsActivity::class.java)
+            intent.putExtra(AppConstant.FROM_ACTIVITY, this::class.java.simpleName)
+            intent.putExtra(AppConstant.QUESTION_LIST_ITEM, viewModel.questionListItem)
+            intent.putIntegerArrayListExtra(
+                AppConstant.QUESTION_NUMBER_LIST, viewModel.questionNumberList
+            )
+            intent.putExtra(AppConstant.SELECTED_ANSWER_MAP, viewModel.eventSelectedAnswerMap)
+            intent.putExtra(
+                AppConstant.QUESTION_BTN_TEXT,
+                if (from != AppConstant.EDIT_BUTTON) viewModel.questionBtnText.value else ""
+            )
+            finish()
+            startActivity(intent)
+        }
     }
 
     private fun estimatedBudgetFocusListener() {
@@ -201,9 +201,10 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
 
     private fun liveDataObservers() {
         // Observer for service date lead period verification
-        viewModel.serviceDate.observe(this, androidx.lifecycle.Observer {
-            if (it.isNullOrEmpty().not()) {
-                if (viewModel.leadPeriodVerification(it)) {
+        viewModel.updateServiceDate.observe(this, androidx.lifecycle.Observer {
+            if (it) {
+                // Lead period verification
+                if (viewModel.leadPeriodVerification(viewModel.serviceDate.value!!)) {
                     viewModel.hideServiceDateError()
                 } else {
                     val message =
@@ -213,8 +214,32 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
                     viewModel.setServiceDateErrorText(message)
                     viewModel.showServiceDateError()
                 }
+                // Get time slots based on selected date
+                viewModel.getServiceSlots()
                 // Update submit button background color
                 submitBtnColorVisibility()
+                // To avoid observer observe data multiple times
+                viewModel.updateServiceDate(false)
+            }
+        })
+
+        // Observer for update service time slots to UI
+        viewModel.timeSlotList.observe(this, androidx.lifecycle.Observer {
+            Log.d(TAG, "setTimeSlotsRecycler: $it")
+            // Show error and slots visibility based on timeslots
+            if (it.isNullOrEmpty()) {
+                val message = getString(R.string.no_service_is_available_)
+                viewModel.setServiceDateErrorText(message)
+                viewModel.showServiceDateError()
+                viewModel.hideTimeSlot()
+            } else {
+                viewModel.showTimeSlot()
+                timeSlotsAdapter.setTimeSlotList(it, viewModel.selectedSlotsPositionMap)
+                // Verify questions API call required
+                if (viewModel.updateQuestions.value == true) {
+                    // Get Service Questions
+                    viewModel.getServiceDetailQuestions()
+                }
             }
         })
 
@@ -272,6 +297,7 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
                         viewModel.hideStartQuestionsBtn()
                     } else {
                         viewModel.showStartQuestionsBtn()
+                        viewModel.eventSelectedAnswerMap.clear()
                         editButtonVisibility()
                         // Update Questions
                         updateQuestionsList(eventQuestionsResponseDTO)
@@ -354,11 +380,14 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
             remainingBudgetAmount =
                 remainingBudgetAmount.substring(1, remainingBudgetAmount.length - 1)
         }
+        // For update totalAmount while serviceAmount exceeds the totalAmount
+        viewModel.updateTotalAmount =
+            (budgetCalcInfoDTO.data.estimatedEventBudget + remainingBudgetAmount.toBigDecimal())
         val message =
             "${getString(R.string.service_Budget_Exceeds_)} $remainingBudgetAmount ${
                 getString(R.string.would_you_like_to_update_)
-            } ${budgetCalcInfoDTO.data.estimatedEventBudget}"
-        Log.d(TAG, "showEstimationDialog: ${twoButtonDialog.hashCode()}")
+            } ${viewModel.updateTotalAmount}"
+
         if (twoButtonDialog == null) {
             twoButtonDialog = TwoButtonDialogFragment.newInstance(
                 message,
@@ -439,13 +468,23 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
             )
             viewModel.serviceDate.value = sharedPrefsHelper[SharedPrefConstant.EVENT_DATE, ""]
             viewModel.zipCode.value = sharedPrefsHelper[SharedPrefConstant.ZIPCODE, ""]
+            // Get Initial Questions API call
+            viewModel.updateQuestions(true)
+            // Get Initial time slots based on event date
+            viewModel.updateServiceDate(true)
         } else {
             updateEnteredValues()
+            // Avoid getting initial Questions API call
+            viewModel.updateQuestions(false)
+            // Get Initial time slots based on event date
+            viewModel.updateServiceDate(false)
         }
     }
 
     private fun updateEnteredValues() {
         viewModel.serviceDate.value = sharedPrefsHelper[SharedPrefConstant.SERVICE_DATE, ""]
+        viewModel.timeSlotList.value =
+            sharedPrefsHelper.getArrayList(SharedPrefConstant.TIME_SLOT_LIST) as ArrayList<String>
         viewModel.selectedSlotsPositionMap =
             sharedPrefsHelper.getHashMap(SharedPrefConstant.SELECTED_SLOT_POSITION_MAP) as HashMap<Int, Boolean>
         viewModel.zipCode.value = sharedPrefsHelper[SharedPrefConstant.SERVICE_ZIPCODE, ""]
@@ -459,9 +498,19 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
             viewModel.showRemainingAmountLayout()
         }
         viewModel.milePosition.value = sharedPrefsHelper[SharedPrefConstant.SERVICE_MILES, 0]
+        // Question data
+        viewModel.questionListItem =
+            sharedPrefsHelper.getQuestionsList(SharedPrefConstant.QUESTION_LIST_ITEM)
+        viewModel.questionNumberList =
+            sharedPrefsHelper.getArrayIntList(SharedPrefConstant.QUESTION_NUMBER_LIST)
         // Update selected questions answers
         viewModel.eventSelectedAnswerMap =
             sharedPrefsHelper.getHashMap(SharedPrefConstant.SERVICE_SELECTED_ANSWER_MAP) as HashMap<Int, ArrayList<String>>
+        // Update questions button visibility
+        if (viewModel.questionListItem.isNotEmpty()) {
+            viewModel.showStartQuestionsBtn()
+            editButtonVisibility()
+        }
     }
 
     private fun editButtonVisibility() {
