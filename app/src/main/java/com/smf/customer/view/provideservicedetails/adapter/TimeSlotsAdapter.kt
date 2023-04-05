@@ -13,16 +13,16 @@ class TimeSlotsAdapter :
     RecyclerView.Adapter<TimeSlotsAdapter.TimeSlotItemViewHolder>() {
 
     private var timeSlotList = ArrayList<String>()
-    var selectedSlotsPositionMap = HashMap<Int, Boolean>()
+    var selectedSlotsList = ArrayList<String>()
 
     @SuppressLint("NotifyDataSetChanged")
     fun setTimeSlotList(
         timeSlotList: ArrayList<String>,
-        selectedSlotsPositionMap: HashMap<Int, Boolean>
+        selectedSlotsList: ArrayList<String>
     ) {
         this.timeSlotList.clear()
         this.timeSlotList = timeSlotList
-        this.selectedSlotsPositionMap = selectedSlotsPositionMap
+        this.selectedSlotsList = selectedSlotsList
         notifyDataSetChanged()
     }
 
@@ -51,7 +51,7 @@ class TimeSlotsAdapter :
 
         fun setData(timeSlot: String, position: Int) {
             // Initialize image and text
-            if (selectedSlotsPositionMap[position] == true) {
+            if (selectedSlotsList.contains(timeSlotList[position])) {
                 timeSlotIcon.setImageResource(R.drawable.new_selection)
                 timeSlotIcon.tag = R.drawable.new_selection
                 timeSlotText.text = timeSlot
@@ -64,9 +64,6 @@ class TimeSlotsAdapter :
             itemView.setOnClickListener {
                 updateData(position)
             }
-//            timeSlotText.setOnClickListener {
-//                updateData(position)
-//            }
         }
 
         // Method for update image after onClick

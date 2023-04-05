@@ -106,8 +106,8 @@ object SharedPrefConstant {
     val TIME_SLOT_LIST: String
         get() = "timeSlotList"
 
-    val SELECTED_SLOT_POSITION_MAP: String
-        get() = "selectedSlotsPositionMap"
+    val SELECTED_TIME_SLOTS: String
+        get() = "selectedTimeSlots"
 
     val ESTIMATED_BUDGET: String
         get() = "estimatedBudget"

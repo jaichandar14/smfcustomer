@@ -51,7 +51,7 @@ class ProvideServiceViewModel : BaseViewModel() {
     var zipCodeErrorVisibility = MutableLiveData<Boolean>(false)
 
     var timeSlotList = MutableLiveData<ArrayList<String>>()
-    var selectedSlotsPositionMap = HashMap<Int, Boolean>()
+    var selectedSlotsList = ArrayList<String>()
     var doBudgetAPICall = MutableLiveData<Boolean>(false)
     var budgetCalcInfo = MutableLiveData<BudgetCalcInfoDTO>(null)
 
@@ -183,13 +183,15 @@ class ProvideServiceViewModel : BaseViewModel() {
     }
 
     fun onClickQuesEditBtn() {
+        // Update entered values to shared preference
+        setServiceSharedPreference()
         callBackInterface?.onClickQuestionsBtn(AppConstant.EDIT_BUTTON)
     }
 
     fun onClickSaveBtn() {
         // Verify all mandatory questions answered before submit
         if (verifyMandatoryQuesAnswered(questionListItem, eventSelectedAnswerMap)) {
-            if (userDetailsValidation()) {
+            if (userDetailsValidation(AppConstant.ON_SAVE)) {
                 postServiceDescription(createServiceInfoDto())
             } else {
                 showError()
@@ -199,13 +201,14 @@ class ProvideServiceViewModel : BaseViewModel() {
         }
     }
 
-    fun userDetailsValidation(): Boolean {
+    fun userDetailsValidation(from: String): Boolean {
         return (serviceDate.value.isNullOrEmpty().not() &&
                 serviceDate.value?.let { leadPeriodVerification(it) } == true &&
                 if (timeSlotList.value?.isNotEmpty() == true) {
-                    selectedSlotsPositionMap.isEmpty().not()
+                    selectedSlotsList.isEmpty().not()
                 } else {
-                    false
+                    // For highlight Save button clickable
+                    from == AppConstant.ON_SAVE
                 }
                 && estimatedBudget.value.isNullOrEmpty().not() &&
                 zipCode.value.isNullOrEmpty().not())
@@ -217,10 +220,7 @@ class ProvideServiceViewModel : BaseViewModel() {
             SharedPrefConstant.TIME_SLOT_LIST,
             timeSlotList.value ?: ArrayList<String>()
         )
-        sharedPrefsHelper.putHashMap(
-            SharedPrefConstant.SELECTED_SLOT_POSITION_MAP,
-            selectedSlotsPositionMap
-        )
+        sharedPrefsHelper.putArrayList(SharedPrefConstant.SELECTED_TIME_SLOTS, selectedSlotsList)
         sharedPrefsHelper.put(
             SharedPrefConstant.ESTIMATED_BUDGET,
             estimatedBudget.value?.trim() ?: ""
@@ -239,10 +239,10 @@ class ProvideServiceViewModel : BaseViewModel() {
         )
     }
 
-    private fun removeServiceSharedPreference() {
+    fun removeServiceSharedPreference() {
         sharedPrefsHelper.remove(SharedPrefConstant.SERVICE_DATE)
         sharedPrefsHelper.remove(SharedPrefConstant.TIME_SLOT_LIST)
-        sharedPrefsHelper.remove(SharedPrefConstant.SELECTED_SLOT_POSITION_MAP)
+        sharedPrefsHelper.remove(SharedPrefConstant.SELECTED_TIME_SLOTS)
         sharedPrefsHelper.remove(SharedPrefConstant.ESTIMATED_BUDGET)
         sharedPrefsHelper.remove(SharedPrefConstant.TOTAL_AMOUNT)
         sharedPrefsHelper.remove(SharedPrefConstant.REMAINING_AMOUNT)
@@ -276,7 +276,7 @@ class ProvideServiceViewModel : BaseViewModel() {
             showServiceDateError()
         }
         if (timeSlotList.value?.isNotEmpty() == true) {
-            if (selectedSlotsPositionMap.isEmpty()) {
+            if (selectedSlotsList.isEmpty()) {
                 showTimeSlotError()
             }
         }
@@ -383,11 +383,24 @@ class ProvideServiceViewModel : BaseViewModel() {
     }
 
     // Lead period verification
-    fun leadPeriodVerification(dateString: String): Boolean {
+    private fun leadPeriodVerification(dateString: String): Boolean {
         val formatter = DateTimeFormatter.ofPattern(AppConstant.DATE_FORMAT)
         val date = LocalDate.parse(dateString, formatter)
         val leadPeriod = sharedPrefsHelper[SharedPrefConstant.LEAD_PERIOD, "0"].toLong()
         return LocalDate.now().plusDays(leadPeriod) < date
+    }
+
+    fun updateLeadPeriodVerification(dateString: String) {
+        if (leadPeriodVerification(dateString)) {
+            hideServiceDateError()
+        } else {
+            val message =
+                "${MyApplication.appContext.resources.getString(R.string.sorry_you_cannot_add_this_as_service_date_it_needs_at_least_)} " +
+                        "${sharedPrefsHelper[SharedPrefConstant.LEAD_PERIOD, "0"]} " +
+                        MyApplication.appContext.resources.getString(R.string.days_lead_period_from_current_date)
+            setServiceDateErrorText(message)
+            showServiceDateError()
+        }
     }
 
     private fun createServiceInfoDto(): ServiceInfoDTO {
@@ -418,15 +431,9 @@ class ProvideServiceViewModel : BaseViewModel() {
     }
 
     private fun createEventServiceDateDto(): EventServiceDateDto {
-        val preferredSlots = ArrayList<String>()
-        selectedSlotsPositionMap.keys.forEach {
-            if (selectedSlotsPositionMap[it] == true) {
-                timeSlotList.value?.let { it1 -> preferredSlots.add(it1[it]) }
-            }
-        }
         return EventServiceDateDto(
             null, sharedPrefsHelper[SharedPrefConstant.LEAD_PERIOD, "0"].toInt(),
-            preferredSlots,
+            selectedSlotsList,
             serviceDate.value!!
         )
     }

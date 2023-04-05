@@ -118,7 +118,9 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
     }
 
     private fun showDatePickerDialog() {
-        if (binding.estimatedBudget.isFocused) {
+        if (binding.estimatedBudget.isFocused &&
+            viewModel.estimatedBudget.value.isNullOrEmpty().not()
+        ) {
             binding.estimatedBudget.clearFocus()
             return
         } else {
@@ -131,11 +133,15 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
 
     private fun clickListeners() {
         binding.cancelBtn.setOnClickListener {
+            // Delete specific service details from shared preference
+            viewModel.removeServiceSharedPreference()
             finish()
         }
 
         binding.saveBtn.setOnClickListener {
-            if (binding.estimatedBudget.isFocused) {
+            if (binding.estimatedBudget.isFocused &&
+                viewModel.estimatedBudget.value.isNullOrEmpty().not()
+            ) {
                 binding.estimatedBudget.clearFocus()
                 return@setOnClickListener
             } else {
@@ -154,7 +160,9 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         mileDistance.setOnTouchListener { _, event ->
             var returnValue = false
             if (event.action == MotionEvent.ACTION_UP) {
-                if (binding.estimatedBudget.isFocused) {
+                if (binding.estimatedBudget.isFocused &&
+                    viewModel.estimatedBudget.value.isNullOrEmpty().not()
+                ) {
                     binding.estimatedBudget.clearFocus()
                     returnValue = true
                 }
@@ -171,7 +179,9 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
     }
 
     override fun onClickQuestionsBtn(from: String) {
-        if (binding.estimatedBudget.isFocused) {
+        if (binding.estimatedBudget.isFocused &&
+            viewModel.estimatedBudget.value.isNullOrEmpty().not()
+        ) {
             binding.estimatedBudget.clearFocus()
             return
         } else {
@@ -204,16 +214,7 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         viewModel.updateServiceDate.observe(this, androidx.lifecycle.Observer {
             if (it) {
                 // Lead period verification
-                if (viewModel.leadPeriodVerification(viewModel.serviceDate.value!!)) {
-                    viewModel.hideServiceDateError()
-                } else {
-                    val message =
-                        "${getString(R.string.sorry_you_cannot_add_this_as_service_date_it_needs_at_least_)} " +
-                                "${sharedPrefsHelper[SharedPrefConstant.LEAD_PERIOD, "0"]} " +
-                                getString(R.string.days_lead_period_from_current_date)
-                    viewModel.setServiceDateErrorText(message)
-                    viewModel.showServiceDateError()
-                }
+                viewModel.updateLeadPeriodVerification(viewModel.serviceDate.value!!)
                 // Get time slots based on selected date
                 viewModel.getServiceSlots()
                 // Update submit button background color
@@ -234,7 +235,7 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
                 viewModel.hideTimeSlot()
             } else {
                 viewModel.showTimeSlot()
-                timeSlotsAdapter.setTimeSlotList(it, viewModel.selectedSlotsPositionMap)
+                timeSlotsAdapter.setTimeSlotList(it, viewModel.selectedSlotsList)
                 // Verify questions API call required
                 if (viewModel.updateQuestions.value == true) {
                     // Get Service Questions
@@ -314,12 +315,12 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         // Update and remove time slots based on user selection
         if (status) {
             // Update selected time slots
-            viewModel.selectedSlotsPositionMap[listPosition] = true
+            viewModel.selectedSlotsList.add(viewModel.timeSlotList.value!![listPosition])
         } else {
-            viewModel.selectedSlotsPositionMap.remove(listPosition)
+            viewModel.selectedSlotsList.remove(viewModel.timeSlotList.value!![listPosition])
         }
         // Manage timeslot error visibility
-        if (viewModel.selectedSlotsPositionMap.isNotEmpty() &&
+        if (viewModel.selectedSlotsList.isNotEmpty() &&
             viewModel.timeSlotErrorVisibility.value == true
         ) {
             viewModel.hideTimeSlotError()
@@ -483,10 +484,12 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
 
     private fun updateEnteredValues() {
         viewModel.serviceDate.value = sharedPrefsHelper[SharedPrefConstant.SERVICE_DATE, ""]
+        // Lead period verification
+        viewModel.updateLeadPeriodVerification(viewModel.serviceDate.value!!)
         viewModel.timeSlotList.value =
             sharedPrefsHelper.getArrayList(SharedPrefConstant.TIME_SLOT_LIST) as ArrayList<String>
-        viewModel.selectedSlotsPositionMap =
-            sharedPrefsHelper.getHashMap(SharedPrefConstant.SELECTED_SLOT_POSITION_MAP) as HashMap<Int, Boolean>
+        viewModel.selectedSlotsList =
+            sharedPrefsHelper.getArrayList(SharedPrefConstant.SELECTED_TIME_SLOTS) as ArrayList<String>
         viewModel.zipCode.value = sharedPrefsHelper[SharedPrefConstant.SERVICE_ZIPCODE, ""]
         viewModel.estimatedBudget.value = sharedPrefsHelper[SharedPrefConstant.ESTIMATED_BUDGET, ""]
         viewModel.totalAmount.value = sharedPrefsHelper[SharedPrefConstant.TOTAL_AMOUNT, ""]
@@ -527,9 +530,9 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
 
     private fun submitBtnColorVisibility() {
         // Verify all user details are entered
-        if (viewModel.userDetailsValidation() && viewModel.verifyMandatoryQuesAnswered(
-                viewModel.questionListItem,
-                viewModel.eventSelectedAnswerMap
+        if (viewModel.userDetailsValidation(AppConstant.ON_VERIFY) &&
+            viewModel.verifyMandatoryQuesAnswered(
+                viewModel.questionListItem, viewModel.eventSelectedAnswerMap
             )
         ) {
             binding.saveBtn.background = getDrawable(R.drawable.custom_button_corner_ok)
