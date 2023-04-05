@@ -131,4 +131,6 @@ object AppConstant {
 
     //3439
     const val SERVICE_NAME_LIST="Service_Name_List"
+    const val ON_SAVE = "OnSave"
+    const val ON_VERIFY = "OnVerify"
 }
