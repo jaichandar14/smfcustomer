@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:drawable="@drawable/ic_baseline_calendar_month_24" android:state_enabled="false" android:state_focused="true" />
-    <item android:drawable="@drawable/ic_baseline_calendar_month_24" android:state_enabled="true" android:state_focused="true" />
-    <item android:drawable="@drawable/ic_baseline_calendar_month_24" android:state_enabled="false" />
-    <item android:drawable="@color/black" android:state_pressed="true" />
-    <item android:drawable="@drawable/ic_baseline_calendar_month_24" />
+    <item android:drawable="@drawable/availability" android:state_enabled="false" android:state_focused="true" />
+    <item android:drawable="@drawable/availability" android:state_enabled="true" android:state_focused="true" />
+    <item android:drawable="@drawable/availability" android:state_enabled="false" />
+    <item android:drawable="@color/theme_color" android:state_pressed="true" />
+    <item android:drawable="@drawable/availability" />
 
 </selector>

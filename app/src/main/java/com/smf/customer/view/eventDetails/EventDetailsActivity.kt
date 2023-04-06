@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -27,6 +28,7 @@ import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+
 
 class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
     EventDetailsViewModel.CallBackInterface {
@@ -130,7 +132,7 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
     }
 
     override fun onClickNext() {
-        Intent(this, DashBoardActivity::class.java).apply{
+        Intent(this, DashBoardActivity::class.java).apply {
             this.putExtra(AppConstant.ON_EVENT, AppConstant.ON_EVENT)
             startActivity(this)
         }
@@ -197,6 +199,12 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
                 position: Int,
                 id: Long
             ) {
+                // Update text color based on country selection
+                if (viewModel.countryList[position] == getString(R.string.select_your_country)) {
+                    (parent?.getChildAt(0) as TextView).setTextColor(getColor(R.color.gray_text))
+                } else {
+                    (parent?.getChildAt(0) as TextView).setTextColor(getColor(R.color.black))
+                }
                 // Update selected country position
                 viewModel.selectedCountryPosition = position
                 // Update country error visibility
@@ -228,6 +236,12 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
                 position: Int,
                 id: Long
             ) {
+                // Update text color based on state selection
+                if (viewModel.stateList[countryPosition][position] == getString(R.string.select_your_state)) {
+                    (parent?.getChildAt(0) as TextView).setTextColor(getColor(R.color.gray_text))
+                } else {
+                    (parent?.getChildAt(0) as TextView).setTextColor(getColor(R.color.black))
+                }
                 // Update selected state position
                 viewModel.selectedStatePosition = position
                 // Update state error visibility
