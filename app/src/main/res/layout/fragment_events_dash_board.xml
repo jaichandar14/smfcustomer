@@ -7,10 +7,14 @@
 
         <import type="android.view.View" />
 
-
         <variable
             name="events_dashboard_view_model"
             type="com.smf.customer.view.dashboard.fragment.serviceFragment.sharedviewmodel.EventsDashBoardViewModel" />
+        <variable
+            name="visibilityBtn"
+            type="com.smf.customer.view.dashboard.model.EventVisibility"/>
+
+
     </data>
 
     <FrameLayout
@@ -92,6 +96,7 @@
                             tools:listitem="@layout/detailscardview" />
 
                         <androidx.appcompat.widget.AppCompatButton
+                            app:visibility="@{ visibilityBtn.submit ? View.VISIBLE : View.GONE}"
                             android:id="@+id/cancel_btn"
                             android:layout_width="0dp"
                             android:layout_height="@dimen/_35sdp"
@@ -110,6 +115,7 @@
                             app:layout_constraintTop_toTopOf="@+id/save_btn" />
 
                         <androidx.appcompat.widget.AppCompatButton
+                            app:visibility="@{ visibilityBtn.submit ? View.VISIBLE : View.GONE}"
                             android:id="@+id/save_btn"
                             android:layout_width="0dp"
                             android:background="@color/pairing_theme"
@@ -126,6 +132,7 @@
                             app:layout_constraintTop_toBottomOf="@+id/event_details_recyclerview" />
 
                         <ImageView
+                            app:visibility="@{ visibilityBtn.addService ? View.VISIBLE : View.GONE}"
                             android:id="@+id/add_service_icon"
                             android:layout_width="@dimen/_35sdp"
                             android:layout_height="@dimen/_35sdp"
@@ -137,6 +144,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="@+id/service_offered"
                             app:layout_constraintVertical_bias="0.43" />
+
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
