@@ -24,12 +24,14 @@ import com.smf.customer.databinding.FragmentEventsDashBoardBinding
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.dialog.OneButtonDialogFragment
+import com.smf.customer.utility.OnBackPressedFragment
 import com.smf.customer.view.addServices.AddServiceActivity
 import com.smf.customer.view.dashboard.DashBoardActivity
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.adaptor.EventDetailsAdaptor
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.adaptor.StatusDetailsAdaptor
 import com.smf.customer.view.dashboard.fragment.serviceFragment.sharedviewmodel.EventsDashBoardViewModel
 import com.smf.customer.view.dashboard.model.EventServiceInfoDTO
+import com.smf.customer.view.dashboard.model.EventVisibility
 import com.smf.customer.view.eventDetails.EventDetailsActivity
 import com.smf.customer.view.provideservicedetails.ProvideServiceDetailsActivity
 import java.time.LocalDate
@@ -40,7 +42,8 @@ import javax.inject.Inject
 
 class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
     EventsDashBoardViewModel.OnServiceClickListener,
-    EventDetailsAdaptor.OnServiceClickListener, DialogOneButtonListener {
+    EventDetailsAdaptor.OnServiceClickListener, DialogOneButtonListener{
+
 
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
@@ -97,7 +100,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
         viewModel.getEventServiceInfo(sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 1218])
         // 3439 onSubmit btn click for put api cal
         onSubmitBtnClick()
-       
+        OnBackPressedFragment.tag=getString(R.string.eventDashboard)
     }
 
     private fun onSubmitBtnClick() {
@@ -212,9 +215,15 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
     private fun setEventStatus(eventStatus: String, eventTrackStatus: String) {
         if (eventStatus == "NEW" || eventTrackStatus == "Add/Remove Services" || eventTrackStatus == "Order Details") {
             mAdapterStatusDetails.refreshItems(viewModel.setStatusFlowDetails(viewModel.stepOne))
+            mDataBinding.visibilityBtn = EventVisibility(submit = true, addService = true)
         } else if (eventStatus == "PENDING ADMIN APPROVAL" && eventTrackStatus == "Admin Approval") {
             mAdapterStatusDetails.refreshItems(viewModel.setStatusFlowDetails(viewModel.stepTwo))
+            mDataBinding.visibilityBtn = EventVisibility(submit = false, addService = false)
+        } else if (eventStatus == AppConstant.APPROVED) {
+            mAdapterStatusDetails.refreshItems(viewModel.setStatusFlowDetails(viewModel.stepTwo))
+            mDataBinding.visibilityBtn = EventVisibility(submit = false, addService = false)
         }
+
     }
 
     private fun addEventServiceDetails(it: EventServiceDtos, formattedDate: String) {
@@ -263,6 +272,4 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
             startActivity(this)
         }
     }
-
-
 }

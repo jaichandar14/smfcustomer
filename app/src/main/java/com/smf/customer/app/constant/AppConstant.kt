@@ -133,4 +133,8 @@ object AppConstant {
     const val SERVICE_NAME_LIST="Service_Name_List"
     const val ON_SAVE = "OnSave"
     const val ON_VERIFY = "OnVerify"
+
+    // 3452
+    const val BIDDING_STARTED = "BIDDING STARTED"
+    const val ON_SERVICE="serviceDashboard"
 }

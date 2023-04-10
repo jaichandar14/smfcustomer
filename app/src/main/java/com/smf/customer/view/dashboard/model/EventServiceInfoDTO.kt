@@ -11,3 +11,5 @@ data class EventServiceInfoDTO(
     val eventServiceStatus: String?,
     val eventName: String?
 )
+
+data class EventVisibility(var submit:Boolean=true,var addService:Boolean=true)

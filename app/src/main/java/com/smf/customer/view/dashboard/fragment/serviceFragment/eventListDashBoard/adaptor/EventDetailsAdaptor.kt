@@ -1,11 +1,9 @@
 package com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.adaptor
 
 import android.annotation.SuppressLint
-import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.smf.customer.R
 import com.smf.customer.app.base.MyApplication
@@ -65,20 +63,25 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
 
             // 3443
             settingValueUi(myEvents)
-
-    }
+        }
 
         private fun settingValueUi(myEvents: EventServiceInfoDTO) {
-             if (myEvents.eventServiceStatus == AppConstant.PENDING_ADMIN_APPROVAL) {
+            if (myEvents.eventServiceStatus == AppConstant.PENDING_ADMIN_APPROVAL) {
                 binding.statusTxt.text =
                     MyApplication.appContext.getString(R.string.waiting_for_aprproval)
+
+            } else if (myEvents.eventServiceStatus == AppConstant.BIDDING_STARTED) {
+                binding.btnStartService.text =
+                    MyApplication.appContext.getString(R.string.bidding_in_progress)
             }
-            if (myEvents.biddingCutOffDate != null)
-            {
+            if (myEvents.biddingCutOffDate != null) {
                 val cutDate = LocalDate.parse(myEvents.biddingCutOffDate, formatter)
                 val formatter2 = DateTimeFormatter.ofPattern("MMM")
+                val dateNo = DateTimeFormatter.ofPattern("dd")
                 val cutOffDate = cutDate.format(formatter2)
+                val cutOffDay = cutDate.format(dateNo)
                 binding.cutoffMonthText.text = cutOffDate
+                binding.progressDateNumber.text = cutOffDay
             }
             binding.details = myEvents
             binding.progressBar.progress = myEvents.leadPeriod.toInt() * 10
@@ -88,9 +91,9 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
                 Log.d("TAG", "onBind: ${myEvents.serviceName}")
             }
         }
-        }
+    }
 
-        //Method For Refreshing Invoices
+    //Method For Refreshing Invoices
     @SuppressLint("NotifyDataSetChanged")
     fun refreshItems(invoice: List<EventServiceInfoDTO>) {
         myEventsList.clear()
