@@ -5,7 +5,9 @@ import java.math.BigDecimal
 data class ServiceInfoDTO(
     val eventServiceDescriptionDto: EventServiceDescriptionDto,
     val eventServiceId: Int,
-    val questionnaireWrapperDto: QuestionnaireWrapperDto
+    val questionnaireWrapperDto: QuestionnaireWrapperDto,
+    val eventServiceDescriptionId: Long,
+    val eventServiceStatus: String
 )
 
 data class QuestionnaireWrapperDto(
@@ -35,25 +37,27 @@ data class QuestionMetadataService(
     val vendor: String
 )
 
-data class EventServiceVenueDto(
-    val redius: String,
-    val zipCode: String
-)
-
 data class EventServiceDescriptionDto(
     val eventServiceBudgetDto: EventServiceBudgetDto,
     val eventServiceDateDto: EventServiceDateDto,
     val eventServiceVenueDto: EventServiceVenueDto
 )
 
+data class EventServiceVenueDto(
+    val redius: String,
+    val zipCode: String
+)
+
 data class EventServiceDateDto(
     val biddingCutOffDate: Any?,
     val leadPeriod: Int,
     val preferredSlots: List<String>,
-    val serviceDate: String
+    val serviceDate: String,
+    val serviceName: String
 )
 
 data class EventServiceBudgetDto(
     val currencyType: String,
-    val estimatedBudget: BigDecimal
+    val estimatedBudget: BigDecimal,
+    val actualServiceBudget: String?
 )

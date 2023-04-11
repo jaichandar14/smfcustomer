@@ -43,4 +43,17 @@ interface ProvideDetailsService {
         @Header("Authorization") idToken: String, @Body serviceInfo: ServiceInfoDTO
     ): Observable<EventInfoResponseDto>
 
+    // 3453 - Get Service description
+    @GET(BuildConfig.apiType + "event/api/events/event-service-description/{event-service-description-id}")
+    fun getServiceDescription(
+        @Header("Authorization") idToken: String,
+        @Path("event-service-description-id") eventServiceDescriptionId: Long,
+    ): Observable<GetServiceDetailsDTO>
+
+    // 3453 - Post Service description
+    @PUT(BuildConfig.apiType + "event/api/events/event-service-description")
+    fun putServiceDescription(
+        @Header("Authorization") idToken: String, @Body serviceInfo: ServiceInfoDTO
+    ): Observable<EventInfoResponseDto>
+
 }

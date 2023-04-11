@@ -12,7 +12,9 @@
         <variable
             name="status"
             type="java.lang.Boolean" />
-
+        <variable
+            name="modifyStatus"
+            type="java.lang.Boolean" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -97,6 +99,23 @@
                 app:layout_constraintVertical_bias="0.0" />
 
             <TextView
+                android:id="@+id/modify_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:fontFamily="@font/mulish_regular"
+                android:text="@string/modify_order_details"
+                android:textColor="@color/darkblue_smf_font"
+                android:textSize="@dimen/_13sdp"
+                app:visibility="@{modifyStatus.booleanValue ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/event_name_txt"
+                app:layout_constraintTop_toBottomOf="@+id/event_name_txt"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
                 android:id="@+id/event_type_text"
                 android:layout_width="@dimen/_110sdp"
                 android:layout_height="wrap_content"
@@ -109,8 +128,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/event_name_txt"
-                app:layout_constraintTop_toBottomOf="@+id/event_name_txt"
+                app:layout_constraintStart_toStartOf="@+id/modify_txt"
+                app:layout_constraintTop_toBottomOf="@+id/modify_txt"
                 app:layout_constraintVertical_bias="0.0" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -124,7 +143,7 @@
                 app:layout_constraintEnd_toEndOf="@+id/amount_text"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toEndOf="@+id/event_type_text"
-                app:layout_constraintTop_toBottomOf="@+id/event_name_txt"
+                app:layout_constraintTop_toBottomOf="@+id/modify_txt"
                 app:layout_constraintVertical_bias="0.0">
 
                 <TextView

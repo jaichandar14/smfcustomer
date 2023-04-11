@@ -120,6 +120,7 @@ object AppConstant {
     const val EVENT_SERVICE_ID="Event_ServiceId"
     const val SERVICE_CATEGORY_ID="serviceCategoryId"
     const val EVENT_SERVICE_DESCRIPTION_ID="Event_ServiceDescriptionId"
+    const val EVENT_SERVICE_STATUS="eventServiceStatus"
     const val LEAD_PERIOD="Lead_Period"
 
     //3438
@@ -137,4 +138,9 @@ object AppConstant {
     // 3452
     const val BIDDING_STARTED = "BIDDING STARTED"
     const val ON_SERVICE="serviceDashboard"
+
+    // 3453
+    const val MODIFY_ORDER_DETAILS = "ModifyOrderDetails"
+    const val SERVICE_NAME="serviceName"
+    const val PROVIDE_DETAILS="provideDetails"
 }

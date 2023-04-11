@@ -4,10 +4,10 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.smf.customer.data.model.dto.QuestionListItem
+import com.smf.customer.data.model.response.EventQuestionsResponseDTO
 import java.lang.reflect.Type
 import javax.inject.Inject
 import javax.inject.Singleton
-
 
 @Singleton
 open class SharedPrefsHelper
@@ -85,6 +85,20 @@ constructor(private val mSharedPreferences: SharedPreferences) {
         val gson = Gson()
         val json = mSharedPreferences.getString(key, "")
         val type: Type = object : TypeToken<ArrayList<QuestionListItem>>() {}.type
+        return gson.fromJson(json, type)
+    }
+
+    fun putObject(key: String, obj: Any?) {
+        val gson = Gson()
+        val json = gson.toJson(obj)
+        editor.putString(key, json)
+        editor.apply()
+    }
+
+    fun getObject(key: String): EventQuestionsResponseDTO? {
+        val gson = Gson()
+        val json = mSharedPreferences.getString(key, null)
+        val type: Type = object : TypeToken<EventQuestionsResponseDTO>() {}.type
         return gson.fromJson(json, type)
     }
 
