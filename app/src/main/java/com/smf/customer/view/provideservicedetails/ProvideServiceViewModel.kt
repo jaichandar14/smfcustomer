@@ -616,30 +616,32 @@ class ProvideServiceViewModel : BaseViewModel() {
     }
 
     fun getIntentDetails(intent: Intent) {
-        sharedPrefsHelper.put(
-            SharedPrefConstant.SERVICE_NAME,
-            intent.getStringExtra(AppConstant.SERVICE_NAME) ?: ""
-        )
-        sharedPrefsHelper.put(
-            SharedPrefConstant.EVENT_SERVICE_ID,
-            intent.getStringExtra(AppConstant.EVENT_SERVICE_ID) ?: "0"
-        )
-        sharedPrefsHelper.put(
-            SharedPrefConstant.SERVICE_CATEGORY_ID,
-            intent.getStringExtra(AppConstant.SERVICE_CATEGORY_ID) ?: "0"
-        )
-        sharedPrefsHelper.put(
-            SharedPrefConstant.EVENT_SERVICE_DESCRIPTION_ID,
-            intent.getStringExtra(AppConstant.EVENT_SERVICE_DESCRIPTION_ID) ?: "0"
-        )
-        sharedPrefsHelper.put(
-            SharedPrefConstant.EVENT_SERVICE_STATUS,
-            intent.getStringExtra(AppConstant.EVENT_SERVICE_STATUS) ?: ""
-        )
-        sharedPrefsHelper.put(
-            SharedPrefConstant.LEAD_PERIOD,
-            intent.getStringExtra(AppConstant.LEAD_PERIOD) ?: "0"
-        )
+        sharedPrefsHelper.apply {
+            this.put(
+                SharedPrefConstant.SERVICE_NAME,
+                intent.getStringExtra(AppConstant.SERVICE_NAME) ?: ""
+            )
+            this.put(
+                SharedPrefConstant.EVENT_SERVICE_ID,
+                intent.getStringExtra(AppConstant.EVENT_SERVICE_ID) ?: "0"
+            )
+            this.put(
+                SharedPrefConstant.SERVICE_CATEGORY_ID,
+                intent.getStringExtra(AppConstant.SERVICE_CATEGORY_ID) ?: "0"
+            )
+            this.put(
+                SharedPrefConstant.EVENT_SERVICE_DESCRIPTION_ID,
+                intent.getStringExtra(AppConstant.EVENT_SERVICE_DESCRIPTION_ID) ?: "0"
+            )
+            this.put(
+                SharedPrefConstant.EVENT_SERVICE_STATUS,
+                intent.getStringExtra(AppConstant.EVENT_SERVICE_STATUS) ?: ""
+            )
+            this.put(
+                SharedPrefConstant.LEAD_PERIOD,
+                intent.getStringExtra(AppConstant.LEAD_PERIOD) ?: "0"
+            )
+        }
     }
 
     fun editButtonVisibility() {
