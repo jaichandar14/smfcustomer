@@ -249,7 +249,16 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
 
     // 3426 service event details on click provide details button
     override fun onClickProvideDetails(listMyEvents: EventServiceInfoDTO) {
+        goToProvideDetailsPage(listMyEvents, false)
+    }
+
+    override fun onClickModifyDetails(listMyEvents: EventServiceInfoDTO) {
+        goToProvideDetailsPage(listMyEvents, true)
+    }
+
+    private fun goToProvideDetailsPage(listMyEvents: EventServiceInfoDTO, isModify: Boolean) {
         Intent(requireActivity(), ProvideServiceDetailsActivity::class.java).apply {
+            this.putExtra(AppConstant.SERVICE_NAME, listMyEvents.serviceName)
             this.putExtra(
                 AppConstant.EVENT_ID,
                 sharedPrefsHelper[SharedPrefConstant.EVENT_ID, ""]
@@ -261,6 +270,8 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
                 listMyEvents.eventServiceDescriptionId
             )
             this.putExtra(AppConstant.LEAD_PERIOD, listMyEvents.leadPeriod)
+            this.putExtra(AppConstant.EVENT_SERVICE_STATUS, listMyEvents.eventServiceStatus)
+            this.putExtra(AppConstant.MODIFY_ORDER_DETAILS, isModify)
             startActivity(this)
         }
     }

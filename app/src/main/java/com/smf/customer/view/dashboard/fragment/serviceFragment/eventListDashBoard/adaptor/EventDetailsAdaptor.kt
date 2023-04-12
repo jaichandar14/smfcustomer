@@ -60,7 +60,7 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
             //  titleText.text = myEvents.title
             binding.status =
                 (myEvents.eventServiceStatus == AppConstant.NEW) || (myEvents.eventServiceStatus == AppConstant.PENDING_ADMIN_APPROVAL)
-
+            binding.modifyStatus = myEvents.eventServiceStatus == AppConstant.NEW
             // 3443
             settingValueUi(myEvents)
         }
@@ -90,6 +90,9 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
                 callBackInterface?.onClickProvideDetails(myEvents)
                 Log.d("TAG", "onBind: ${myEvents.serviceName}")
             }
+            binding.modifyTxt.setOnClickListener {
+                callBackInterface?.onClickModifyDetails(myEvents)
+            }
         }
     }
 
@@ -111,5 +114,6 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
     // Interface For Invoice Click Listener
     interface OnServiceClickListener {
         fun onClickProvideDetails(listMyEvents: EventServiceInfoDTO)
+        fun onClickModifyDetails(listMyEvents: EventServiceInfoDTO)
     }
 }

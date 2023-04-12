@@ -55,4 +55,18 @@ class ServiceRepositoryImpl @Inject constructor(provideDetailsService: ProvideDe
         return mProvideDetailsService.postServiceDescription(idToken, serviceInfo)
     }
 
+    override fun getServiceDescription(
+        idToken: String,
+        eventServiceDescriptionId: Long
+    ): Observable<GetServiceDetailsDTO> {
+        return mProvideDetailsService.getServiceDescription(idToken, eventServiceDescriptionId)
+    }
+
+    override fun putServiceDescription(
+        idToken: String,
+        serviceInfo: ServiceInfoDTO
+    ): Observable<EventInfoResponseDto> {
+        return mProvideDetailsService.putServiceDescription(idToken, serviceInfo)
+    }
+
 }

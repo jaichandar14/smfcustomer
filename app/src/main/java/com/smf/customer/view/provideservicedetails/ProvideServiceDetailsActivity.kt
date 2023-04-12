@@ -106,6 +106,8 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
             viewModel.serviceDate.value = date
             // Get Questions API call
             viewModel.updateQuestions(true)
+            // Clear EventSelectedAnswerMap
+            viewModel.clearEventSelectedAnswerMap(true)
             // Get slots based on selected date
             viewModel.updateServiceDate(true)
         }
@@ -237,7 +239,7 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
                 viewModel.showTimeSlot()
                 timeSlotsAdapter.setTimeSlotList(it, viewModel.selectedSlotsList)
                 // Verify questions API call required
-                if (viewModel.updateQuestions.value == true) {
+                if (viewModel.getUpdateQuestionsValue()) {
                     // Get Service Questions
                     viewModel.getServiceDetailQuestions()
                 }
@@ -292,14 +294,13 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         viewModel.eventQuestionsResponseDTO.observe(
             this,
             androidx.lifecycle.Observer { eventQuestionsResponseDTO ->
-                if (eventQuestionsResponseDTO != null) {
+                if (eventQuestionsResponseDTO != null && viewModel.getUpdateQuestionsValue()) {
                     viewModel.questionListItem.clear()
                     if (eventQuestionsResponseDTO.data.questionnaireDtos.isEmpty()) {
                         viewModel.hideStartQuestionsBtn()
                     } else {
                         viewModel.showStartQuestionsBtn()
-                        viewModel.eventSelectedAnswerMap.clear()
-                        editButtonVisibility()
+                        viewModel.editButtonVisibility()
                         // Update Questions
                         updateQuestionsList(eventQuestionsResponseDTO)
                         // Update Question Number
@@ -450,81 +451,33 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
     }
 
     private fun setInitialValues() {
-        if (intent.extras?.getString(AppConstant.SERVICE_QUESTIONS) != AppConstant.SERVICE_QUESTIONS) {
-            sharedPrefsHelper.put(
-                SharedPrefConstant.EVENT_SERVICE_ID,
-                intent.getStringExtra(AppConstant.EVENT_SERVICE_ID) ?: "0"
-            )
-            sharedPrefsHelper.put(
-                SharedPrefConstant.SERVICE_CATEGORY_ID,
-                intent.getStringExtra(AppConstant.SERVICE_CATEGORY_ID) ?: "0"
-            )
-            sharedPrefsHelper.put(
-                SharedPrefConstant.EVENT_SERVICE_DESCRIPTION_ID,
-                intent.getStringExtra(AppConstant.EVENT_SERVICE_DESCRIPTION_ID) ?: "0"
-            )
-            sharedPrefsHelper.put(
-                SharedPrefConstant.LEAD_PERIOD,
-                intent.getStringExtra(AppConstant.LEAD_PERIOD) ?: "0"
-            )
-            viewModel.serviceDate.value = sharedPrefsHelper[SharedPrefConstant.EVENT_DATE, ""]
-            viewModel.zipCode.value = sharedPrefsHelper[SharedPrefConstant.ZIPCODE, ""]
-            // Get Initial Questions API call
-            viewModel.updateQuestions(true)
-            // Get Initial time slots based on event date
-            viewModel.updateServiceDate(true)
-        } else {
-            updateEnteredValues()
+        if (intent.extras?.getString(AppConstant.SERVICE_QUESTIONS) == AppConstant.SERVICE_QUESTIONS) {
+            viewModel.updateEnteredValues()
+            viewModel.setServiceName()
             // Avoid getting initial Questions API call
             viewModel.updateQuestions(false)
+            // Clear EventSelectedAnswerMap
+            viewModel.clearEventSelectedAnswerMap(false)
             // Get Initial time slots based on event date
             viewModel.updateServiceDate(false)
-        }
-    }
-
-    private fun updateEnteredValues() {
-        viewModel.serviceDate.value = sharedPrefsHelper[SharedPrefConstant.SERVICE_DATE, ""]
-        // Lead period verification
-        viewModel.updateLeadPeriodVerification(viewModel.serviceDate.value!!)
-        viewModel.timeSlotList.value =
-            sharedPrefsHelper.getArrayList(SharedPrefConstant.TIME_SLOT_LIST) as ArrayList<String>
-        viewModel.selectedSlotsList =
-            sharedPrefsHelper.getArrayList(SharedPrefConstant.SELECTED_TIME_SLOTS) as ArrayList<String>
-        viewModel.zipCode.value = sharedPrefsHelper[SharedPrefConstant.SERVICE_ZIPCODE, ""]
-        viewModel.estimatedBudget.value = sharedPrefsHelper[SharedPrefConstant.ESTIMATED_BUDGET, ""]
-        viewModel.totalAmount.value = sharedPrefsHelper[SharedPrefConstant.TOTAL_AMOUNT, ""]
-        viewModel.remainingAmount.value = sharedPrefsHelper[SharedPrefConstant.REMAINING_AMOUNT, ""]
-        // show total and remaining amount to UI
-        if (viewModel.estimatedBudget.value.isNullOrEmpty()) {
-            viewModel.hideRemainingAmountLayout()
+        } else if (intent.extras?.getBoolean(AppConstant.MODIFY_ORDER_DETAILS) == true) {
+            // Update intent details to shared preferences
+            viewModel.getIntentDetails(intent)
+            viewModel.setServiceName()
+            // Get Service Description for modify
+            viewModel.getServiceDescription()
         } else {
-            viewModel.showRemainingAmountLayout()
-        }
-        viewModel.milePosition.value = sharedPrefsHelper[SharedPrefConstant.SERVICE_MILES, 0]
-        // Question data
-        viewModel.questionListItem =
-            sharedPrefsHelper.getQuestionsList(SharedPrefConstant.QUESTION_LIST_ITEM)
-        viewModel.questionNumberList =
-            sharedPrefsHelper.getArrayIntList(SharedPrefConstant.QUESTION_NUMBER_LIST)
-        // Update selected questions answers
-        viewModel.eventSelectedAnswerMap =
-            sharedPrefsHelper.getHashMap(SharedPrefConstant.SERVICE_SELECTED_ANSWER_MAP) as HashMap<Int, ArrayList<String>>
-        // Update questions button visibility
-        if (viewModel.questionListItem.isNotEmpty()) {
-            viewModel.showStartQuestionsBtn()
-            editButtonVisibility()
-        }
-    }
-
-    private fun editButtonVisibility() {
-        // Update questions button text
-        if (viewModel.eventSelectedAnswerMap.isNotEmpty()) {
-            viewModel.questionBtnText.value =
-                getString(R.string.view_order) + " {${viewModel.eventSelectedAnswerMap.keys.size}}"
-            viewModel.editImageVisibility.value = true
-        } else {
-            viewModel.questionBtnText.value = getString(R.string.start_questions)
-            viewModel.editImageVisibility.value = false
+            // Update intent details to shared preferences
+            viewModel.getIntentDetails(intent)
+            viewModel.serviceDate.value = sharedPrefsHelper[SharedPrefConstant.EVENT_DATE, ""]
+            viewModel.zipCode.value = sharedPrefsHelper[SharedPrefConstant.ZIPCODE, ""]
+            viewModel.setServiceName()
+            // Get Initial Questions API call
+            viewModel.updateQuestions(true)
+            // Clear EventSelectedAnswerMap
+            viewModel.clearEventSelectedAnswerMap(true)
+            // Get Initial time slots based on event date
+            viewModel.updateServiceDate(true)
         }
     }
 

@@ -124,6 +124,12 @@ object SharedPrefConstant {
     val SERVICE_MILES: String
         get() = "serviceMiles"
 
+    val SERVICE_NAME: String
+        get() = "serviceName"
+
+    val EVENT_SERVICE_STATUS: String
+        get() = "eventServiceStatus"
+
     val EVENT_SERVICE_ID: String
         get() = "eventServiceId"
 
@@ -144,4 +150,7 @@ object SharedPrefConstant {
 
     val QUESTION_NUMBER_LIST: String
         get() = "questionNumberListSharedPerf"
+
+    val SERVICE_QUESTIONS_RES_DTO: String
+        get() = "eventQuestionsResponseDTO"
 }

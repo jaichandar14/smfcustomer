@@ -264,4 +264,7 @@
     <string name="bidding_in_progress">Bidding in progress</string>
     <string name="eventDashboard">EventDashBoard</string>
     <string name="back_message">Please click BACK again to exit</string>
+    <string name="provide">Provide</string>
+    <string name="details">details</string>
+    <string name="modify_order_details">Modify order details</string>
 </resources>
