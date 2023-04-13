@@ -343,8 +343,6 @@
                         android:buttonTint="@color/black"
                         android:checked="@={eventDetailsViewModel.iKnowVenue}"
                         android:fontFamily="@font/mulish_medium"
-                        android:gravity="center_horizontal|start"
-                        android:paddingTop="@dimen/_2sdp"
                         android:text="@string/i_know_my_venue_details"
                         android:textColor="@color/gray_text"
                         android:textSize="@dimen/_13ssp" />
@@ -356,8 +354,6 @@
                         android:buttonTint="@color/black"
                         android:checked="@={eventDetailsViewModel.iKnowVenue2 }"
                         android:fontFamily="@font/mulish_medium"
-                        android:gravity="center_horizontal|start"
-                        android:paddingTop="@dimen/_2sdp"
                         android:text="@string/i_will_be_selecting_venue_in_service_location"
                         android:textColor="@color/gray_text"
                         android:textSize="@dimen/_13ssp" />
@@ -955,9 +951,9 @@
 
         </ScrollView>
 
-        <!--        <include-->
-        <!--            layout="@layout/progressbar"-->
-        <!--            app:visibility="@{eventDetailsViewModel.showLoading.booleanValue ? View.VISIBLE : View.GONE}" />-->
+        <include
+            layout="@layout/progressbar"
+            app:visibility="@{eventDetailsViewModel.showLoading.booleanValue ? View.VISIBLE : View.GONE}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
