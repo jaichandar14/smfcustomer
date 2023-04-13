@@ -20,6 +20,7 @@ import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import io.reactivex.Observable
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.*
 import javax.inject.Inject
 
 class ProvideServiceViewModel : BaseViewModel() {
@@ -473,7 +474,7 @@ class ProvideServiceViewModel : BaseViewModel() {
             MyApplication.appContext.resources.getString(R.string.provide) +
                     " ${
                         sharedPrefsHelper[SharedPrefConstant.SERVICE_NAME, ""]
-                            .replaceFirstChar(Char::lowercase)
+                            .lowercase(Locale.getDefault())
                     } " +
                     MyApplication.appContext.resources.getString(R.string.details)
     }
