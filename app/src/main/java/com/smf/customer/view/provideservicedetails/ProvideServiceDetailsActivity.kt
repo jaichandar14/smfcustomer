@@ -30,6 +30,7 @@ import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.dialog.DialogConstant
 import com.smf.customer.dialog.TwoButtonDialogFragment
 import com.smf.customer.listener.DialogTwoButtonListener
+import com.smf.customer.utility.Util
 import com.smf.customer.view.dashboard.DashBoardActivity
 import com.smf.customer.view.provideservicedetails.adapter.TimeSlotsAdapter
 import com.smf.customer.view.questions.QuestionsActivity
@@ -205,7 +206,7 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
 
     private fun estimatedBudgetFocusListener() {
         binding.estimatedBudget.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus.not()) {
+            if (hasFocus.not() && Util.amountValidation(viewModel.estimatedBudget.value.toString())) {
                 viewModel.setDoBudgetAPICall(true)
             }
         }
@@ -250,8 +251,10 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         viewModel.estimatedBudget.observe(this, androidx.lifecycle.Observer {
             if (it != null) {
                 // Refresh error message visibility
-                if (it.isNotEmpty() && viewModel.amountErrorVisibility.value == true) {
+                if (it.isNotEmpty() && Util.amountValidation(it)) {
                     viewModel.hideAmountErrorText()
+                } else {
+                    viewModel.showAmountErrorText(getString(R.string.please_enter_the_valid_))
                 }
                 // Update submit button background color
                 submitBtnColorVisibility()
@@ -357,14 +360,9 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
 
         val totalBudget = getExactAmountToUI(budgetCalcInfoDTO.data.estimatedEventBudget)
         val remainingBudget = getExactAmountToUI(budgetCalcInfoDTO.data.remainingBudget)
-
-        if (budgetCalcInfoDTO.data.currencyType == AppConstant.NULL) {
-            viewModel.setTotalAmount(budgetCalcInfoDTO.data.currencyType + "  $totalBudget")
-            viewModel.setRemainingAmount(budgetCalcInfoDTO.data.currencyType + "  $remainingBudget")
-        } else {
-            viewModel.setTotalAmount("${getString(R.string.dollar)}  " + totalBudget)
-            viewModel.setRemainingAmount("${getString(R.string.dollar)}  " + remainingBudget)
-        }
+        // Update total and remaining budget value
+        viewModel.setTotalAmount("${viewModel.estimatedBudgetSymbol.value}  " + totalBudget)
+        viewModel.setRemainingAmount("${viewModel.estimatedBudgetSymbol.value}  " + remainingBudget)
     }
 
     // Get exact value to show UI
@@ -377,14 +375,13 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
     }
 
     private fun showEstimationDialog(budgetCalcInfoDTO: BudgetCalcInfoDTO) {
-        var remainingBudgetAmount = budgetCalcInfoDTO.data.remainingBudget.toString()
+        var remainingBudgetAmount = getExactAmountToUI(budgetCalcInfoDTO.data.remainingBudget)
         if (remainingBudgetAmount.startsWith("-")) {
             remainingBudgetAmount =
                 remainingBudgetAmount.substring(1, remainingBudgetAmount.length - 1)
         }
         // For update totalAmount while serviceAmount exceeds the totalAmount
-        viewModel.updateTotalAmount =
-            (budgetCalcInfoDTO.data.estimatedEventBudget + remainingBudgetAmount.toBigDecimal())
+        viewModel.updateTotalAmount = viewModel.estimatedBudget.value ?: 0
         val message =
             "${getString(R.string.service_Budget_Exceeds_)} $remainingBudgetAmount ${
                 getString(R.string.would_you_like_to_update_)

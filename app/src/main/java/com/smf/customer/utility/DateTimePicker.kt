@@ -3,8 +3,6 @@ package com.smf.customer.utility
 import android.annotation.SuppressLint
 import android.content.Context
 import android.text.format.DateFormat
-import com.google.android.material.datepicker.CalendarConstraints
-import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_KEYBOARD
@@ -28,12 +26,10 @@ object DateTimePicker {
     }
 
     fun getDatePicker(title: String, selectedDate: Long?): MaterialDatePicker<Long> {
-        val constraintsBuilder =
-            CalendarConstraints.Builder().setValidator(DateValidatorPointForward.now())
         return MaterialDatePicker.Builder.datePicker().setTitleText(title)
             .setSelection(selectedDate)
 //            .setTheme(R.style.ThemeOverlay_App_DatePicker)
-            .setCalendarConstraints(constraintsBuilder.build()).build()
+            .build()
     }
 
     fun getTimePicker(context: Context, hour: Int, minute: Int, title: Int): MaterialTimePicker {

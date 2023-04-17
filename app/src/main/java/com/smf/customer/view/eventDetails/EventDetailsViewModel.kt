@@ -27,7 +27,7 @@ class EventDetailsViewModel : BaseViewModel() {
     var eventName = MutableLiveData<String>("")
     var eventDate = MutableLiveData<String>("")
     var noOfAttendees = MutableLiveData<String>("")
-    var totalBudget = MutableLiveData<String>("")
+    var totalBudget = MutableLiveData<String>(null)
     var address1 = MutableLiveData<String>("")
     var address2 = MutableLiveData<String>("")
     var city = MutableLiveData<String>("")
@@ -101,7 +101,7 @@ class EventDetailsViewModel : BaseViewModel() {
                 if (eventName.value.isNullOrEmpty().not() && eventDate.value.isNullOrEmpty()
                         .not() &&
                     noOfAttendees.value.isNullOrEmpty().not() && totalBudget.value.isNullOrEmpty()
-                        .not() &&
+                        .not() && totalBudgetError.value != true &&
                     zipCode.value.isNullOrEmpty().not() && name.value.isNullOrEmpty().not() &&
                     mobileNumber.value.isNullOrEmpty().not() && emailId.value.isNullOrEmpty().not()
                 ) {
@@ -114,7 +114,7 @@ class EventDetailsViewModel : BaseViewModel() {
             } else {
                 if (eventName.value.isNullOrEmpty().not() && eventDate.value.isNullOrEmpty().not()
                     && noOfAttendees.value.isNullOrEmpty().not() &&
-                    totalBudget.value.isNullOrEmpty().not() &&
+                    totalBudget.value.isNullOrEmpty().not() && totalBudgetError.value != true &&
                     address1.value.isNullOrEmpty().not() && address2.value.isNullOrEmpty().not()
                     && selectedCountryPosition != 0 && city.value.isNullOrEmpty().not()
                     && zipCode.value.isNullOrEmpty().not() &&
@@ -356,7 +356,7 @@ class EventDetailsViewModel : BaseViewModel() {
             "",
             noOfAttendees.value!!,
             currencyTypeList[currencyPosition.value!!],
-            totalBudget.value!!.toInt(),
+            totalBudget.value!!.toBigDecimal(),
             eventDate.value!!,
             eventName.value!!
         )

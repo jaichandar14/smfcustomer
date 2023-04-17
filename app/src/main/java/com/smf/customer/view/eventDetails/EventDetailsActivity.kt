@@ -173,7 +173,7 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
 
     private fun initializeCurrencyType() {
         val arrayAdapterCurrency = ArrayAdapter(
-            applicationContext, R.layout.spinner_text_view, viewModel.currencyTypeList
+            applicationContext, R.layout.currency_spinner_text_view, viewModel.currencyTypeList
         )
         binding.currencyType.adapter = arrayAdapterCurrency
     }
@@ -311,7 +311,9 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
             viewModel.noOfAttendeesError.value = false
         })
         viewModel.totalBudget.observe(this, Observer {
-            viewModel.totalBudgetError.value = false
+            if (it != null) {
+                viewModel.totalBudgetError.value = !(it.isNotEmpty() && Util.amountValidation(it))
+            }
         })
         viewModel.address1.observe(this, Observer {
             viewModel.address1Error.value = false
