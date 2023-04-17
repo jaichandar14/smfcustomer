@@ -354,23 +354,24 @@ class EventDetailsViewModel : BaseViewModel() {
     private fun createEventMetaDataDto(): EventMetaDataDto {
         val eventInformationDto = EventInformationDto(
             "",
-            noOfAttendees.value!!,
-            currencyTypeList[currencyPosition.value!!],
-            totalBudget.value!!.toBigDecimal(),
-            eventDate.value!!,
-            eventName.value!!
+            noOfAttendees.value ?: "",
+            currencyTypeList[currencyPosition.value ?: 0],
+            totalBudget.value?.toBigDecimal() ?: "0".toBigDecimal(),
+            eventDate.value ?: "",
+            eventName.value ?: ""
         )
-        val hostInformationDto =
-            HostInformationDto(emailId.value!!, mobileNumber.value!!, name.value!!)
+        val hostInformationDto = HostInformationDto(
+            emailId.value ?: "", mobileNumber.value ?: "", name.value ?: ""
+        )
 
         val venueInformationDto = VenueInformationDto(
-            address1.value!!,
-            address2.value!!,
-            city.value!!,
+            address1.value ?: "",
+            address2.value ?: "",
+            city.value ?: "",
             countryList[selectedCountryPosition],
-            iKnowVenue.value!!,
+            iKnowVenue.value ?: false,
             stateList[selectedCountryPosition][selectedStatePosition],
-            zipCode.value!!
+            zipCode.value ?: ""
         )
         return EventMetaDataDto(
             eventInformationDto, hostInformationDto, venueInformationDto
