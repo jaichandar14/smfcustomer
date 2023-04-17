@@ -7,8 +7,8 @@ import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.data.model.response.*
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.model.ItemClass
-import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.expandablelist.ChildData
 import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.expandablelist.ParentData
+import com.smf.customer.view.dashboard.model.EventStatusDTO
 import io.reactivex.Observable
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -22,6 +22,7 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
     lateinit var sharedPrefsHelper: SharedPrefsHelper
     var countApi: Int = 1
     private var eventTrackStatus: String? = null
+     var isExpandable=true
 
     init {
         MyApplication.applicationComponent?.inject(this)
@@ -161,59 +162,12 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
         }
         return itemClasses
     }
-
-    // 3438 setting bidding details for expandable view
-    fun setBiddingDetails(): MutableList<ParentData> {
-
-        val parentData: Array<String> =
-            arrayOf(
-                AppConstant.BIDDING_RESPONSE,
-                AppConstant.PAYMENT,
-                AppConstant.REVIEW_AND_FEEDBACK
-            )
-
-        // 3438 Currently using manual data
-        val childDataData1= ArrayList<ServiceProviderBiddingResponseDto> ()
-
-
-        // Need to do some changes in future
-        if (biddingResponseData.isEmpty()){
-            childDataData1.add(ServiceProviderBiddingResponseDto("jai ",
-                BigDecimal(5200),"$","Thanjvau1","bidding"))
-            childDataData1.add(ServiceProviderBiddingResponseDto("jai catering",
-                BigDecimal(1200),"$","Thanjvau2","bidding"))
-            childDataData1.add(ServiceProviderBiddingResponseDto("jai watch",
-                BigDecimal(4200),"$","Thanjva3","bidding"))
-            childDataData1.add(ServiceProviderBiddingResponseDto("jai food",
-                BigDecimal(1200),"$","Thanjva4","bidding"))
-        }else{
-            childDataData1.addAll(biddingResponseData)
-        }
-
-//        biddingResponseData.forEach {
-//            childDataData1.add(it.serviceProviderName)
-//        }
-
-//        = mutableListOf(
-//            ChildData("Anathapur"), ChildData("Chittoor"), ChildData("Nellore"), ChildData("Guntur")
-//        )
-//        val childDataData2: MutableList<ChildData> = mutableListOf(
-//            ChildData("Rajanna Sircilla"), ChildData("Karimnagar"), ChildData("Siddipet")
-//        )
-//        val childDataData3: MutableList<ChildData> =
-//            mutableListOf(ChildData("Chennai"), ChildData("Erode"))
-
-        val parentObj1 = ParentData(parentTitle = parentData[0], subList = childDataData1)
-        val parentObj2 = ParentData(parentTitle = parentData[1])
-        val parentObj3 = ParentData(parentTitle = parentData[2])
-
-        listData.add(parentObj1)
-        listData.add(parentObj2)
-        listData.add(parentObj3)
-
-        return listData
-    }
-
+    val parentData: Array<String> =
+        arrayOf(
+            AppConstant.BIDDING_RESPONSE,
+            AppConstant.PAYMENT,
+            AppConstant.REVIEW_AND_FEEDBACK
+        )
     private var callBackInterface: OnServiceClickListener? = null
     private var callBackServiceInterface: OnServiceDetailsClickListener? = null
     // Initializing Listener Interface

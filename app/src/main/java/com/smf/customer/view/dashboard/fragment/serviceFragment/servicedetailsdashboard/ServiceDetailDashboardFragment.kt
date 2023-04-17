@@ -1,5 +1,6 @@
 package com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,20 +16,21 @@ import com.smf.customer.R
 import com.smf.customer.app.base.BaseFragment
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.data.model.response.DataBidding
+import com.smf.customer.data.model.response.ServiceProviderBiddingResponseDto
 import com.smf.customer.databinding.FragmentServiceDetailDashboardBinding
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.adaptor.StatusDetailsAdaptor
-import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.adaapter.ServiceDashboardAdapter
 import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.adaapter.ServiceDetailsAdapter
+import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.adaapter.ServiceProvidersListAdapter
 import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.adaapter.SlotAdapter
 import com.smf.customer.view.dashboard.fragment.serviceFragment.sharedviewmodel.EventsDashBoardViewModel
 import com.smf.customer.view.dashboard.model.EventStatusDTO
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 class ServiceDetailDashboardFragment(var serviceDescriptionId: String?) :
@@ -36,7 +38,7 @@ class ServiceDetailDashboardFragment(var serviceDescriptionId: String?) :
     EventsDashBoardViewModel.OnServiceDetailsClickListener {
     private lateinit var mDataBinding: FragmentServiceDetailDashboardBinding
     private lateinit var mBiddingDetailsRecyclerView: RecyclerView
-    private lateinit var mAdapterBiddingDetails: ServiceDashboardAdapter
+    private lateinit var mAdapterBiddingServiceProvidersDetails: ServiceProvidersListAdapter
     private lateinit var mStatusDetailsRecyclerView: RecyclerView
     private lateinit var mAdapterStatusDetails: StatusDetailsAdaptor
     private lateinit var mServiceDetailsRecyclerView: RecyclerView
@@ -45,6 +47,7 @@ class ServiceDetailDashboardFragment(var serviceDescriptionId: String?) :
     private lateinit var mAdapterSlot: SlotAdapter
     private val formatter: DateTimeFormatter =
         DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.ENGLISH)
+    val childDataData1 = java.util.ArrayList<ServiceProviderBiddingResponseDto>()
 
 
     @Inject
@@ -73,29 +76,61 @@ class ServiceDetailDashboardFragment(var serviceDescriptionId: String?) :
         super.onViewCreated(view, savedInstanceState)
         // Initialize the call back listeners
         viewModel.setOnServiceClickListener(this)
+        // 3460 Service Provider list recycler view
         mBiddingFlowRecycler()
+        // 3460 Status flow recycler view
         mStatusFlowRecycler()
+        // 3460 Bidding details recycler view
         mServiceRecyclerView()
+        // 3460 Time slots recycler view
         mSlotRecyclerView()
         setEventServiceDetails()
+        // 3460 pull down swipe refresh
+        onSwipeRefresh()
         mAdapterStatusDetails.refreshItems(viewModel.setStatusFlowDetails(viewModel.stepThree))
-        Log.d(TAG, "onViewCreated service Dashboard: $serviceDescriptionId")
         serviceDescriptionId?.toLong()?.let {
             viewModel.getBiddingResponse(
                 sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0], it
             )
+        }
+        mAdapterBiddingServiceProvidersDetails.refreshItems(
+            viewModel.parentData,
+            viewModel.isExpandable,
+            childServiceProvideDetails(childDataData1)
+        )
+
+    }
+
+    private fun onSwipeRefresh() {
+        mDataBinding.swipeRefresh.setOnRefreshListener {
+            // Reload current fragment
+            onReload()
+        }
+    }
+
+    private fun onReload() {
+        // Reload current fragment
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            requireActivity().supportFragmentManager.beginTransaction().detach(this)
+                .commitNow();
+            requireActivity().supportFragmentManager.beginTransaction().attach(this)
+                .commitNow();
+        } else {
+            requireActivity().supportFragmentManager.beginTransaction().detach(this)
+                .attach(this).commit();
         }
     }
 
     // 3438 Intializing bidding recycler
     private fun mBiddingFlowRecycler() {
         mBiddingDetailsRecyclerView = mDataBinding.exRecycle
-        mAdapterBiddingDetails =
-            ServiceDashboardAdapter(requireContext(), viewModel.setBiddingDetails())
+        mAdapterBiddingServiceProvidersDetails =
+            ServiceProvidersListAdapter()
         mBiddingDetailsRecyclerView.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-        mBiddingDetailsRecyclerView.adapter = mAdapterBiddingDetails
+        mBiddingDetailsRecyclerView.adapter = mAdapterBiddingServiceProvidersDetails
     }
+
     private fun setEventServiceDetails() {
         val date = LocalDate.parse(
             sharedPrefsHelper[SharedPrefConstant.EVENT_DATE, ""], formatter
@@ -107,6 +142,7 @@ class ServiceDetailDashboardFragment(var serviceDescriptionId: String?) :
         mDataBinding.statusLayout.titleTxt.text =
             sharedPrefsHelper[SharedPrefConstant.EVENT_NAME, ""]
     }
+
     // 3438 Intializing status recycler
     private fun mStatusFlowRecycler() {
         mStatusDetailsRecyclerView = mDataBinding.statusLayout.stepperListview
@@ -142,26 +178,81 @@ class ServiceDetailDashboardFragment(var serviceDescriptionId: String?) :
         Log.d(TAG, "getBiddingResponse: get the log")
         val formatter1 = DateTimeFormatter.ofPattern("dd MMM yyyy")
         val formattedDate = response.bidRequestedDate?.format(formatter1)
-        var event = ArrayList<EventStatusDTO>()
-        event.add(EventStatusDTO(formattedDate, getString(R.string.cut_off_date)))
-        event.add(
-            EventStatusDTO(
-                "${response.bidRequestedCount.toString()} ${getString(R.string.bidders)}",
-                getString(R.string.request_posted)
-            )
+        mAdapterBiddingServiceProvidersDetails.refreshItems(
+            viewModel.parentData,
+            viewModel.isExpandable,
+            settingServiceProviderChildListUI(response)
         )
-        event.add(
-            EventStatusDTO(
-                "${response.biddingResponseCount.toString()} ${getString(R.string.bidders)}",
-                getString(R.string.responses_received)
-            )
-        )
-        mAdapterServiceDetails.refreshItems(event)
+        mAdapterServiceDetails.refreshItems(settingServiceAdapterUi(response, formattedDate))
         mDataBinding.timeLeftTxt.text =
             response.timeLeft.toString() + " ${getString(R.string.days)}"
         var preferredSlots = ArrayList<String>()
         preferredSlots.addAll(response.preferredTimeSlots)
         mAdapterSlot.refreshItems(preferredSlots)
+    }
+
+    private fun settingServiceProviderChildListUI(response: DataBidding): ArrayList<ServiceProviderBiddingResponseDto> {
+        // Need to do some changes in future
+        if (response.serviceProviderBiddingResponseDtos.isEmpty()) {
+            childDataData1.addAll(childServiceProvideDetails(childDataData1))
+        } else {
+            childDataData1.addAll(response.serviceProviderBiddingResponseDtos)
+        }
+
+        return childDataData1
+    }
+
+    // 3460 Manual data used future we need to change
+    private fun childServiceProvideDetails(childDataData1: ArrayList<ServiceProviderBiddingResponseDto>): ArrayList<ServiceProviderBiddingResponseDto> {
+        childDataData1.run {
+            add(
+                ServiceProviderBiddingResponseDto(
+                    "jai ",
+                    BigDecimal(5200), "$", "Thanjvau1", "bidding"
+                )
+            )
+            add(
+                ServiceProviderBiddingResponseDto(
+                    "jai catering",
+                    BigDecimal(1200), "$", "Thanjvau2", "bidding"
+                )
+            )
+            add(
+                ServiceProviderBiddingResponseDto(
+                    "jai watch",
+                    BigDecimal(4200), "$", "Thanjva3", "bidding"
+                )
+            )
+            add(
+                ServiceProviderBiddingResponseDto(
+                    "jai food",
+                    BigDecimal(1200), "$", "Thanjva4", "bidding"
+                )
+            )
+        }
+        return childDataData1
+    }
+
+    private fun settingServiceAdapterUi(
+        response: DataBidding,
+        formattedDate: String?
+    ): ArrayList<EventStatusDTO> {
+        var event = java.util.ArrayList<EventStatusDTO>().apply {
+            add(EventStatusDTO(formattedDate, getString(R.string.cut_off_date)))
+            add(
+                EventStatusDTO(
+                    "${response.bidRequestedCount.toString()} ${getString(R.string.bidders)}",
+                    getString(R.string.request_posted)
+                )
+            )
+            add(
+                EventStatusDTO(
+                    "${response.biddingResponseCount.toString()} ${getString(R.string.bidders)}",
+                    getString(R.string.responses_received)
+                )
+            )
+        }
+        return event
     }
 
 
