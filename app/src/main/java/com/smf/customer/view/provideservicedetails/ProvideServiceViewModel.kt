@@ -284,6 +284,7 @@ class ProvideServiceViewModel : BaseViewModel() {
                     from == AppConstant.ON_SAVE
                 }
                 && estimatedBudget.value.isNullOrEmpty().not() &&
+                getAmountErrorVisibility().not() &&
                 zipCode.value.isNullOrEmpty().not())
     }
 
@@ -392,6 +393,8 @@ class ProvideServiceViewModel : BaseViewModel() {
     fun hideAmountErrorText() {
         amountErrorVisibility.value = false
     }
+
+    private fun getAmountErrorVisibility(): Boolean = amountErrorVisibility.value!!
 
     fun setDoBudgetAPICall(value: Boolean) {
         doBudgetAPICall.value = value
@@ -593,7 +596,7 @@ class ProvideServiceViewModel : BaseViewModel() {
         totalAmount.value = sharedPrefsHelper[SharedPrefConstant.TOTAL_AMOUNT, ""]
         remainingAmount.value = sharedPrefsHelper[SharedPrefConstant.REMAINING_AMOUNT, ""]
         // show total and remaining amount to UI
-        if (estimatedBudget.value.isNullOrEmpty()) {
+        if (totalAmount.value.isNullOrEmpty() && remainingAmount.value.isNullOrEmpty()) {
             hideRemainingAmountLayout()
         } else {
             showRemainingAmountLayout()

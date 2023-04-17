@@ -27,7 +27,7 @@ class EventDetailsViewModel : BaseViewModel() {
     var eventName = MutableLiveData<String>("")
     var eventDate = MutableLiveData<String>("")
     var noOfAttendees = MutableLiveData<String>("")
-    var totalBudget = MutableLiveData<String>("")
+    var totalBudget = MutableLiveData<String>(null)
     var address1 = MutableLiveData<String>("")
     var address2 = MutableLiveData<String>("")
     var city = MutableLiveData<String>("")
@@ -101,7 +101,7 @@ class EventDetailsViewModel : BaseViewModel() {
                 if (eventName.value.isNullOrEmpty().not() && eventDate.value.isNullOrEmpty()
                         .not() &&
                     noOfAttendees.value.isNullOrEmpty().not() && totalBudget.value.isNullOrEmpty()
-                        .not() &&
+                        .not() && totalBudgetError.value != true &&
                     zipCode.value.isNullOrEmpty().not() && name.value.isNullOrEmpty().not() &&
                     mobileNumber.value.isNullOrEmpty().not() && emailId.value.isNullOrEmpty().not()
                 ) {
@@ -114,7 +114,7 @@ class EventDetailsViewModel : BaseViewModel() {
             } else {
                 if (eventName.value.isNullOrEmpty().not() && eventDate.value.isNullOrEmpty().not()
                     && noOfAttendees.value.isNullOrEmpty().not() &&
-                    totalBudget.value.isNullOrEmpty().not() &&
+                    totalBudget.value.isNullOrEmpty().not() && totalBudgetError.value != true &&
                     address1.value.isNullOrEmpty().not() && address2.value.isNullOrEmpty().not()
                     && selectedCountryPosition != 0 && city.value.isNullOrEmpty().not()
                     && zipCode.value.isNullOrEmpty().not() &&
@@ -354,23 +354,24 @@ class EventDetailsViewModel : BaseViewModel() {
     private fun createEventMetaDataDto(): EventMetaDataDto {
         val eventInformationDto = EventInformationDto(
             "",
-            noOfAttendees.value!!,
-            currencyTypeList[currencyPosition.value!!],
-            totalBudget.value!!.toInt(),
-            eventDate.value!!,
-            eventName.value!!
+            noOfAttendees.value ?: "",
+            currencyTypeList[currencyPosition.value ?: 0],
+            totalBudget.value?.toBigDecimal() ?: "0".toBigDecimal(),
+            eventDate.value ?: "",
+            eventName.value ?: ""
         )
-        val hostInformationDto =
-            HostInformationDto(emailId.value!!, mobileNumber.value!!, name.value!!)
+        val hostInformationDto = HostInformationDto(
+            emailId.value ?: "", mobileNumber.value ?: "", name.value ?: ""
+        )
 
         val venueInformationDto = VenueInformationDto(
-            address1.value!!,
-            address2.value!!,
-            city.value!!,
+            address1.value ?: "",
+            address2.value ?: "",
+            city.value ?: "",
             countryList[selectedCountryPosition],
-            iKnowVenue.value!!,
+            iKnowVenue.value ?: false,
             stateList[selectedCountryPosition][selectedStatePosition],
-            zipCode.value!!
+            zipCode.value ?: ""
         )
         return EventMetaDataDto(
             eventInformationDto, hostInformationDto, venueInformationDto

@@ -1,5 +1,7 @@
 package com.smf.customer.data.model.request
 
+import java.math.BigDecimal
+
 data class EventInfoDTO(
     val eventId: Int,
     val eventMetaDataDto: EventMetaDataDto,
@@ -13,7 +15,7 @@ data class EventInformationDto(
     val actualEventBudget: String,
     val attendeesCount: String,
     val currencyType: String,
-    val estimatedEventBudget: Int,
+    val estimatedEventBudget: BigDecimal,
     val eventDate: String,
     val eventName: String
 )

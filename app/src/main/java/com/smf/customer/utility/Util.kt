@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Rect
 import android.text.InputFilter
-import android.text.Spanned
 import android.util.Log
 import androidx.fragment.app.DialogFragment
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -49,7 +48,7 @@ class Util {
         // Restrict number inside editText
         fun filterTextWithSpace(): InputFilter {
             return InputFilter { source, start, end, dest, dstart, dend ->
-                if(source.equals(" ")){ // for backspace
+                if (source.equals(" ")) { // for backspace
                     return@InputFilter source
                 }
                 for (i in start until end) {
@@ -60,6 +59,9 @@ class Util {
                 null
             }
         }
+
+        // Amount length restriction
+        fun amountValidation(value: String): Boolean = value.length < 11
 
         // Setting Dialog Fragment Size
         fun DialogFragment.setWidthPercent(widthPercentage: Int, heightPercentage: Int) {

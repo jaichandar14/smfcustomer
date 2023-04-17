@@ -84,17 +84,17 @@ class AddServiceAdapter(val context: Context) :
                     val img =
                         serviceTemplateIcon.substring(serviceTemplateIcon.indexOf(",") + 1).trim()
                     Glide.with(context).load(Base64.decode(img, Base64.DEFAULT))
-                        .error(R.drawable.custom_button_corner_ok_fade).into(serviceIconView)
+                        .error(R.drawable.gernicservice1).into(serviceIconView)
                 } else {
                     Glide.with(context)
                         .load((BuildConfig.base_url + serviceTemplateIcon).replace(" ", "%20"))
-                        .error(R.drawable.custom_button_corner_ok_fade)
+                        .error(R.drawable.gernicservice1)
                         .into(serviceIconView)
                 }
             } else {
                 // make sure Glide doesn't load anything into this view until told otherwise
                 Glide.with(context).clear(serviceIconView)
-                serviceIconView.setImageDrawable(context.getDrawable(R.drawable.custom_button_corner_ok_fade))
+                serviceIconView.setImageDrawable(context.getDrawable(R.drawable.gernicservice1))
             }
         }
 
