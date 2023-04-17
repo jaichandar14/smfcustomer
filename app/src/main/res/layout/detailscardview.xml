@@ -15,6 +15,9 @@
         <variable
             name="modifyStatus"
             type="java.lang.Boolean" />
+        <variable
+            name="deleteVisibility"
+            type="java.lang.Boolean" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -218,6 +221,22 @@
                 app:layout_constraintStart_toStartOf="@+id/event_type_text"
                 app:layout_constraintTop_toBottomOf="@+id/event_type_text"
                 app:layout_constraintVertical_bias="0.0" />
+
+            <ImageView
+                android:id="@+id/delete_icon"
+                android:layout_width="@dimen/_25sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_marginEnd="@dimen/_15sdp"
+                android:layout_marginBottom="@dimen/_7sdp"
+                android:contentDescription="@string/service_delete"
+                android:src="@drawable/trash_icon"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/status_txt"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
+                app:layout_constraintVertical_bias="1.0"
+                app:visibility="@{ deleteVisibility.booleanValue ? View.GONE : View.VISIBLE}" />
 
             <TextView
                 app:visibility="@{ status.booleanValue ? View.VISIBLE : View.GONE}"

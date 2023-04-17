@@ -1,6 +1,7 @@
 package com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.adaapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.smf.customer.R
 import com.smf.customer.app.constant.AppConstant
+import com.smf.customer.data.model.response.ServiceProviderBiddingResponseDto
 import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.expandablelist.ChildData
 import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.expandablelist.ParentData
 
@@ -31,7 +33,6 @@ class ServiceDashboardAdapter(var mContext: Context, val list: MutableList<Paren
     override fun getItemCount(): Int = list.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-
         val dataList = list[position]
         if (dataList.type == AppConstant.PARENT) {
             holder as GroupViewHolder
@@ -46,7 +47,9 @@ class ServiceDashboardAdapter(var mContext: Context, val list: MutableList<Paren
 
             holder.apply {
                 val singleService = dataList.subList.first()
-                childTV?.text = singleService.childTitle
+                childTV?.text = singleService.serviceProviderName
+                childBranch?.text = singleService.branchName
+                amount?.text =  singleService.currencyType+singleService.bidValue.toString()
             }
         }
     }
@@ -70,7 +73,7 @@ class ServiceDashboardAdapter(var mContext: Context, val list: MutableList<Paren
             services.forEach { service ->
                 val parentModel = ParentData()
                 parentModel.type = AppConstant.CHILD
-                val subList: ArrayList<ChildData> = ArrayList()
+                val subList: ArrayList<ServiceProviderBiddingResponseDto> = ArrayList()
                 subList.add(service)
                 parentModel.subList = subList
                 list.add(++nextPosition, parentModel)
@@ -104,6 +107,9 @@ class ServiceDashboardAdapter(var mContext: Context, val list: MutableList<Paren
 
     class ChildViewHolder(row: View) : RecyclerView.ViewHolder(row) {
         val childTV = row.findViewById(R.id.child_Title) as TextView?
+        val childBranch = row.findViewById(R.id.child_sub_title) as TextView?
+        val amount = row.findViewById(R.id.amount) as TextView?
+
 
     }
 }

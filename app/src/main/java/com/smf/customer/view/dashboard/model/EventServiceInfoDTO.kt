@@ -9,7 +9,8 @@ data class EventServiceInfoDTO(
     val leadPeriod: String,
     val eventServiceDescriptionId: String,
     val eventServiceStatus: String?,
-    val eventName: String?
+    val eventName: String?,
+    val isServiceRequired:Boolean,
 )
 
 data class EventVisibility(var submit:Boolean=true,var addService:Boolean=true)

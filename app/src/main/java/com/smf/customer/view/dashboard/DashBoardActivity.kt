@@ -54,10 +54,11 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
 
         val intent = intent
         var fragIntent = intent.getStringExtra(AppConstant.ON_EVENT)
+        var serviceDescriptionId=intent.getStringExtra(AppConstant.EVENT_SERVICE_DESCRIPTION_ID)
         if (fragIntent == AppConstant.ON_EVENT) {
             eventListFragment()
         } else if (fragIntent == AppConstant.ON_SERVICE) {
-            serviceDetailsFragment()
+            serviceDetailsFragment(serviceDescriptionId)
         }else{
             mainFragment()
         }
@@ -109,10 +110,10 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
     }
 
     // 3438 service dashboard call
-    private fun serviceDetailsFragment() {
+    private fun serviceDetailsFragment(serviceDescriptionId: String?) {
         Log.d(TAG, "mainFragment:  called")
         //frag = MainDashBoardFragment() //create the fragment instance for the middle fragment
-        frag = ServiceDetailDashboardFragment()
+        frag = ServiceDetailDashboardFragment(serviceDescriptionId)
         val manager: FragmentManager =
             supportFragmentManager //create an instance of fragment manager
         var transaction =
@@ -120,7 +121,7 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
         transaction.replace(
             R.id.main_dashboard_ui,
             frag as ServiceDetailDashboardFragment,
-            "Frag_Bottom_tag"
+            "1223456"
         )
         transaction.addToBackStack(null)
         transaction.commit()

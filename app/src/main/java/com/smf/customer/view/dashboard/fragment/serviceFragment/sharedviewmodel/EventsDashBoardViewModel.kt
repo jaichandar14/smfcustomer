@@ -10,13 +10,14 @@ import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoa
 import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.expandablelist.ChildData
 import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.expandablelist.ParentData
 import io.reactivex.Observable
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class EventsDashBoardViewModel : BaseDashboardViewModel() {
 
     private val itemClasses: MutableList<ItemClass> = ArrayList()
     val listData: MutableList<ParentData> = ArrayList()
-
+    var biddingResponseData=ArrayList<ServiceProviderBiddingResponseDto>()
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
     var countApi: Int = 1
@@ -30,6 +31,8 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
     val LayoutTwo = 1
     var stepOne = arrayListOf(0, 1, 2, 2, 2, 2)
     var stepTwo = arrayListOf(0, 0, 0, 1, 2, 2)
+    var stepThree= arrayListOf(0,0,0,0,1,2)
+
 
 
     fun getEventInfo(eventId: Int) {
@@ -61,6 +64,20 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
     }
+    fun getBiddingResponse(eventId: Int, eventServiceDescriptionId: Long) {
+        val observable: Observable<EventServiceBiddingResponseDto> =
+            retrofitHelper.getDashBoardRepository()
+                .getBiddingResponse((getUserToken()), eventId, eventServiceDescriptionId)
+        this.observable.value = observable as Observable<ResponseDTO>
+        doNetworkOperation()
+    }
+    fun deleteService(eventServiceId: Int?) {
+        val observable: Observable<BiddingInfoResponse> =
+            retrofitHelper.getDashBoardRepository()
+                .deleteService((getUserToken()), eventServiceId!!)
+        this.observable.value = observable as Observable<ResponseDTO>
+        doNetworkOperation()
+    }
 
     override fun onSuccess(responseDTO: ResponseDTO) {
         super.onSuccess(responseDTO)
@@ -80,6 +97,15 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
             is ServiceInfoResponse -> {
                 callBackInterface?.sendForTrackStatus()
             }
+            is EventServiceBiddingResponseDto ->{
+                var response = responseDTO.data
+                biddingResponseData.addAll(response.serviceProviderBiddingResponseDtos )
+                callBackServiceInterface?.getBiddingResponse(response)
+            }
+            is BiddingInfoResponse->{
+                callBackInterface?.deleteService()
+            }
+
         }
 
     }
@@ -147,17 +173,38 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
             )
 
         // 3438 Currently using manual data
-        val childDataData1: MutableList<ChildData> = mutableListOf(
-            ChildData("Anathapur"), ChildData("Chittoor"), ChildData("Nellore"), ChildData("Guntur")
-        )
-        val childDataData2: MutableList<ChildData> = mutableListOf(
-            ChildData("Rajanna Sircilla"), ChildData("Karimnagar"), ChildData("Siddipet")
-        )
-        val childDataData3: MutableList<ChildData> =
-            mutableListOf(ChildData("Chennai"), ChildData("Erode"))
+        val childDataData1= ArrayList<ServiceProviderBiddingResponseDto> ()
+
+
+        // Need to do some changes in future
+        if (biddingResponseData.isEmpty()){
+            childDataData1.add(ServiceProviderBiddingResponseDto("jai ",
+                BigDecimal(5200),"$","Thanjvau1","bidding"))
+            childDataData1.add(ServiceProviderBiddingResponseDto("jai catering",
+                BigDecimal(1200),"$","Thanjvau2","bidding"))
+            childDataData1.add(ServiceProviderBiddingResponseDto("jai watch",
+                BigDecimal(4200),"$","Thanjva3","bidding"))
+            childDataData1.add(ServiceProviderBiddingResponseDto("jai food",
+                BigDecimal(1200),"$","Thanjva4","bidding"))
+        }else{
+            childDataData1.addAll(biddingResponseData)
+        }
+
+//        biddingResponseData.forEach {
+//            childDataData1.add(it.serviceProviderName)
+//        }
+
+//        = mutableListOf(
+//            ChildData("Anathapur"), ChildData("Chittoor"), ChildData("Nellore"), ChildData("Guntur")
+//        )
+//        val childDataData2: MutableList<ChildData> = mutableListOf(
+//            ChildData("Rajanna Sircilla"), ChildData("Karimnagar"), ChildData("Siddipet")
+//        )
+//        val childDataData3: MutableList<ChildData> =
+//            mutableListOf(ChildData("Chennai"), ChildData("Erode"))
 
         val parentObj1 = ParentData(parentTitle = parentData[0], subList = childDataData1)
-        val parentObj2 = ParentData(parentTitle = parentData[1], subList = childDataData2)
+        val parentObj2 = ParentData(parentTitle = parentData[1])
         val parentObj3 = ParentData(parentTitle = parentData[2])
 
         listData.add(parentObj1)
@@ -168,10 +215,14 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
     }
 
     private var callBackInterface: OnServiceClickListener? = null
-
+    private var callBackServiceInterface: OnServiceDetailsClickListener? = null
     // Initializing Listener Interface
     fun setOnClickListener(listener: OnServiceClickListener) {
         callBackInterface = listener
+    }
+    // Initializing Listener Interface
+    fun setOnServiceClickListener(listeners: OnServiceDetailsClickListener) {
+        callBackServiceInterface = listeners
     }
 
     // Interface For Invoice Click Listener
@@ -179,6 +230,10 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
         fun getEventServiceInfo(listMyEvents: GetEventServiceDataDto)
         fun sendForApproval()
         fun sendForTrackStatus()
+        fun deleteService()
+    }
+    interface OnServiceDetailsClickListener {
+        fun getBiddingResponse(response: DataBidding)
     }
 
 }

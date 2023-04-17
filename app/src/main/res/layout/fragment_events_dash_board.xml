@@ -21,6 +21,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:context=".view.dashboard.fragment.serviceFragment.MyEventDashBoardFragment">
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    android:id="@+id/swipe_refresh"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -103,10 +107,9 @@
                             android:layout_margin="@dimen/_10sdp"
                             android:fontFamily="@font/mulish_bold"
                             android:text="@string/cancel"
-                            android:background="@color/pairing_theme"
-                            android:backgroundTint="@color/text_gray_color"
+                            android:background="@drawable/custom_button_corner_ok_fade"
                             android:textAllCaps="false"
-                            android:textColor="@color/black"
+                            android:textColor="@color/text_gray_color"
                             android:textSize="@dimen/_14ssp"
                             app:layout_constraintBottom_toBottomOf="@+id/save_btn"
                             app:layout_constraintHorizontal_chainStyle="spread"
@@ -118,7 +121,8 @@
                             app:visibility="@{ visibilityBtn.submit ? View.VISIBLE : View.GONE}"
                             android:id="@+id/save_btn"
                             android:layout_width="0dp"
-                            android:background="@color/pairing_theme"
+                            android:background="@drawable/custom_button_corner_ok_fade"
+                            android:backgroundTint="@color/pairing_theme"
                             android:layout_height="@dimen/_35sdp"
                             android:layout_margin="@dimen/_10sdp"
                             android:fontFamily="@font/mulish_bold"
@@ -151,6 +155,7 @@
 
 
         </androidx.core.widget.NestedScrollView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <include
             layout="@layout/progressbar"

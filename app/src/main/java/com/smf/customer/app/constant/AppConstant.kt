@@ -143,4 +143,8 @@ object AppConstant {
     const val MODIFY_ORDER_DETAILS = "ModifyOrderDetails"
     const val SERVICE_NAME="serviceName"
     const val PROVIDE_DETAILS="provideDetails"
+
+    //3454
+    const val ONE_BUTTON="OneButton"
+    const val TWO_BUTTON="TwoButton"
 }
