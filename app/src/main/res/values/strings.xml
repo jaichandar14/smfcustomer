@@ -267,4 +267,9 @@
     <string name="provide">Provide</string>
     <string name="details">details</string>
     <string name="modify_order_details">Modify order details</string>
+    <string name="should_selected">should be selected in Service ,This action cannot be Performed</string>
+    <string name="service_delete">\" Service will be removed from this event\"</string>
+    <string name="bidders">Bidders</string>
+    <string name="days">\" days\"</string>
+    <string name="messagre">message</string>
 </resources>

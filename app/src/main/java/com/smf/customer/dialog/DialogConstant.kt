@@ -58,4 +58,10 @@ object DialogConstant {
 
     val ESTIMATION_DIALOG: String
         get() = "ESTIMATION_DIALOG"
+
+    val NON_DELETABLE_SERVICE: String
+        get() = "NON_DELETABLE_SERVICE"
+
+    val WITHOUT_PROVIDING_DETAILS: String
+        get() = " WITHOUT_PROVIDING_DETAILS"
 }

@@ -1,9 +1,7 @@
 package com.smf.customer.data.api_service
 
 import com.smf.customer.BuildConfig
-import com.smf.customer.data.model.response.EventInfoResponseDto
-import com.smf.customer.data.model.response.GetEventServiceInfo
-import com.smf.customer.data.model.response.ServiceInfoResponse
+import com.smf.customer.data.model.response.*
 import com.smf.customer.view.dashboard.responsedto.EventCountDto
 import com.smf.customer.view.dashboard.responsedto.EventStatusResponse
 import io.reactivex.Observable
@@ -48,4 +46,18 @@ interface DashBoardService {
         @Path("event-id") eventId: Int,
         @Path("event-stepper-status") eventTrackStatus: String
     ): Observable<ServiceInfoResponse>
+
+    //3454
+    @GET(BuildConfig.apiType + "event/api/events/event-service-bidding-responses/{event-id}/{event-service-description-id}")
+    fun getBiddingResponse(
+        @Header("Authorization") idToken: String,
+        @Path("event-id") eventId: Int,
+        @Path("event-service-description-id") eventServiceDescriptionId: Long
+    ): Observable<EventServiceBiddingResponseDto>
+    // 3454
+    @DELETE(BuildConfig.apiType + "event/api/events/event-service-description/{event-id}")
+    fun deleteService(
+        @Header("Authorization") idToken: String,
+        @Path("event-id") eventId: Int,
+    ): Observable<BiddingInfoResponse>
 }

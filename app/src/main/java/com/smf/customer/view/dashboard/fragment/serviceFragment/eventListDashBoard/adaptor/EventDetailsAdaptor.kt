@@ -1,7 +1,6 @@
 package com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.adaptor
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -41,10 +40,8 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
             )
         )
 
-
     override fun onBindViewHolder(holder: EventDetailsViewHolder, position: Int) {
         holder.onBind(myEventsList[position])
-
     }
 
     override fun getItemCount(): Int {
@@ -53,8 +50,6 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
 
     inner class EventDetailsViewHolder(var binding: DetailscardviewBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        // private var titleText = view.findViewById<TextView>(R.id.event_title_text)
-
         // Method For Fixing xml views and Values
         fun onBind(myEvents: EventServiceInfoDTO) {
             //  titleText.text = myEvents.title
@@ -63,16 +58,39 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
             binding.modifyStatus = myEvents.eventServiceStatus == AppConstant.NEW
             // 3443
             settingValueUi(myEvents)
+            // Delete service
+            deleteService(myEvents.eventServiceId, myEvents.serviceName, myEvents)
+        }
+
+        private fun deleteService(
+            eventServiceId: String,
+            serviceName: String?,
+            myEvents: EventServiceInfoDTO
+        ) {
+            binding.deleteIcon.apply {
+                if (myEvents.isServiceRequired) {
+                    setOnClickListener {
+                        callBackInterface?.nonDeletableService(serviceName)
+                    }
+                } else {
+                    setOnClickListener {
+                        callBackInterface?.onClickDelete(eventServiceId, serviceName)
+                    }
+                }
+            }
         }
 
         private fun settingValueUi(myEvents: EventServiceInfoDTO) {
+            // Delete button visiblity binding
+            binding.deleteVisibility =
+                (myEvents.eventServiceStatus == AppConstant.PENDING_ADMIN_APPROVAL) || (myEvents.eventServiceStatus == AppConstant.BIDDING_STARTED)
             if (myEvents.eventServiceStatus == AppConstant.PENDING_ADMIN_APPROVAL) {
                 binding.statusTxt.text =
                     MyApplication.appContext.getString(R.string.waiting_for_aprproval)
-
             } else if (myEvents.eventServiceStatus == AppConstant.BIDDING_STARTED) {
-                binding.btnStartService.text =
-                    MyApplication.appContext.getString(R.string.bidding_in_progress)
+                binding.btnStartService.apply {
+                    text = MyApplication.appContext.getString(R.string.bidding_in_progress)
+                }
             }
             if (myEvents.biddingCutOffDate != null) {
                 val cutDate = LocalDate.parse(myEvents.biddingCutOffDate, formatter)
@@ -86,14 +104,20 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
             binding.details = myEvents
             binding.progressBar.progress = myEvents.leadPeriod.toInt() * 10
             binding.eventNameTxt.text = sharedPrefsHelper[SharedPrefConstant.EVENT_NAME, ""]
-            binding.btnStartService.setOnClickListener {
-                callBackInterface?.onClickProvideDetails(myEvents)
-                Log.d("TAG", "onBind: ${myEvents.serviceName}")
+            binding.btnStartService.apply {
+                setOnClickListener {
+                    if (text == MyApplication.appContext.getString(R.string.bidding_in_progress)) {
+                        callBackInterface?.onClickBidding(myEvents)
+                    } else {
+                        callBackInterface?.onClickProvideDetails(myEvents)
+                    }
+                }
             }
             binding.modifyTxt.setOnClickListener {
                 callBackInterface?.onClickModifyDetails(myEvents)
             }
         }
+
     }
 
     //Method For Refreshing Invoices
@@ -115,5 +139,8 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
     interface OnServiceClickListener {
         fun onClickProvideDetails(listMyEvents: EventServiceInfoDTO)
         fun onClickModifyDetails(listMyEvents: EventServiceInfoDTO)
+        fun onClickBidding(listMyEvents: EventServiceInfoDTO)
+        fun onClickDelete(eventServiceId: String, serviceName: String?)
+        fun nonDeletableService(serviceName: String?)
     }
 }

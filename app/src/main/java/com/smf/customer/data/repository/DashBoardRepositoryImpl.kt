@@ -1,9 +1,7 @@
 package com.smf.customer.data.repository
 
 import com.smf.customer.data.api_service.DashBoardService
-import com.smf.customer.data.model.response.EventInfoResponseDto
-import com.smf.customer.data.model.response.GetEventServiceInfo
-import com.smf.customer.data.model.response.ServiceInfoResponse
+import com.smf.customer.data.model.response.*
 import com.smf.customer.view.dashboard.responsedto.EventCountDto
 import com.smf.customer.view.dashboard.responsedto.EventStatusResponse
 import io.reactivex.Observable
@@ -29,7 +27,7 @@ class DashBoardRepositoryImpl @Inject constructor(dashBoardService: DashBoardSer
         idToken: String,
         eventId: Int
     ): Observable<GetEventServiceInfo> {
-        return mDashBoardService.getEventServiceInfo(idToken,eventId).doOnNext { }
+        return mDashBoardService.getEventServiceInfo(idToken, eventId).doOnNext { }
     }
 
     override fun sendForApproval(
@@ -37,7 +35,7 @@ class DashBoardRepositoryImpl @Inject constructor(dashBoardService: DashBoardSer
         eventId: Int,
         status: String
     ): Observable<EventInfoResponseDto> {
-        return mDashBoardService.sendForApproval(idToken,eventId,status).doOnNext { }
+        return mDashBoardService.sendForApproval(idToken, eventId, status).doOnNext { }
     }
 
     override fun sendEventTrackStatus(
@@ -45,7 +43,21 @@ class DashBoardRepositoryImpl @Inject constructor(dashBoardService: DashBoardSer
         eventId: Int,
         eventTrackStatus: String
     ): Observable<ServiceInfoResponse> {
-        return mDashBoardService.sendEventTrackStatus(idToken,eventId,eventTrackStatus).doOnNext { }
+        return mDashBoardService.sendEventTrackStatus(idToken, eventId, eventTrackStatus)
+            .doOnNext { }
 
+    }
+
+    override fun getBiddingResponse(
+        idToken: String,
+        eventId: Int,
+        eventServiceDescriptionId: Long
+    ): Observable<EventServiceBiddingResponseDto> {
+        return mDashBoardService.getBiddingResponse(idToken, eventId, eventServiceDescriptionId)
+            .doOnNext { }
+    }
+
+    override fun deleteService(idToken: String, eventId: Int): Observable<BiddingInfoResponse> {
+        return mDashBoardService.deleteService(idToken, eventId).doOnNext { }
     }
 }
