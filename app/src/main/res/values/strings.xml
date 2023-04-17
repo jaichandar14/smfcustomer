@@ -271,4 +271,5 @@
     <string name="service_delete">\" Service will be removed from this event\"</string>
     <string name="bidders">Bidders</string>
     <string name="days">\" days\"</string>
+    <string name="messagre">message</string>
 </resources>

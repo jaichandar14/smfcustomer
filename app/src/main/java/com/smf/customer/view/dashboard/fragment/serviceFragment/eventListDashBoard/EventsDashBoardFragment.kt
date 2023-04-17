@@ -19,7 +19,6 @@ import com.smf.customer.app.base.BaseFragment
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.app.listener.DialogOneButtonListener
-import com.smf.customer.data.model.response.DataBidding
 import com.smf.customer.data.model.response.EventServiceDtos
 import com.smf.customer.data.model.response.GetEventServiceDataDto
 import com.smf.customer.databinding.FragmentEventsDashBoardBinding
@@ -108,7 +107,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
         }
     }
 
-    private fun onReload(){
+    private fun onReload() {
         eventServiceDetails.clear()
         // Reload current fragment
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -121,6 +120,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
                 .attach(this).commit();
         }
     }
+
     private fun addService() {
         mDataBinding.addServiceIcon.setOnClickListener {
             Intent(requireActivity(), AddServiceActivity::class.java).apply {
@@ -150,7 +150,10 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
                     "ok",
                     this,
                     false
-                ).show(requireActivity().supportFragmentManager, DialogConstant.WITHOUT_PROVIDING_DETAILS)
+                ).show(
+                    requireActivity().supportFragmentManager,
+                    DialogConstant.WITHOUT_PROVIDING_DETAILS
+                )
 
             } else {
                 viewModel.sendForApproval(sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 1218])
@@ -223,7 +226,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
         mAdapterEventDetails.refreshItems(getServiceList())
         // Update selected service name
         eventServiceDetails.forEach {
-            if (it.eventServiceStatus==null) {
+            if (it.eventServiceStatus == null) {
                 it.serviceName?.let { it1 -> servicesName.add(it1) }
             }
         }
@@ -241,15 +244,14 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
 
         if (provideDetailsCount == 0) {
             OneButtonDialogFragment.newInstance(
-                "message",
+                getString(R.string.messagre),
                 getString(R.string.admin_approval_ifo),
-                "ok",
+                AppConstant.OK,
                 this,
                 false
             ).show(requireActivity().supportFragmentManager, AppConstant.ONE_BUTTON)
         }
     }
-
 
 
     override fun deleteService() {
@@ -305,10 +307,16 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
     // 3454 On click Bidding in progress button we are redirecting to service details dashboard fragment
     override fun onClickBidding(listMyEvents: EventServiceInfoDTO) {
         Log.d(TAG, "onClickBidding: ${listMyEvents.eventServiceDescriptionId}")
-        sharedPrefsHelper.put(SharedPrefConstant.EVENT_SERVICE_DESCRIPTION_ID,listMyEvents.eventServiceDescriptionId)
+        sharedPrefsHelper.put(
+            SharedPrefConstant.EVENT_SERVICE_DESCRIPTION_ID,
+            listMyEvents.eventServiceDescriptionId
+        )
         Intent(requireActivity(), DashBoardActivity::class.java).apply {
             this.putExtra(AppConstant.ON_EVENT, AppConstant.ON_SERVICE)
-            this.putExtra(AppConstant.EVENT_SERVICE_DESCRIPTION_ID,listMyEvents.eventServiceDescriptionId)
+            this.putExtra(
+                AppConstant.EVENT_SERVICE_DESCRIPTION_ID,
+                listMyEvents.eventServiceDescriptionId
+            )
             startActivity(this)
         }
     }
@@ -333,9 +341,9 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
 
     override fun nonDeletableService(serviceName: String?) {
         OneButtonDialogFragment.newInstance(
-            "message",
-            "$serviceName " +getString(R.string.should_selected),
-            "ok",
+            getString(R.string.messagre),
+            "$serviceName " + getString(R.string.should_selected),
+            AppConstant.OK,
             this,
             false
         ).show(requireActivity().supportFragmentManager, DialogConstant.NON_DELETABLE_SERVICE)
@@ -346,6 +354,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
         // Dismiss dialog
         dismissEstimationDialog()
     }
+
     private fun dismissEstimationDialog() {
         twoButtonDialog?.let {
             if (it.isVisible) {
@@ -388,7 +397,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
                     dialogFragment.dismiss()
                 }
 
-                DialogConstant.WITHOUT_PROVIDING_DETAILS->{
+                DialogConstant.WITHOUT_PROVIDING_DETAILS -> {
                     dialogFragment.dismiss()
                 }
                 else -> {

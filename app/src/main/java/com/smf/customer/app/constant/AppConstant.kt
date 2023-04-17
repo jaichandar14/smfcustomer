@@ -147,4 +147,6 @@ object AppConstant {
     //3454
     const val ONE_BUTTON="OneButton"
     const val TWO_BUTTON="TwoButton"
+
+    const val OK="ok"
 }
