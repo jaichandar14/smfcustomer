@@ -9,6 +9,7 @@ import com.smf.customer.data.model.dto.QuestionListItem
 import com.smf.customer.data.model.request.*
 import com.smf.customer.data.model.response.EventInfoResponseDto
 import com.smf.customer.data.model.response.EventQuestionsResponseDTO
+import com.smf.customer.data.model.response.GetEventServiceInfoDTO
 import com.smf.customer.data.model.response.ResponseDTO
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
@@ -97,22 +98,32 @@ class EventDetailsViewModel : BaseViewModel() {
     fun onClickNextButton() {
         // Verify all mandatory questions answered before submit
         if (verifyMandatoryQuesAnswered(questionListItem, eventSelectedAnswerMap)) {
-            if (iKnowVenue.value != true) {
-                if (eventName.value.isNullOrEmpty().not() && eventDate.value.isNullOrEmpty()
-                        .not() &&
-                    noOfAttendees.value.isNullOrEmpty().not() && totalBudget.value.isNullOrEmpty()
-                        .not() && totalBudgetError.value != true &&
-                    zipCode.value.isNullOrEmpty().not() && name.value.isNullOrEmpty().not() &&
-                    mobileNumber.value.isNullOrEmpty().not() && emailId.value.isNullOrEmpty().not()
-                ) {
+            if (venueValidation()) {
+                if (sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0] == 0) {
                     // Post Event info details
                     postEventInfo(createEventInfoDto())
                 } else {
-                    // Set error
-                    setIWillBeSelectingErrorVisible()
+                    // Post Event info details
+                    putEventInfo(createEventInfoDto())
                 }
             } else {
-                if (eventName.value.isNullOrEmpty().not() && eventDate.value.isNullOrEmpty().not()
+                updateError()
+            }
+        } else {
+            showToastMessage(MyApplication.appContext.resources.getString(R.string.please_answer_all_mandatory_questions))
+        }
+    }
+
+    private fun venueValidation(): Boolean {
+        if (iKnowVenue.value != true) {
+            return eventName.value.isNullOrEmpty().not() && eventDate.value.isNullOrEmpty()
+                .not() &&
+                    noOfAttendees.value.isNullOrEmpty().not() && totalBudget.value.isNullOrEmpty()
+                .not() && totalBudgetError.value != true &&
+                    zipCode.value.isNullOrEmpty().not() && name.value.isNullOrEmpty().not() &&
+                    mobileNumber.value.isNullOrEmpty().not() && emailId.value.isNullOrEmpty().not()
+        } else {
+            return eventName.value.isNullOrEmpty().not() && eventDate.value.isNullOrEmpty().not()
                     && noOfAttendees.value.isNullOrEmpty().not() &&
                     totalBudget.value.isNullOrEmpty().not() && totalBudgetError.value != true &&
                     address1.value.isNullOrEmpty().not() && address2.value.isNullOrEmpty().not()
@@ -120,15 +131,15 @@ class EventDetailsViewModel : BaseViewModel() {
                     && zipCode.value.isNullOrEmpty().not() &&
                     name.value.isNullOrEmpty().not() && mobileNumber.value.isNullOrEmpty().not() &&
                     emailId.value.isNullOrEmpty().not()
-                ) {
-                    // Post Event info details
-                    postEventInfo(createEventInfoDto())
-                } else {
-                    // Set error
-                    setIWillBeSelectingErrorVisible()
-                    setIKnowVenueErrorVisible()
-                }
-            }
+        }
+    }
+
+    private fun updateError() {
+        if (iKnowVenue.value != true) {
+            setIWillBeSelectingErrorVisible()
+        } else {
+            setIWillBeSelectingErrorVisible()
+            setIKnowVenueErrorVisible()
         }
     }
 
@@ -136,24 +147,38 @@ class EventDetailsViewModel : BaseViewModel() {
         questionListItem: ArrayList<QuestionListItem>,
         eventSelectedAnswerMap: HashMap<Int, ArrayList<String>>
     ): Boolean {
-        if (questionListItem.isNotEmpty()) {
-            val mandatoryQuesIndexList = ArrayList<Int>().apply {
+        return if (questionListItem.isNotEmpty()) {
+            val mandatoryQuesIndexList = java.util.ArrayList<Int>().apply {
                 questionListItem.filter { it.isMandatory }.forEach {
                     add(questionListItem.indexOf(it))
                 }
             }
             // Verify all mandatory questions are answered
-            return if (eventSelectedAnswerMap.keys.containsAll(mandatoryQuesIndexList)) {
-                true
-            } else {
-                if (MyApplication.getAppContextInitialization()) {
-                    showToastMessage(MyApplication.appContext.resources.getString(R.string.please_answer_all_mandatory_questions))
-                }
-                false
-            }
+            eventSelectedAnswerMap.keys.containsAll(mandatoryQuesIndexList)
         } else {
-            return true
+            true
         }
+    }
+
+    fun getEventDetailsQuestions(eventTemplateId: Int) {
+        val observable: Observable<EventQuestionsResponseDTO> =
+            retrofitHelper.getEventRepository()
+                .getEventDetailQuestions(getUserToken(), eventTemplateId)
+        this.observable.value = observable as Observable<ResponseDTO>
+        doNetworkOperation()
+    }
+
+    // TODO next task
+    fun getEventServiceInfo() {
+        Log.d(TAG, "getEventServiceInfo: ${sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0]}")
+        val observable: Observable<GetEventServiceInfoDTO> =
+            retrofitHelper.getEventRepository()
+                .getEventServiceInfo(
+                    getUserToken(),
+                    sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0]
+                )
+        this.observable.value = observable as Observable<ResponseDTO>
+        doNetworkOperation()
     }
 
     fun postEventInfo(eventInfo: EventInfoDTO) {
@@ -161,6 +186,38 @@ class EventDetailsViewModel : BaseViewModel() {
             retrofitHelper.getEventRepository().postEventInfo(getUserToken(), eventInfo)
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
+    }
+
+    private fun putEventInfo(eventInfo: EventInfoDTO) {
+        val observable: Observable<EventInfoResponseDto> =
+            retrofitHelper.getEventRepository().putEventInfo(getUserToken(), eventInfo)
+        this.observable.value = observable as Observable<ResponseDTO>
+        doNetworkOperation()
+    }
+
+    override fun onSuccess(responseDTO: ResponseDTO) {
+        super.onSuccess(responseDTO)
+        when (responseDTO) {
+            is EventQuestionsResponseDTO -> {
+                this.eventQuestionsResponseDTO = responseDTO
+                callBackInterface?.updateQuestions(responseDTO)
+            }
+            is EventInfoResponseDto -> {
+                // 3420 responseDTO.data.key is  event id we getting from event_info post response
+                val response = responseDTO.data.key
+                Log.d(TAG, "getEventServiceInfo: scss ${response}")
+                updateEventIdToSharedPref(response)
+                // Update entered values to shared preference
+                setSharedPreference()
+                // Go to dashboard
+                callBackInterface?.onClickNext()
+            }
+            is GetEventServiceInfoDTO -> {
+                // TODO next task
+                // Modify event details
+                Log.d(TAG, "onSuccess: $responseDTO")
+            }
+        }
     }
 
     private fun setIWillBeSelectingErrorVisible() {
@@ -224,33 +281,8 @@ class EventDetailsViewModel : BaseViewModel() {
         return datePickerDialog.value!!
     }
 
-    fun getEventDetailsQuestions(eventTemplateId: Int) {
-        val observable: Observable<EventQuestionsResponseDTO> =
-            retrofitHelper.getEventRepository()
-                .getEventDetailQuestions(getUserToken(), eventTemplateId)
-        this.observable.value = observable as Observable<ResponseDTO>
-        doNetworkOperation()
-    }
-
-    override fun onSuccess(responseDTO: ResponseDTO) {
-        super.onSuccess(responseDTO)
-        when (responseDTO) {
-            is EventQuestionsResponseDTO -> {
-                this.eventQuestionsResponseDTO = responseDTO as EventQuestionsResponseDTO
-                callBackInterface?.updateQuestions(responseDTO as EventQuestionsResponseDTO)
-            }
-            is EventInfoResponseDto -> {
-                // 3420 responseDTO.data.key is  event id we getting from event_info post response
-                val response = responseDTO.data.key
-                response.let {
-                    sharedPrefsHelper.put(SharedPrefConstant.EVENT_ID, it)
-                }
-                // Update entered values to shared preference
-                setSharedPreference()
-                // Go to dashboard
-                callBackInterface?.onClickNext()
-            }
-        }
+    fun updateEventIdToSharedPref(value: Int) {
+        sharedPrefsHelper.put(SharedPrefConstant.EVENT_ID, value)
     }
 
     private fun setSharedPreference() {
@@ -309,14 +341,18 @@ class EventDetailsViewModel : BaseViewModel() {
     }
 
     private fun createEventInfoDto(): EventInfoDTO {
-        val eventId: Int = 0
+        val eventId: Int = sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0]
         val eventMetaDataDto = createEventMetaDataDto()
         val eventOrganizerId: String = sharedPrefsHelper[SharedPrefConstant.USER_ID, ""]
         val eventQuestionMetaDataDto = createEventQuestionMetaDataDto()
         val eventTypeId: Int = templateId!!
-        val id: String = ""
+
         return EventInfoDTO(
-            eventId, eventMetaDataDto, eventOrganizerId, eventQuestionMetaDataDto, eventTypeId, id
+            eventId = eventId,
+            eventTypeId = eventTypeId,
+            eventMetaDataDto = eventMetaDataDto,
+            eventQuestionMetaDataDto = eventQuestionMetaDataDto,
+            eventOrganizerId = eventOrganizerId
         )
     }
 
