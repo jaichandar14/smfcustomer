@@ -4,11 +4,17 @@ import java.math.BigDecimal
 
 data class EventInfoDTO(
     val eventId: Int,
-    val eventMetaDataDto: EventMetaDataDto,
-    val eventOrganizerId: String,
-    val eventQuestionMetaDataDto: EventQuestionMetaDataDto,
     val eventTypeId: Int,
-    val id: String
+    val eventTypeName: String = "",
+    val eventMetaDataDto: EventMetaDataDto,
+    val eventQuestionMetaDataDto: EventQuestionMetaDataDto,
+    val eventOrganizerId: String,
+    val eventStatus: String = "",
+    val statusMessage: String = "",
+    val eventBudgetDto: EventBudgetDto = EventBudgetDto(),
+    val eventMetaData: String = "",
+    val categoryIcon: String = "",
+    val rejectionComments: String = ""
 )
 
 data class EventInformationDto(
@@ -66,4 +72,20 @@ data class VenueInformationDto(
     val knownVenue: Boolean,
     val state: String,
     val zipCode: String
+)
+
+data class EventBudgetDto(
+    val totalEstimatedBudget: BigDecimal = "0".toBigDecimal(),
+    val totalAllocatedBudget: BigDecimal = "0".toBigDecimal(),
+    val allocatedBudgetPercentage: BigDecimal = "0".toBigDecimal(),
+    val totalRemainingBudget: BigDecimal = "0".toBigDecimal(),
+    val remainingBudgetPercentage: BigDecimal = "0".toBigDecimal(),
+    val estimatedEventBudget: BigDecimal = "0".toBigDecimal(),
+    val serviceCount: Int = 0,
+    val eventStatus: String = "",
+//    val eventServiceDtos: List<EventServiceDto> = ArrayList(), // this parameter not required
+    val currencyType: String = "",
+    val actualEventbudget: String = "",
+    val totalUtilizedBudget: BigDecimal = "0".toBigDecimal(),
+    val totalActualServiceBudget: BigDecimal = "0".toBigDecimal()
 )

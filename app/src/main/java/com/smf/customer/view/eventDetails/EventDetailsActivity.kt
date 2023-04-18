@@ -29,7 +29,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-
 class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
     EventDetailsViewModel.CallBackInterface {
     lateinit var binding: EventDetailsBinding
@@ -125,10 +124,6 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
         for (i in 0 until viewModel.questionListItem.size) {
             viewModel.questionNumberList.add(i)
         }
-        Log.d(
-            TAG,
-            "updateListData: ${viewModel.questionListItem.size} ${viewModel.questionNumberList}"
-        )
     }
 
     override fun onClickNext() {
@@ -136,7 +131,6 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
             this.putExtra(AppConstant.ON_EVENT, AppConstant.ON_EVENT)
             startActivity(this)
         }
-
     }
 
     override fun onClickQuestionsBtn() {
@@ -375,8 +369,8 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
 
     // Setting user details to the UI
     private fun setUserDetails() {
-        if (intent.extras?.get(AppConstant.EVENT_DASH_BOARD) == AppConstant.EVENT_DASH_BOARD ||
-            intent.extras?.get(AppConstant.EVENT_QUESTIONS) == AppConstant.EVENT_QUESTIONS
+        if (intent.extras?.getString(AppConstant.EVENT_QUESTIONS) == AppConstant.EVENT_QUESTIONS ||
+            intent.extras?.getString(AppConstant.EVENT_DASH_BOARD) == AppConstant.EVENT_DASH_BOARD
         ) {
             // Set sharedPref details
             updateOldValues()
@@ -385,6 +379,8 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
         } else {
             // Update eventTitle and TemplateId
             updateSharedPrefValues()
+            // Update eventId for new event creation
+            viewModel.updateEventIdToSharedPref(0)
             // Set Initial details
             setInitialUserDetails(getString(R.string.initial))
         }
