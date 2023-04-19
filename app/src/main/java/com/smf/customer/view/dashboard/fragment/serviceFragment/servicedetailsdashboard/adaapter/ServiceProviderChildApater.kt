@@ -42,6 +42,11 @@ class ServiceProviderChildApater :
             titleText.text = myEvents.serviceProviderName
             childBranch.text = myEvents.branchName
             amount.text = myEvents.bidValue.toString()
+            view.acceptBtn.apply {
+                setOnClickListener {
+                    callBackInterface?.onClickSubmitBtn(myEvents)
+                }
+            }
         }
     }
 
@@ -51,5 +56,17 @@ class ServiceProviderChildApater :
         myEventsList.clear()
         myEventsList.addAll(invoice)
         notifyDataSetChanged()
+    }
+
+    private var callBackInterface: OnServiceClickListener? = null
+
+    // Initializing Listener Interface
+    fun setOnClickListener(listener: OnServiceClickListener) {
+        callBackInterface = listener
+    }
+
+    // Interface For Invoice Click Listener
+    interface OnServiceClickListener {
+        fun onClickSubmitBtn(myEvents: ServiceProviderBiddingResponseDto)
     }
 }

@@ -272,4 +272,7 @@
     <string name="bidders">Bidders</string>
     <string name="days">\" days\"</string>
     <string name="messagre">message</string>
+    <string name="acceptbtn">AcceptBtn</string>
+    <string name="you_are_choosing">You are choosing</string>
+    <string name="bidding_amount">Bidding amount</string>
 </resources>

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +21,8 @@ import com.smf.customer.data.model.response.ServiceProviderBiddingResponseDto
 import com.smf.customer.databinding.FragmentServiceDetailDashboardBinding
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
+import com.smf.customer.dialog.DialogConstant
+import com.smf.customer.dialog.TwoButtonDialogFragment
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.adaptor.StatusDetailsAdaptor
 import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.adaapter.ServiceDetailsAdapter
 import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.adaapter.ServiceProvidersListAdapter
@@ -35,7 +38,8 @@ import javax.inject.Inject
 
 class ServiceDetailDashboardFragment(var serviceDescriptionId: String?) :
     BaseFragment<EventsDashBoardViewModel>(),
-    EventsDashBoardViewModel.OnServiceDetailsClickListener {
+    EventsDashBoardViewModel.OnServiceDetailsClickListener,
+    ServiceProvidersListAdapter.OnServiceClickListener {
     private lateinit var mDataBinding: FragmentServiceDetailDashboardBinding
     private lateinit var mBiddingDetailsRecyclerView: RecyclerView
     private lateinit var mAdapterBiddingServiceProvidersDetails: ServiceProvidersListAdapter
@@ -48,7 +52,7 @@ class ServiceDetailDashboardFragment(var serviceDescriptionId: String?) :
     private val formatter: DateTimeFormatter =
         DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.ENGLISH)
     val childDataData1 = java.util.ArrayList<ServiceProviderBiddingResponseDto>()
-
+    private var twoButtonDialog: DialogFragment? = null
 
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
@@ -76,6 +80,8 @@ class ServiceDetailDashboardFragment(var serviceDescriptionId: String?) :
         super.onViewCreated(view, savedInstanceState)
         // Initialize the call back listeners
         viewModel.setOnServiceClickListener(this)
+
+        //Initialize the call back listeners
         // 3460 Service Provider list recycler view
         mBiddingFlowRecycler()
         // 3460 Status flow recycler view
@@ -129,6 +135,8 @@ class ServiceDetailDashboardFragment(var serviceDescriptionId: String?) :
         mBiddingDetailsRecyclerView.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
         mBiddingDetailsRecyclerView.adapter = mAdapterBiddingServiceProvidersDetails
+        mAdapterBiddingServiceProvidersDetails.setOnClickListener(this)
+
     }
 
     private fun setEventServiceDetails() {
@@ -253,6 +261,48 @@ class ServiceDetailDashboardFragment(var serviceDescriptionId: String?) :
             )
         }
         return event
+    }
+
+    // 3466 On Click service provider accept button
+    override fun onClickSubmitBtn(myEvents: ServiceProviderBiddingResponseDto) {
+        Log.d(TAG, "onClickSubmitBtn: $myEvents")
+        if (twoButtonDialog == null) {
+            twoButtonDialog = TwoButtonDialogFragment.newInstance(
+                getString(R.string.you_are_choosing) + " " + myEvents.serviceProviderName + "\n" + getString(
+                    R.string.bidding_amount
+                ),
+                myEvents.currencyType + myEvents.bidValue,
+                this,
+                false
+            )
+        }
+        if (twoButtonDialog?.isVisible != true) {
+            twoButtonDialog?.show(
+                requireActivity().supportFragmentManager,
+                DialogConstant.AMOUNT_HIGHLIGHTED_DIALOG
+            )
+        }
+    }
+
+    override fun onNegativeClick(dialogFragment: DialogFragment) {
+        super.onNegativeClick(dialogFragment)
+        // Dismiss dialog
+        dismissEstimationDialog()
+    }
+
+    private fun dismissEstimationDialog() {
+        twoButtonDialog?.let {
+            if (it.isVisible) {
+                it.dismiss()
+            }
+        }
+    }
+
+    override fun onPositiveClick(dialogFragment: DialogFragment) {
+        super.onPositiveClick(dialogFragment)
+        dialogFragment.apply {
+            dialogFragment.dismiss()
+        }
     }
 
 

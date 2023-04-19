@@ -64,4 +64,7 @@ object DialogConstant {
 
     val WITHOUT_PROVIDING_DETAILS: String
         get() = " WITHOUT_PROVIDING_DETAILS"
+
+    val AMOUNT_HIGHLIGHTED_DIALOG: String
+        get() = "AMOUNT_HIGHLIGHTED_DIALOG"
 }
