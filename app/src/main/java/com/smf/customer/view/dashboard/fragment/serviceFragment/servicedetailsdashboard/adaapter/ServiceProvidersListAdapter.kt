@@ -11,12 +11,13 @@ import com.smf.customer.data.model.response.ServiceProviderBiddingResponseDto
 import com.smf.customer.databinding.ServiceDashboardParedntRowBinding
 
 class ServiceProvidersListAdapter :
-    RecyclerView.Adapter<ServiceProvidersListAdapter.ServiceProvidersListViewHolder>() {
+    RecyclerView.Adapter<ServiceProvidersListAdapter.ServiceProvidersListViewHolder>(),
+    ServiceProviderChildApater.OnServiceClickListener {
 
     private var myEventsList = ArrayList<String>()
     private var isExpandable: Boolean? = null
     private lateinit var mBiddingDetailsRecyclerView: RecyclerView
-    private lateinit var mAdapterBiddingServiceProvidersDetails: ServiceProviderChildApater
+    private lateinit var mAdapterChildProvidersDetails: ServiceProviderChildApater
     var serviceProviderBiddingResponseDtos = ArrayList<ServiceProviderBiddingResponseDto>()
 
     override fun onCreateViewHolder(
@@ -61,18 +62,19 @@ class ServiceProvidersListAdapter :
 
     private fun mBiddingFlowRecycler(mDataBinding: ServiceDashboardParedntRowBinding) {
         mBiddingDetailsRecyclerView = mDataBinding.childRecyclerview
-        mAdapterBiddingServiceProvidersDetails =
+        mAdapterChildProvidersDetails =
             ServiceProviderChildApater()
         mBiddingDetailsRecyclerView.layoutManager =
             LinearLayoutManager(MyApplication.appContext, LinearLayoutManager.VERTICAL, false)
-        mBiddingDetailsRecyclerView.adapter = mAdapterBiddingServiceProvidersDetails
+        mBiddingDetailsRecyclerView.adapter = mAdapterChildProvidersDetails
+        mAdapterChildProvidersDetails.setOnClickListener(this)
         val parentData: Array<String> =
             arrayOf(
                 AppConstant.BIDDING_RESPONSE,
                 AppConstant.PAYMENT,
                 AppConstant.REVIEW_AND_FEEDBACK
             )
-        mAdapterBiddingServiceProvidersDetails.refreshItems(serviceProviderBiddingResponseDtos)
+        mAdapterChildProvidersDetails.refreshItems(serviceProviderBiddingResponseDtos)
     }
 
     //Method For Refreshing Invoices
@@ -88,4 +90,21 @@ class ServiceProvidersListAdapter :
         this.serviceProviderBiddingResponseDtos.addAll(serviceProviderBiddingResponseDtos)
         notifyDataSetChanged()
     }
+
+    private var callBackInterface: OnServiceClickListener? = null
+
+    // Initializing Listener Interface
+    fun setOnClickListener(listener: OnServiceClickListener) {
+        callBackInterface = listener
+    }
+
+    // Interface For Invoice Click Listener
+    interface OnServiceClickListener {
+        fun onClickSubmitBtn(myEvents: ServiceProviderBiddingResponseDto)
+    }
+
+    override fun onClickSubmitBtn(myEvents: ServiceProviderBiddingResponseDto) {
+        callBackInterface?.onClickSubmitBtn(myEvents)
+    }
+
 }

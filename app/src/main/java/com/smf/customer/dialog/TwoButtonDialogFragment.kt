@@ -1,5 +1,6 @@
 package com.smf.customer.dialog
 
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -51,8 +52,16 @@ class TwoButtonDialogFragment : BaseDialogFragment() {
     }
 
     override fun setData() {
+            dataBinding.subText.apply {
+                if (tag == DialogConstant.AMOUNT_HIGHLIGHTED_DIALOG) {
+                    text = requireArguments().getString(KEY_SUBTITLE)
+                    textSize= com.intuit.sdp.R.dimen._22sdp.toFloat()
+                    setTypeface(null, Typeface.BOLD)
+                }else{
+                    text = requireArguments().getString(KEY_SUBTITLE)
+                }
+            }
         dataBinding.messageText.text = requireArguments().getString(KEY_TITLE)
-        dataBinding.subText.text = requireArguments().getString(KEY_SUBTITLE)
         dataBinding.yesBtn.text = getString(requireArguments().getInt(KEY_BUTTON_1))
         dataBinding.noBtn.text = getString(requireArguments().getInt(KEY_BUTTON_2))
     }
