@@ -1,5 +1,6 @@
 package com.smf.customer.view.dashboard
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,10 +14,13 @@ import com.smf.customer.app.base.BaseActivity
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.databinding.ActivityDashBoardBinding
+import com.smf.customer.di.sharedpreference.SharedPrefConstant
+import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.utility.OnBackPressedFragment
 import com.smf.customer.view.dashboard.fragment.MainDashBoardFragment
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.EventsDashBoardFragment
 import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.ServiceDetailDashboardFragment
+import javax.inject.Inject
 
 // 3262
 class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
@@ -26,6 +30,9 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
     var lastOrientation: Int = 0
     var frag: Fragment? = null
 
+    @Inject
+    lateinit var sharedPrefsHelper: SharedPrefsHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mInitialize()
@@ -33,19 +40,21 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
 
     // 3452 on back press
     override fun onBackPressed() {
-        if (OnBackPressedFragment.tag==getString(R.string.eventDashboard)){
-             mainFragment()
-            OnBackPressedFragment.tag=null
-       }else{
+        if (OnBackPressedFragment.tag == getString(R.string.eventDashboard)) {
+            mainFragment()
+            OnBackPressedFragment.tag = null
+        } else {
             if (doubleBackToExitPressedOnce) {
                 finishAffinity()
                 return
             }
             this.doubleBackToExitPressedOnce = true
             // 3452  Need to implement future
-            viewModel.showToastMessage( getString(R.string.back_message))
-            Handler(Looper.getMainLooper()).postDelayed(Runnable { doubleBackToExitPressedOnce = false }, 2000)
-       }
+            viewModel.showToastMessage(getString(R.string.back_message))
+            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                doubleBackToExitPressedOnce = false
+            }, 2000)
+        }
     }
 
 
@@ -54,16 +63,30 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
 
         val intent = intent
         var fragIntent = intent.getStringExtra(AppConstant.ON_EVENT)
-        var serviceDescriptionId=intent.getStringExtra(AppConstant.EVENT_SERVICE_DESCRIPTION_ID)
+        var serviceDescriptionId = intent.getStringExtra(AppConstant.EVENT_SERVICE_DESCRIPTION_ID)
         if (fragIntent == AppConstant.ON_EVENT) {
+            updateValuesToSharedPref(intent)
             eventListFragment()
         } else if (fragIntent == AppConstant.ON_SERVICE) {
             serviceDetailsFragment(serviceDescriptionId)
-        }else{
+        } else {
             mainFragment()
         }
+    }
 
-
+    private fun updateValuesToSharedPref(intent: Intent) {
+        sharedPrefsHelper.put(
+            SharedPrefConstant.EVENT_ID,
+            intent.getIntExtra(AppConstant.EVENT_ID, 0)
+        )
+        sharedPrefsHelper.put(
+            SharedPrefConstant.EVENT_NAME,
+            intent.getStringExtra(AppConstant.EVENT_NAME) ?: ""
+        )
+        sharedPrefsHelper.put(
+            SharedPrefConstant.EVENT_DATE,
+            intent.getStringExtra(AppConstant.EVENT_DATE) ?: ""
+        )
     }
 
     override fun onPause() {

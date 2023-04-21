@@ -1,5 +1,8 @@
 package com.smf.customer.data.model.response
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 data class OTPValidationResponseDTO (
     var success: Boolean,
     var data: Int,
@@ -7,5 +10,5 @@ data class OTPValidationResponseDTO (
     var errorMessage: String
 ):ResponseDTO()
 
-
-data class Result(var info: String)
+@Parcelize
+data class Result(var info: String): Parcelable

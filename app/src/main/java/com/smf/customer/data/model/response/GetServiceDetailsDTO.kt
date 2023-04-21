@@ -39,27 +39,27 @@ data class EventServiceVenueDto(
     val zipCode: String
 )
 
-data class QuestionnaireWrapperDto(
-    val noOfEventOrganizers: Int,
-    val noOfVendors: Int,
-    val questionnaireDtos: List<GetQuestionnaireDto>
-)
+//data class QuestionnaireWrapperDto(
+//    val noOfEventOrganizers: Int,
+//    val noOfVendors: Int,
+//    val questionnaireDtos: List<GetQuestionnaireDto>
+//)
 
-data class GetQuestionnaireDto(
-    val active: Boolean,
-    val eventTemplateId: Int,
-    val id: Int,
-    val questionMetadata: GetQuestionMetadata,
-    val serviceCategoryId: Int
-)
+//data class GetQuestionnaireDto(
+//    val active: Boolean,
+//    val eventTemplateId: Int,
+//    val id: Int,
+//    val questionMetadata: GetQuestionMetadata,
+//    val serviceCategoryId: Int
+//)
 
-data class GetQuestionMetadata(
-    val answer: String?,
-    val choices: List<String>,
-    val eventOrganizer: String,
-    val filter: String,
-    val isMandatory: Boolean,
-    val question: String,
-    val questionType: String,
-    val vendor: String
-)
+//data class GetQuestionMetadata(
+//    val answer: String?,
+//    val choices: List<String>,
+//    val eventOrganizer: String,
+//    val filter: String,
+//    val isMandatory: Boolean,
+//    val question: String,
+//    val questionType: String,
+//    val vendor: String
+//)

@@ -89,20 +89,21 @@ object AppConstant {
     const val CLOSED_TXT = "Closed"
 
     // 3306
-    const val ON_EVENT="onEvent"
+    const val ON_EVENT = "onEvent"
 
     //3317
-    const val EVENT_DASH_BOARD= "EventDashBoard"
-    const val EVENT_QUESTIONS= "EventQuestions"
-    const val SERVICE_QUESTIONS= "ServiceQuestions"
-    const val EVENT_DETAILS_ACTIVITY= "EventDetailsActivity"
-    const val PROVIDE_SERVICE_DETAILS_ACTIVITY= "ProvideServiceDetailsActivity"
-    const val SELECTED_ANSWER_MAP= "selectedAnswerMap"
-    const val QUESTION_LIST_ITEM= "questionListItem"
-    const val QUESTION_NUMBER_LIST= "questionNumberList"
-    const val FROM_ACTIVITY= "fromActivity"
-    const val QUESTION_BTN_TEXT= "QuestionButtonText"
-    const val QUESTION_BUTTON= "QuestionButton"
+    const val EVENT_DASH_BOARD = "EventDashBoard"
+    const val EVENT_QUESTIONS = "EventQuestions"
+    const val SERVICE_QUESTIONS = "ServiceQuestions"
+    const val EVENT_DETAILS_ACTIVITY = "EventDetailsActivity"
+    const val PROVIDE_SERVICE_DETAILS_ACTIVITY = "ProvideServiceDetailsActivity"
+    const val EVENT_DATA = "eventData"
+    const val SELECTED_ANSWER_MAP = "selectedAnswerMap"
+    const val QUESTION_LIST_ITEM = "questionListItem"
+    const val QUESTION_NUMBER_LIST = "questionNumberList"
+    const val FROM_ACTIVITY = "fromActivity"
+    const val QUESTION_BTN_TEXT = "QuestionButtonText"
+    const val QUESTION_BUTTON = "QuestionButton"
 
     //3372
     const val PLAIN_SNACK_BAR = "Plain Snackbar"
@@ -114,39 +115,42 @@ object AppConstant {
     const val NULL = "null"
 
     // 3429
-    const val LAYOUTONE=0
-    const val LAYOUTTWO=1
-    const val EVENT_ID="Event_Id"
-    const val EVENT_SERVICE_ID="Event_ServiceId"
-    const val SERVICE_CATEGORY_ID="serviceCategoryId"
-    const val EVENT_SERVICE_DESCRIPTION_ID="Event_ServiceDescriptionId"
-    const val EVENT_SERVICE_STATUS="eventServiceStatus"
-    const val LEAD_PERIOD="Lead_Period"
+    const val LAYOUTONE = 0
+    const val LAYOUTTWO = 1
+    const val EVENT_ID = "Event_Id"
+    const val EVENT_SERVICE_ID = "Event_ServiceId"
+    const val SERVICE_CATEGORY_ID = "serviceCategoryId"
+    const val EVENT_SERVICE_DESCRIPTION_ID = "Event_ServiceDescriptionId"
+    const val EVENT_SERVICE_STATUS = "eventServiceStatus"
+    const val LEAD_PERIOD = "Lead_Period"
 
     //3438
     const val PARENT = 0
     const val CHILD = 1
     const val BIDDING_RESPONSE = "Bidding response"
-    const val PAYMENT ="Payment"
+    const val PAYMENT = "Payment"
     const val REVIEW_AND_FEEDBACK = "Review and Feedback"
 
     //3439
-    const val SERVICE_NAME_LIST="Service_Name_List"
+    const val SERVICE_NAME_LIST = "Service_Name_List"
     const val ON_SAVE = "OnSave"
     const val ON_VERIFY = "OnVerify"
 
     // 3452
     const val BIDDING_STARTED = "BIDDING STARTED"
-    const val ON_SERVICE="serviceDashboard"
+    const val ON_SERVICE = "serviceDashboard"
 
     // 3453
     const val MODIFY_ORDER_DETAILS = "ModifyOrderDetails"
-    const val SERVICE_NAME="serviceName"
-    const val PROVIDE_DETAILS="provideDetails"
+    const val SERVICE_NAME = "serviceName"
+    const val PROVIDE_DETAILS = "provideDetails"
 
     //3454
-    const val ONE_BUTTON="OneButton"
-    const val TWO_BUTTON="TwoButton"
+    const val ONE_BUTTON = "OneButton"
+    const val TWO_BUTTON = "TwoButton"
 
-    const val OK="ok"
+    const val OK = "ok"
+
+    const val EVENT_NAME = "EventName"
+    const val EVENT_DATE = "EventDate"
 }

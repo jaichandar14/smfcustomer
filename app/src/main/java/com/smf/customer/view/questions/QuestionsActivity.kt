@@ -14,10 +14,12 @@ import com.smf.customer.R
 import com.smf.customer.app.base.BaseActivity
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
+import com.smf.customer.data.model.dto.EventDetailsDTO
 import com.smf.customer.data.model.dto.QuestionListItem
 import com.smf.customer.databinding.ActivityQuestionsBinding
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
+import com.smf.customer.utility.Util.Companion.parcelable
 import com.smf.customer.view.eventDetails.EventDetailsActivity
 import com.smf.customer.view.provideservicedetails.ProvideServiceDetailsActivity
 import javax.inject.Inject
@@ -67,7 +69,7 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
         // Button visibility observer
         setButtonVisibility()
         // adding onbackpressed callback listener.
-        onBackPressedDispatcher.addCallback(this,onBackPressedCallback)
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
     }
 
     private fun setQuestionsRecycler() {
@@ -165,13 +167,15 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
 
     private fun backToDetailsPage() {
         if (fromActivity == AppConstant.EVENT_DETAILS_ACTIVITY) {
-            // Update selectedAnswerMap for event details page
-            sharedPrefsHelper.putHashMap(
-                SharedPrefConstant.EVENT_SELECTED_ANSWER_MAP,
-                viewModel.selectedAnswerMap
-            )
+            val eventDetailsDTO = intent.parcelable<EventDetailsDTO>(AppConstant.EVENT_DATA)?.let {
+                it.apply {
+                    // Update user selected answer
+                    this.eventSelectedAnswerMap = viewModel.selectedAnswerMap
+                }
+            }
             Intent(this, EventDetailsActivity::class.java).apply {
                 this.putExtra(AppConstant.EVENT_QUESTIONS, AppConstant.EVENT_QUESTIONS)
+                this.putExtra(AppConstant.EVENT_DATA, eventDetailsDTO)
                 startActivity(this)
             }
         } else {
