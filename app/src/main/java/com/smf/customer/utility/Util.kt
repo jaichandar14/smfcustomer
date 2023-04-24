@@ -1,8 +1,12 @@
 package com.smf.customer.utility
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Rect
+import android.os.Build.VERSION.SDK_INT
+import android.os.Bundle
+import android.os.Parcelable
 import android.text.InputFilter
 import android.util.Log
 import androidx.fragment.app.DialogFragment
@@ -72,6 +76,37 @@ class Util {
             val percentHeight = heightPercentage.toFloat() / 100
             val height = rect.height() * percentHeight
             dialog?.window?.setLayout(width.toInt(), height.toInt())
+        }
+
+        inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
+            SDK_INT >= 33 -> getParcelableExtra(key, T::class.java)
+            else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
+        }
+
+        inline fun <reified T : Parcelable> Bundle.parcelable(key: String): T? = when {
+            SDK_INT >= 33 -> getParcelable(key, T::class.java)
+            else -> @Suppress("DEPRECATION") getParcelable(key) as? T
+        }
+
+        fun getCountryPosition(countryList: ArrayList<String>, countryName: String): Int {
+            return if (countryList.contains(countryName)) {
+                countryList.indexOf(countryName)
+            } else {
+                0
+            }
+        }
+
+        fun getStatePosition(
+            countryList: ArrayList<String>, stateList: ArrayList<List<String>>,
+            countryName: String, stateName: String
+        ): Int {
+            return if (countryList.contains(countryName) &&
+                stateList[countryList.indexOf(countryName)].contains(stateName)
+            ) {
+                stateList[countryList.indexOf(countryName)].indexOf(stateName)
+            } else {
+                0
+            }
         }
 
         fun getNewFCMToken(preferenceHelper: SharedPrefsHelper) {

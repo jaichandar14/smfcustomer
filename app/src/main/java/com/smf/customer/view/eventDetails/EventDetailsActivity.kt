@@ -15,13 +15,14 @@ import com.smf.customer.R
 import com.smf.customer.app.base.BaseActivity
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
-import com.smf.customer.data.model.dto.QuestionListItem
+import com.smf.customer.data.model.dto.EventDetailsDTO
 import com.smf.customer.data.model.response.EventQuestionsResponseDTO
 import com.smf.customer.databinding.EventDetailsBinding
 import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.utility.DatePicker
 import com.smf.customer.utility.Util
+import com.smf.customer.utility.Util.Companion.parcelable
 import com.smf.customer.view.dashboard.DashBoardActivity
 import com.smf.customer.view.questions.QuestionsActivity
 import org.json.JSONObject
@@ -51,26 +52,6 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
         init()
     }
 
-    override fun onPostCreate(savedInstanceState: Bundle?) {
-        super.onPostCreate(savedInstanceState)
-        // Verify date picker dialog isVisible
-        if (viewModel.isDatePickerDialogVisible()) {
-            showDatePickerDialog()
-        }
-        // Check screen rotating
-        if (viewModel.screenRotationStatus.value == false) {
-            // Event Questions Api call
-            viewModel.templateId?.let { viewModel.getEventDetailsQuestions(it) }
-            // Update viewOrderQuestionNumber when activity not rotation
-            viewModel.viewOrderQuestionNumber = 0
-        } else {
-            // Set start button visibility when rotating screen
-            if (viewModel.questionListItem.isEmpty()) {
-                startQuestionsButtonVisibility(false)
-            }
-        }
-    }
-
     private fun init() {
         // Setting user details on UI
         setUserDetails()
@@ -88,79 +69,59 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
         eventDateListener()
         // Initialize currency type
         initializeCurrencyType()
-        // Questions edit button Listener
-        editBtnListener()
     }
 
     override fun updateQuestions(eventQuestionsResponseDTO: EventQuestionsResponseDTO) {
-        if (eventQuestionsResponseDTO.data.questionnaireDtos.isEmpty()) {
-            viewModel.questionListItem.clear()
-            startQuestionsButtonVisibility(false)
-        } else {
-            startQuestionsButtonVisibility(true)
-            // Update Questions
-            updateQuestionsList(eventQuestionsResponseDTO)
-            // Update Question Number
-            updateQuestionNumberList()
-        }
-    }
-
-    private fun updateQuestionsList(eventQuestionsResponseDTO: EventQuestionsResponseDTO) {
+        // Update eventQuestionsResponse data to view model variable
+        viewModel.eventQuestionsResponseDTO = eventQuestionsResponseDTO
         viewModel.questionListItem.clear()
-        eventQuestionsResponseDTO.data.questionnaireDtos.forEach {
-            viewModel.questionListItem.add(
-                QuestionListItem(
-                    it.questionMetadata.question,
-                    it.questionMetadata.choices as ArrayList<String>,
-                    it.questionMetadata.questionType,
-                    it.questionMetadata.isMandatory
-                )
-            )
-        }
-    }
-
-    private fun updateQuestionNumberList() {
         viewModel.questionNumberList.clear()
-        for (i in 0 until viewModel.questionListItem.size) {
-            viewModel.questionNumberList.add(i)
+        if (viewModel.eventQuestionsResponseDTO?.data?.questionnaireDtos?.isEmpty() == true) {
+            viewModel.hideStartQuestionsBtn()
+        } else {
+            viewModel.showStartQuestionsBtn()
+            viewModel.editButtonVisibility()
+            // Update Questions
+            viewModel.questionListItem = viewModel.getQuesListItem(eventQuestionsResponseDTO.data)
+            // Update Question Number
+            viewModel.questionNumberList =
+                viewModel.getQuestionNumberList(viewModel.questionListItem.size)
         }
     }
 
     override fun onClickNext() {
-        Intent(this, DashBoardActivity::class.java).apply {
+        val intent = Intent(this, DashBoardActivity::class.java).apply {
             this.putExtra(AppConstant.ON_EVENT, AppConstant.ON_EVENT)
-            startActivity(this)
+            this.putExtra(AppConstant.EVENT_ID, viewModel.eventId)
+            this.putExtra(AppConstant.EVENT_NAME, viewModel.eventName.value)
+            this.putExtra(AppConstant.EVENT_DATE, viewModel.eventDate.value)
         }
+        finish()
+        startActivity(intent)
     }
 
-    override fun onClickQuestionsBtn() {
-        // Update Host Country Code
-        sharedPrefsHelper.put(
-            SharedPrefConstant.HOST_COUNTRY_CODE,
-            binding.cppSignIn.selectedCountryCode
-        )
-        // Go to questions page
-        navigateQuestionsPage(AppConstant.QUESTION_BUTTON)
-    }
-
-    private fun editBtnListener() {
-        binding.editImage.setOnClickListener {
-            navigateQuestionsPage(AppConstant.EDIT_BUTTON)
+    override fun onClickQuestionsBtn(from: String) {
+        val intent = Intent(this, QuestionsActivity::class.java).apply {
+            this.putExtra(AppConstant.FROM_ACTIVITY, AppConstant.EVENT_DETAILS_ACTIVITY)
+            this.putExtra(
+                AppConstant.EVENT_DATA, viewModel.getUserEnteredValuesForQuesPage()
+            )
+            this.putExtra(
+                AppConstant.QUESTION_LIST_ITEM,
+                viewModel.questionListItem
+            )
+            this.putIntegerArrayListExtra(
+                AppConstant.QUESTION_NUMBER_LIST, viewModel.questionNumberList
+            )
+            this.putExtra(
+                AppConstant.SELECTED_ANSWER_MAP,
+                viewModel.eventSelectedAnswerMap
+            )
+            this.putExtra(
+                AppConstant.QUESTION_BTN_TEXT,
+                if (from != AppConstant.EDIT_BUTTON) viewModel.questionBtnText.value else ""
+            )
         }
-    }
-
-    private fun navigateQuestionsPage(from: String) {
-        val intent = Intent(this, QuestionsActivity::class.java)
-        intent.putExtra(AppConstant.FROM_ACTIVITY, this::class.java.simpleName)
-        intent.putExtra(AppConstant.QUESTION_LIST_ITEM, viewModel.questionListItem)
-        intent.putIntegerArrayListExtra(
-            AppConstant.QUESTION_NUMBER_LIST, viewModel.questionNumberList
-        )
-        intent.putExtra(AppConstant.SELECTED_ANSWER_MAP, viewModel.eventSelectedAnswerMap)
-        intent.putExtra(
-            AppConstant.QUESTION_BTN_TEXT,
-            if (from != AppConstant.EDIT_BUTTON) viewModel.questionBtnText.value else ""
-        )
         finish()
         startActivity(intent)
     }
@@ -305,8 +266,8 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
             viewModel.noOfAttendeesError.value = false
         })
         viewModel.totalBudget.observe(this, Observer {
-            if (it != null) {
-                viewModel.totalBudgetError.value = !(it.isNotEmpty() && Util.amountValidation(it))
+            if (it.isNullOrEmpty().not()) {
+                viewModel.totalBudgetError.value = !Util.amountValidation(it)
             }
         })
         viewModel.address1.observe(this, Observer {
@@ -348,19 +309,6 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
         super.onDestroy()
         // Update screen rotation status
         viewModel.screenRotationStatus.value = true
-        Log.d(TAG, "called onDestroy: called")
-    }
-
-    private fun startQuestionsButtonVisibility(status: Boolean) {
-        if (status) {
-            binding.startQusBtn.visibility = View.VISIBLE
-            binding.provideEventDetailsText.visibility = View.VISIBLE
-            binding.hostDetailsSeparator.visibility = View.VISIBLE
-        } else {
-            binding.startQusBtn.visibility = View.GONE
-            binding.provideEventDetailsText.visibility = View.GONE
-            binding.hostDetailsSeparator.visibility = View.GONE
-        }
     }
 
     private fun setEditTextFilter() {
@@ -369,80 +317,42 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
 
     // Setting user details to the UI
     private fun setUserDetails() {
-        if (intent.extras?.getString(AppConstant.EVENT_QUESTIONS) == AppConstant.EVENT_QUESTIONS ||
-            intent.extras?.getString(AppConstant.EVENT_DASH_BOARD) == AppConstant.EVENT_DASH_BOARD
-        ) {
-            // Set sharedPref details
-            updateOldValues()
-            // Set Initial details
-            setInitialUserDetails(getString(R.string.after))
+        if (intent.extras?.getString(AppConstant.EVENT_QUESTIONS) == AppConstant.EVENT_QUESTIONS) {
+            // Get and update user details before entered
+            intent.parcelable<EventDetailsDTO>(AppConstant.EVENT_DATA)?.let { eventDetailsDTO ->
+                eventDetailsDTO.apply {
+                    eventTitle = viewModel.setEventTitle(eventDetailsDTO.eventTitle)
+                }
+                viewModel.updateDetailsToUI(eventDetailsDTO)
+            }
+        } else if (intent.extras?.getString(AppConstant.EVENT_DASH_BOARD) == AppConstant.EVENT_DASH_BOARD) {
+//            TODO Need to get and pass dynamic event Id
+            // Get api call for modify event details
+            viewModel.getEventInfo(sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0])
         } else {
-            // Update eventTitle and TemplateId
-            updateSharedPrefValues()
-            // Update eventId for new event creation
-            viewModel.updateEventIdToSharedPref(0)
-            // Set Initial details
-            setInitialUserDetails(getString(R.string.initial))
+            val eventDetailsDTO = EventDetailsDTO(
+                eventTitle = viewModel.setEventTitle(
+                    intent.getStringExtra(AppConstant.TITLE).toString()
+                ),
+                templateId = intent.getStringExtra(AppConstant.TEMPLATE_ID)?.toInt() ?: 0,
+                eventId = 0,
+                name = sharedPrefsHelper[SharedPrefConstant.FIRST_NAME, ""] + " " + sharedPrefsHelper[SharedPrefConstant.LAST_NAME, ""],
+                emailId = sharedPrefsHelper[SharedPrefConstant.EMAIL_ID, ""],
+                mobileNumberWithCountryCode = sharedPrefsHelper[SharedPrefConstant.MOBILE_NUMBER_WITH_COUNTRY_CODE, ""]
+            )
+            viewModel.updateDetailsToUI(eventDetailsDTO)
+            // Event Questions Api call
+            viewModel.templateId.let { viewModel.getEventDetailsQuestions(it) }
         }
     }
 
-    // For Update page title
-    private fun updateSharedPrefValues() {
-        sharedPrefsHelper.put(
-            SharedPrefConstant.EVENT_TITLE,
-            intent.getStringExtra(AppConstant.TITLE).toString().replaceFirstChar {
-                if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
-            } + " " + getString(R.string.event_Details)
-        )
-        intent.getStringExtra(AppConstant.TEMPLATE_ID)?.let {
-            sharedPrefsHelper.put(SharedPrefConstant.TEMPLATE_ID, it.toInt())
-        }
+    override fun updateCountryCode(code: Int) {
+        binding.cppSignIn.setCountryForPhoneCode(code)
     }
 
-    private fun setInitialUserDetails(from: String) {
-        binding.pageTitleText.text = sharedPrefsHelper[SharedPrefConstant.EVENT_TITLE, ""]
-        viewModel.templateId = sharedPrefsHelper[SharedPrefConstant.TEMPLATE_ID, 0]
-        if (from == getString(R.string.initial)) {
-            viewModel.name.value =
-                sharedPrefsHelper[SharedPrefConstant.FIRST_NAME, ""] + " " + sharedPrefsHelper[SharedPrefConstant.LAST_NAME, ""]
-            viewModel.emailId.value = sharedPrefsHelper[SharedPrefConstant.EMAIL_ID, ""]
-            val countryCode = sharedPrefsHelper[SharedPrefConstant.COUNTRY_CODE, ""]
-            val mobileNumber = sharedPrefsHelper[SharedPrefConstant.MOBILE_NUMBER, ""]
-            viewModel.mobileNumber.value = mobileNumber.substringAfter(countryCode)
-            binding.cppSignIn.setCountryForPhoneCode(sharedPrefsHelper[SharedPrefConstant.COUNTRY_CODE, 0])
-        } else {
-            viewModel.name.value = sharedPrefsHelper[SharedPrefConstant.HOST_NAME, ""]
-            viewModel.emailId.value = sharedPrefsHelper[SharedPrefConstant.HOST_EMAIL, ""]
-            viewModel.mobileNumber.value = sharedPrefsHelper[SharedPrefConstant.HOST_NUMBER, ""]
-            binding.cppSignIn.setCountryForPhoneCode(sharedPrefsHelper[SharedPrefConstant.HOST_COUNTRY_CODE, "0"].toInt())
-        }
-    }
-
-    private fun updateOldValues() {
-        viewModel.eventName.value = sharedPrefsHelper[SharedPrefConstant.EVENT_NAME, ""]
-        viewModel.eventDate.value = sharedPrefsHelper[SharedPrefConstant.EVENT_DATE, ""]
-        viewModel.noOfAttendees.value = sharedPrefsHelper[SharedPrefConstant.NO_OF_ATTENDEES, ""]
-        viewModel.currencyPosition.value = sharedPrefsHelper[SharedPrefConstant.CURRENCY_TYPE, 0]
-        viewModel.totalBudget.value = sharedPrefsHelper[SharedPrefConstant.BUDGET, ""]
-        viewModel.iKnowVenue2.value = sharedPrefsHelper[SharedPrefConstant.VENUE, false] == false
-        viewModel.address1.value = sharedPrefsHelper[SharedPrefConstant.ADDRESS_1, ""]
-        viewModel.address2.value = sharedPrefsHelper[SharedPrefConstant.ADDRESS_2, ""]
-        viewModel.selectedCountryPosition = sharedPrefsHelper[SharedPrefConstant.COUNTRY, 0]
-        viewModel.selectedStatePosition = sharedPrefsHelper[SharedPrefConstant.STATE, 0]
-        viewModel.city.value = sharedPrefsHelper[SharedPrefConstant.CITY, ""]
-        viewModel.zipCode.value = sharedPrefsHelper[SharedPrefConstant.ZIPCODE, ""]
-        // Update selected questions answers
-        viewModel.eventSelectedAnswerMap =
-            sharedPrefsHelper.getHashMap(SharedPrefConstant.EVENT_SELECTED_ANSWER_MAP) as HashMap<Int, ArrayList<String>>
-        // Update questions button text
-        if (viewModel.eventSelectedAnswerMap.isNotEmpty()) {
-            viewModel.questionBtnText.value =
-                getString(R.string.view_order) + " {${viewModel.eventSelectedAnswerMap.keys.size}}"
-            viewModel.editImageVisibility.value = true
-        } else {
-            viewModel.questionBtnText.value = getString(R.string.start_questions)
-            viewModel.editImageVisibility.value = false
-        }
+    override fun updateCountryAndState(selectedCountryPosition: Int, selectedStatePosition: Int) {
+        binding.country.setSelection(selectedCountryPosition)
+        binding.state.setSelection(selectedStatePosition)
     }
 
 }

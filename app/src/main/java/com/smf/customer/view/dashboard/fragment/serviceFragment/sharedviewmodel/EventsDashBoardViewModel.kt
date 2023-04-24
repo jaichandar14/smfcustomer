@@ -37,7 +37,7 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
 
 
     fun getEventInfo(eventId: Int) {
-        val observable: Observable<GetEventInfo> =
+        val observable: Observable<GetEventInfoDTO> =
             retrofitHelper.getEventRepository().getEventInfo(getUserToken(), eventId)
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
@@ -83,7 +83,7 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
     override fun onSuccess(responseDTO: ResponseDTO) {
         super.onSuccess(responseDTO)
         when (responseDTO) {
-            is GetEventInfo -> {
+            is GetEventInfoDTO -> {
                 var response = responseDTO.data
             }
             is GetEventServiceInfo -> {

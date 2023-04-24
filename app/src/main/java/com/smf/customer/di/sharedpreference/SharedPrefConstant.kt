@@ -39,11 +39,8 @@ object SharedPrefConstant {
     val EMAIL_ID: String
         get() = "emailId"
 
-    val MOBILE_NUMBER: String
-        get() = "mobileNumber"
-
-    val COUNTRY_CODE: String
-        get() = "countryCode"
+    val MOBILE_NUMBER_WITH_COUNTRY_CODE: String
+        get() = "mobileNumberWithCountryCode"
 
     val EVENT_NAME: String
         get() = "Event Name"
@@ -54,8 +51,8 @@ object SharedPrefConstant {
     val NO_OF_ATTENDEES: String
         get() = "No Of Attendees"
 
-    val BUDGET: String
-        get() = "Budget"
+    val TOTAL_BUDGET: String
+        get() = "TotalBudget"
 
     val ZIPCODE: String
         get() = "ZipCode"
