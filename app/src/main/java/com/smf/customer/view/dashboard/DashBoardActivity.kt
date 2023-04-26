@@ -60,17 +60,23 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
 
     override fun onStart() {
         super.onStart()
-
         val intent = intent
         var fragIntent = intent.getStringExtra(AppConstant.ON_EVENT)
         var serviceDescriptionId = intent.getStringExtra(AppConstant.EVENT_SERVICE_DESCRIPTION_ID)
-        if (fragIntent == AppConstant.ON_EVENT) {
-            updateValuesToSharedPref(intent)
-            eventListFragment()
-        } else if (fragIntent == AppConstant.ON_SERVICE) {
-            serviceDetailsFragment(serviceDescriptionId)
-        } else {
-            mainFragment()
+        when (fragIntent) {
+            AppConstant.ON_EVENT -> {
+                updateValuesToSharedPref(intent)
+                eventListFragment()
+            }
+            AppConstant.ON_SERVICE -> {
+                serviceDetailsFragment(serviceDescriptionId,fragIntent)
+            }
+            AppConstant.QUOTE_ACCEPTED_SERVICE -> {
+                serviceDetailsFragment(serviceDescriptionId, fragIntent)
+            }
+            else -> {
+                mainFragment()
+            }
         }
     }
 
@@ -133,7 +139,7 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
     }
 
     // 3438 service dashboard call
-    private fun serviceDetailsFragment(serviceDescriptionId: String?) {
+    private fun serviceDetailsFragment(serviceDescriptionId: String?, fragIntent: String) {
         Log.d(TAG, "mainFragment:  called")
         //frag = MainDashBoardFragment() //create the fragment instance for the middle fragment
         frag = ServiceDetailDashboardFragment(serviceDescriptionId)
@@ -144,11 +150,12 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
         transaction.replace(
             R.id.main_dashboard_ui,
             frag as ServiceDetailDashboardFragment,
-            "1223456"
+            fragIntent
         )
         transaction.addToBackStack(null)
         transaction.commit()
     }
+
 
     private fun mInitialize() {
         mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_dash_board)
