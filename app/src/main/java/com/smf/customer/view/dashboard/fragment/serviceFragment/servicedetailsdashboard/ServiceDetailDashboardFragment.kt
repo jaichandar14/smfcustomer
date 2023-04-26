@@ -1,5 +1,6 @@
 package com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.smf.customer.R
 import com.smf.customer.app.base.BaseFragment
 import com.smf.customer.app.base.MyApplication
+import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.data.model.response.DataBidding
 import com.smf.customer.data.model.response.ServiceProviderBiddingResponseDto
 import com.smf.customer.databinding.FragmentServiceDetailDashboardBinding
@@ -23,6 +25,7 @@ import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.dialog.DialogConstant
 import com.smf.customer.dialog.TwoButtonDialogFragment
+import com.smf.customer.view.dashboard.DashBoardActivity
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.adaptor.StatusDetailsAdaptor
 import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.adaapter.ServiceDetailsAdapter
 import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.adaapter.ServiceProvidersListAdapter
@@ -36,7 +39,7 @@ import java.util.*
 import javax.inject.Inject
 
 
-class ServiceDetailDashboardFragment(var serviceDescriptionId: String?) :
+class ServiceDetailDashboardFragment(private var serviceDescriptionId: String?) :
     BaseFragment<EventsDashBoardViewModel>(),
     EventsDashBoardViewModel.OnServiceDetailsClickListener,
     ServiceProvidersListAdapter.OnServiceClickListener {
@@ -80,8 +83,6 @@ class ServiceDetailDashboardFragment(var serviceDescriptionId: String?) :
         super.onViewCreated(view, savedInstanceState)
         // Initialize the call back listeners
         viewModel.setOnServiceClickListener(this)
-
-        //Initialize the call back listeners
         // 3460 Service Provider list recycler view
         mBiddingFlowRecycler()
         // 3460 Status flow recycler view
@@ -104,7 +105,13 @@ class ServiceDetailDashboardFragment(var serviceDescriptionId: String?) :
             viewModel.isExpandable,
             childServiceProvideDetails(childDataData1)
         )
-
+        if (tag==AppConstant.ON_SERVICE){
+            mDataBinding.dashBoardStatus=true
+            mDataBinding.timeLeftTxt.text =
+                " ${getString(R.string.days)}"
+        }else{
+            mDataBinding.dashBoardStatus=false
+        }
     }
 
     private fun onSwipeRefresh() {
@@ -192,8 +199,14 @@ class ServiceDetailDashboardFragment(var serviceDescriptionId: String?) :
             settingServiceProviderChildListUI(response)
         )
         mAdapterServiceDetails.refreshItems(settingServiceAdapterUi(response, formattedDate))
-        mDataBinding.timeLeftTxt.text =
-            response.timeLeft.toString() + " ${getString(R.string.days)}"
+        if (tag==AppConstant.ON_SERVICE){
+            mDataBinding.dashBoardStatus=true
+            mDataBinding.timeLeftTxt.text =
+                response.timeLeft.toString() + " ${getString(R.string.days)}"
+        }else{
+            mDataBinding.dashBoardStatus=false
+        }
+
         var preferredSlots = ArrayList<String>()
         preferredSlots.addAll(response.preferredTimeSlots)
         mAdapterSlot.refreshItems(preferredSlots)
@@ -301,7 +314,11 @@ class ServiceDetailDashboardFragment(var serviceDescriptionId: String?) :
     override fun onPositiveClick(dialogFragment: DialogFragment) {
         super.onPositiveClick(dialogFragment)
         dialogFragment.apply {
-            dialogFragment.dismiss()
+            Intent(requireActivity(), DashBoardActivity::class.java).apply {
+                this.putExtra(AppConstant.ON_EVENT, AppConstant.QUOTE_ACCEPTED_SERVICE)
+                startActivity(this)
+                dialogFragment.dismiss()
+            }
         }
     }
 

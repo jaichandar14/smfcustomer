@@ -149,7 +149,9 @@ object AppConstant {
     const val ONE_BUTTON = "OneButton"
     const val TWO_BUTTON = "TwoButton"
 
-    const val OK = "ok"
+    //3468
+    const val OK="ok"
+    const val QUOTE_ACCEPTED_SERVICE="QUOTE_ACCEPTED_SERVICE"
 
     const val EVENT_NAME = "EventName"
     const val EVENT_DATE = "EventDate"
