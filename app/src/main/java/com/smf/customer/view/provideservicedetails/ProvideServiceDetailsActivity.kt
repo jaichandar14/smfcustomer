@@ -176,7 +176,7 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
 
     override fun onSaveClick() {
         Intent(this, DashBoardActivity::class.java).apply {
-            this.putExtra(AppConstant.ON_EVENT, AppConstant.ON_EVENT)
+            this.putExtra(AppConstant.ON_EVENT, AppConstant.ON_PROVIDE_SERVICE_DETAILS)
             startActivity(this)
         }
     }

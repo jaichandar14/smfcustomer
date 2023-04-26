@@ -68,8 +68,11 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
                 updateValuesToSharedPref(intent)
                 eventListFragment()
             }
+            AppConstant.ON_PROVIDE_SERVICE_DETAILS -> {
+                eventListFragment()
+            }
             AppConstant.ON_SERVICE -> {
-                serviceDetailsFragment(serviceDescriptionId,fragIntent)
+                serviceDetailsFragment(serviceDescriptionId, fragIntent)
             }
             AppConstant.QUOTE_ACCEPTED_SERVICE -> {
                 serviceDetailsFragment(serviceDescriptionId, fragIntent)
