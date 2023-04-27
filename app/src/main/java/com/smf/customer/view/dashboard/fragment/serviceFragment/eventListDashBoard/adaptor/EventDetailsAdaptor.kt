@@ -59,7 +59,7 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
             // 3443
             settingValueUi(myEvents)
             // Delete service
-            deleteService(myEvents.eventServiceId, myEvents.serviceName, myEvents)
+            deleteService(myEvents.eventServiceId.toString(), myEvents.serviceName, myEvents)
         }
 
         private fun deleteService(

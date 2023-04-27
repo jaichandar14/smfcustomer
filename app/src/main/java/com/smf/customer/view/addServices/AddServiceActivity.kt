@@ -80,7 +80,7 @@ class AddServiceActivity : BaseActivity<AddServiceViewModel>(),
 
     override fun onClickSaveService() {
         Intent(this, DashBoardActivity::class.java).apply {
-            putExtra(AppConstant.ON_EVENT, AppConstant.ON_EVENT)
+            putExtra(AppConstant.ON_EVENT, AppConstant.ON_ADD_SERVICE)
             startActivity(this)
         }
     }

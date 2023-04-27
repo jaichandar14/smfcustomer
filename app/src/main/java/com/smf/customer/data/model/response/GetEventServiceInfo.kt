@@ -23,10 +23,10 @@ data class EventServiceDtos(
     val serviceName: String,
     val biddingCutOffDate: String,
     val serviceDate: String,
-    val eventServiceId: String,
-    val serviceCategoryId: String,
-    val leadPeriod: String,
-    val eventServiceDescriptionId: String,
+    val eventServiceId: Int,
+    val serviceCategoryId: Int,
+    val leadPeriod: Long,
+    val eventServiceDescriptionId: Long,
     val isServiceRequired:Boolean,
     val eventServiceStatus:String
 )

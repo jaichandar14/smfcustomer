@@ -28,7 +28,7 @@ data class EventBudgetDto(
     val allocatedBudgetPercentage: BigDecimal,
     val currencyType: String,
     val estimatedEventBudget: BigDecimal,
-//    val eventServiceDtos: List<EventServiceDto, // Not required
+//  val eventServiceDtos: List<EventServiceDto, // Not required
     val eventStatus: String,
     val remainingBudgetPercentage: BigDecimal,
     val serviceCount: Int,
