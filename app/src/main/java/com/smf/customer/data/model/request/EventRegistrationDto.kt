@@ -60,7 +60,7 @@ data class EventBudgetDto(
     val eventStatus: String = "",
 //    val eventServiceDtos: List<EventServiceDto> = ArrayList(), // this parameter not required
     val currencyType: String = "",
-    val actualEventbudget: String = "0",
+    val actualEventbudget: String = "",
     val totalUtilizedBudget: BigDecimal = "0".toBigDecimal(),
     val totalActualServiceBudget: BigDecimal = "0".toBigDecimal()
 )

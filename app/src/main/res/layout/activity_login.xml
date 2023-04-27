@@ -92,10 +92,9 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/phnumerlayout"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_18sdp"
-                android:layout_marginEnd="@dimen/_18sdp"
+                android:layout_marginHorizontal="@dimen/_18sdp"
                 android:background="@drawable/event_details_et_background"
                 android:padding="@dimen/_1sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -106,45 +105,46 @@
 
                 <com.hbb20.CountryCodePicker
                     android:id="@+id/cppSignIn"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/mulish_medium"
+                    android:gravity="end"
                     app:ccpDialog_backgroundColor="@color/white"
                     app:ccpDialog_textColor="@color/fade_black"
                     app:ccp_arrowColor="@color/black"
-                    app:ccp_arrowSize="@dimen/_14sdp"
+                    app:ccp_arrowSize="@dimen/_22sdp"
                     app:ccp_autoDetectCountry="true"
                     app:ccp_contentColor="@color/black"
                     app:ccp_showNameCode="true"
                     app:ccp_textSize="@dimen/_14ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintHorizontal_chainStyle="spread"
-                    app:layout_constraintHorizontal_weight="1.6"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toLeftOf="@+id/editTextMobileNumber"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="1.0"
-                    tools:ignore="MissingClass" />
+                    app:layout_constraintBottom_toBottomOf="@+id/phnumerlayout"
+                    app:layout_constraintEnd_toEndOf="@id/phnumerlayout"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@id/phnumerlayout"
+                    app:layout_constraintTop_toTopOf="@+id/phnumerlayout"
+                    app:layout_constraintVertical_bias="0.0" />
 
                 <EditText
                     android:id="@+id/editTextMobileNumber"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:background="@android:color/transparent"
                     android:fontFamily="@font/mulish_medium"
                     android:hint="@string/phonenumber"
                     android:inputType="number"
-                    android:maxLength="10"
+                    android:maxLength="15"
                     android:maxLines="1"
                     android:textColor="@color/black"
-                    android:textColorHint="@color/button_color"
+                    android:textColorHint="@color/buttoncolor"
                     android:textCursorDrawable="@drawable/text_cursor"
                     android:textSize="@dimen/_14ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintHorizontal_weight="2"
-                    app:layout_constraintLeft_toRightOf="@+id/cppSignIn"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintBottom_toBottomOf="@+id/cppSignIn"
+                    app:layout_constraintEnd_toEndOf="@id/phnumerlayout"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/cppSignIn"
+                    app:layout_constraintTop_toTopOf="@+id/cppSignIn"
+                    app:layout_constraintVertical_bias="0.0" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

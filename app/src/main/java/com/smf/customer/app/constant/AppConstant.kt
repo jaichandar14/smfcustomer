@@ -90,6 +90,8 @@ object AppConstant {
 
     // 3306
     const val ON_EVENT = "onEvent"
+    //3475
+    const val ON_PROVIDE_SERVICE_DETAILS = "onProvideServiceDetails"
 
     //3317
     const val EVENT_DASH_BOARD = "EventDashBoard"

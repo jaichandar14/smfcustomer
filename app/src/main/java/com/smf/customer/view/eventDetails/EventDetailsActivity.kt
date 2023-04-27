@@ -326,9 +326,10 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
                 viewModel.updateDetailsToUI(eventDetailsDTO)
             }
         } else if (intent.extras?.getString(AppConstant.EVENT_DASH_BOARD) == AppConstant.EVENT_DASH_BOARD) {
-//            TODO Need to get and pass dynamic event Id
+            // Get event id from intent and set view model
+            viewModel.eventId = intent.getIntExtra(AppConstant.EVENT_ID, 0)
             // Get api call for modify event details
-            viewModel.getEventInfo(sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0])
+            viewModel.getEventInfo(viewModel.eventId)
         } else {
             val eventDetailsDTO = EventDetailsDTO(
                 eventTitle = viewModel.setEventTitle(
