@@ -68,13 +68,10 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
                 updateValuesToSharedPref(intent)
                 eventListFragment()
             }
-            AppConstant.ON_PROVIDE_SERVICE_DETAILS -> {
+            AppConstant.ON_PROVIDE_SERVICE_DETAILS, AppConstant.ON_ADD_SERVICE -> {
                 eventListFragment()
             }
-            AppConstant.ON_SERVICE -> {
-                serviceDetailsFragment(serviceDescriptionId, fragIntent)
-            }
-            AppConstant.QUOTE_ACCEPTED_SERVICE -> {
+            AppConstant.ON_SERVICE, AppConstant.QUOTE_ACCEPTED_SERVICE -> {
                 serviceDetailsFragment(serviceDescriptionId, fragIntent)
             }
             else -> {
@@ -87,14 +84,6 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
         sharedPrefsHelper.put(
             SharedPrefConstant.EVENT_ID,
             intent.getIntExtra(AppConstant.EVENT_ID, 0)
-        )
-        sharedPrefsHelper.put(
-            SharedPrefConstant.EVENT_NAME,
-            intent.getStringExtra(AppConstant.EVENT_NAME) ?: ""
-        )
-        sharedPrefsHelper.put(
-            SharedPrefConstant.EVENT_DATE,
-            intent.getStringExtra(AppConstant.EVENT_DATE) ?: ""
         )
     }
 

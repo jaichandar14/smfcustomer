@@ -157,4 +157,7 @@ object AppConstant {
 
     const val EVENT_NAME = "EventName"
     const val EVENT_DATE = "EventDate"
+
+    // 3474
+    const val ON_ADD_SERVICE = "ON_ADD_SERVICE"
 }

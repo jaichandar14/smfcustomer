@@ -19,6 +19,7 @@ import com.smf.customer.app.base.BaseFragment
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.app.listener.DialogOneButtonListener
+import com.smf.customer.data.model.response.EventInformationDto
 import com.smf.customer.data.model.response.EventServiceDtos
 import com.smf.customer.data.model.response.GetEventServiceDataDto
 import com.smf.customer.databinding.FragmentEventsDashBoardBinding
@@ -83,12 +84,12 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
         viewModel.setOnClickListener(this)
         // 3429 Initialize the call back listeners
         mAdapterEventDetails.setOnClickListener(this)
-        // 3426 Initialize data in Ui
-        setEventServiceDetails()
         // 3454 View / modify eventl
         onClickViewDetails()
+        // 3426 getEventInfo api call for eventDate and Eventname
+        viewModel.getEventInfo(sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0])
         // 3426 getEventServiceInfo api call
-        viewModel.getEventServiceInfo(sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 1218])
+        viewModel.getEventServiceInfo(sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0])
         // 3439 onSubmit btn click for put api cal
         onSubmitBtnClick()
         // 3454  Add service
@@ -162,16 +163,16 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
         }
     }
 
-    private fun setEventServiceDetails() {
+    private fun setEventServiceDetails(eventName: String, eventDate: String) {
         val date = LocalDate.parse(
-            sharedPrefsHelper[SharedPrefConstant.EVENT_DATE, ""], formatter
+            eventDate, formatter
         )
         val formatter1 = DateTimeFormatter.ofPattern("dd MMM yyyy")
         val formattedDate = date.format(formatter1)
         mDataBinding.statusLayout.eventDateTxt.text =
             formattedDate
         mDataBinding.statusLayout.titleTxt.text =
-            sharedPrefsHelper[SharedPrefConstant.EVENT_NAME, ""]
+            eventName
     }
 
     private fun onClickViewDetails() {
@@ -260,6 +261,10 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
         onReload()
     }
 
+    override fun getEventInfo(eventInformationDto: EventInformationDto) {
+        setEventServiceDetails(eventInformationDto.eventName,eventInformationDto.eventDate)
+    }
+
     // This status or not yet confirmed so only entered manually
     private fun setEventStatus(eventStatus: String, eventTrackStatus: String) {
         if (eventStatus == "NEW" || eventTrackStatus == "Add/Remove Services" || eventTrackStatus == "Order Details") {
@@ -310,13 +315,13 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
         Log.d(TAG, "onClickBidding: ${listMyEvents.eventServiceDescriptionId}")
         sharedPrefsHelper.put(
             SharedPrefConstant.EVENT_SERVICE_DESCRIPTION_ID,
-            listMyEvents.eventServiceDescriptionId
+            listMyEvents.eventServiceDescriptionId.toString()
         )
         Intent(requireActivity(), DashBoardActivity::class.java).apply {
             this.putExtra(AppConstant.ON_EVENT, AppConstant.ON_SERVICE)
             this.putExtra(
                 AppConstant.EVENT_SERVICE_DESCRIPTION_ID,
-                listMyEvents.eventServiceDescriptionId
+                listMyEvents.eventServiceDescriptionId.toString()
             )
             startActivity(this)
         }

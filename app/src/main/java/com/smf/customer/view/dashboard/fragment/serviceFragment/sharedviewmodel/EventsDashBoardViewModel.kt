@@ -8,9 +8,7 @@ import com.smf.customer.data.model.response.*
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.model.ItemClass
 import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.expandablelist.ParentData
-import com.smf.customer.view.dashboard.model.EventStatusDTO
 import io.reactivex.Observable
-import java.math.BigDecimal
 import javax.inject.Inject
 
 class EventsDashBoardViewModel : BaseDashboardViewModel() {
@@ -85,6 +83,7 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
         when (responseDTO) {
             is GetEventInfoDTO -> {
                 var response = responseDTO.data
+                callBackInterface?.getEventInfo(response.eventMetaDataDto.eventInformationDto)
             }
             is GetEventServiceInfo -> {
                 var response = responseDTO.data
@@ -185,6 +184,7 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
         fun sendForApproval()
         fun sendForTrackStatus()
         fun deleteService()
+        fun getEventInfo(eventInformationDto: EventInformationDto)
     }
     interface OnServiceDetailsClickListener {
         fun getBiddingResponse(response: DataBidding)
