@@ -31,8 +31,7 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
     var stepOne = arrayListOf(0, 1, 2, 2, 2, 2)
     var stepTwo = arrayListOf(0, 0, 0, 1, 2, 2)
     var stepThree= arrayListOf(0,0,0,0,1,2)
-
-
+    var eventInfoDTO: GetEventInfoDTO? = null
 
     fun getEventInfo(eventId: Int) {
         val observable: Observable<GetEventInfoDTO> =
@@ -82,8 +81,9 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
         super.onSuccess(responseDTO)
         when (responseDTO) {
             is GetEventInfoDTO -> {
-                var response = responseDTO.data
-                callBackInterface?.getEventInfo(response.eventMetaDataDto.eventInformationDto)
+                // Update event details to share provideServiceDetails page
+                eventInfoDTO = responseDTO
+                callBackInterface?.getEventInfo(responseDTO.data.eventMetaDataDto.eventInformationDto)
             }
             is GetEventServiceInfo -> {
                 var response = responseDTO.data

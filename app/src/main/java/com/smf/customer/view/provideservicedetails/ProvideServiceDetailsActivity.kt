@@ -21,16 +21,16 @@ import com.smf.customer.R
 import com.smf.customer.app.base.BaseActivity
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
-import com.smf.customer.data.model.dto.QuestionListItem
+import com.smf.customer.data.model.dto.ServiceDetailsDTO
 import com.smf.customer.data.model.response.BudgetCalcInfoDTO
 import com.smf.customer.data.model.response.EventQuestionsResponseDTO
 import com.smf.customer.databinding.ActivityProvideServiceDetailsBinding
-import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.dialog.DialogConstant
 import com.smf.customer.dialog.TwoButtonDialogFragment
 import com.smf.customer.listener.DialogTwoButtonListener
 import com.smf.customer.utility.Util
+import com.smf.customer.utility.Util.Companion.parcelable
 import com.smf.customer.view.dashboard.DashBoardActivity
 import com.smf.customer.view.provideservicedetails.adapter.TimeSlotsAdapter
 import com.smf.customer.view.questions.QuestionsActivity
@@ -76,10 +76,10 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         timeSlotRecycler = binding.slotsRecyclerView
         // Initialize mileDistance spinner view
         mileDistance = binding.mileDistance
-        // Initialize UI value
-        setInitialValues()
         // Set timeSlots recyclerView Data
         setTimeSlotsRecycler()
+        // Initialize UI value
+        setInitialValues()
         // Event date edittext Listener
         dateOnClickListeners()
         // Save and cancel Listener
@@ -105,12 +105,10 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
             val date = Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
                 .format(formatter)
             viewModel.serviceDate.value = date
-            // Get Questions API call
-            viewModel.updateQuestions(true)
-            // Clear EventSelectedAnswerMap
-            viewModel.clearEventSelectedAnswerMap(true)
-            // Get slots based on selected date
-            viewModel.updateServiceDate(true)
+            // Refresh selected slots and answers
+            viewModel.clearSelectedSlotsAndAnswers()
+            // Get time slots based on selected date
+            viewModel.getServiceSlots()
         }
         binding.eventDate.setOnClickListener {
             showDatePickerDialog()
@@ -136,8 +134,6 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
 
     private fun clickListeners() {
         binding.cancelBtn.setOnClickListener {
-            // Delete specific service details from shared preference
-            viewModel.removeServiceSharedPreference()
             finish()
         }
 
@@ -188,17 +184,19 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
             binding.estimatedBudget.clearFocus()
             return
         } else {
-            val intent = Intent(this, QuestionsActivity::class.java)
-            intent.putExtra(AppConstant.FROM_ACTIVITY, this::class.java.simpleName)
-            intent.putExtra(AppConstant.QUESTION_LIST_ITEM, viewModel.questionListItem)
-            intent.putIntegerArrayListExtra(
-                AppConstant.QUESTION_NUMBER_LIST, viewModel.questionNumberList
-            )
-            intent.putExtra(AppConstant.SELECTED_ANSWER_MAP, viewModel.eventSelectedAnswerMap)
-            intent.putExtra(
-                AppConstant.QUESTION_BTN_TEXT,
-                if (from != AppConstant.EDIT_BUTTON) viewModel.questionBtnText.value else ""
-            )
+            val intent = Intent(this, QuestionsActivity::class.java).apply {
+                this.putExtra(AppConstant.FROM_ACTIVITY, this::class.java.simpleName)
+                this.putExtra(AppConstant.SERVICE_DATA, viewModel.getUserEnteredValuesForQuesPage())
+                this.putExtra(AppConstant.QUESTION_LIST_ITEM, viewModel.questionListItem)
+                this.putIntegerArrayListExtra(
+                    AppConstant.QUESTION_NUMBER_LIST, viewModel.questionNumberList
+                )
+                this.putExtra(AppConstant.SELECTED_ANSWER_MAP, viewModel.eventSelectedAnswerMap)
+                this.putExtra(
+                    AppConstant.QUESTION_BTN_TEXT,
+                    if (from != AppConstant.EDIT_BUTTON) viewModel.questionBtnText.value else ""
+                )
+            }
             finish()
             startActivity(intent)
         }
@@ -212,53 +210,61 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         }
     }
 
+    override fun updateTimeSlots(timeSlotList: ArrayList<String>, getQuestions: Boolean) {
+        if (timeSlotList.isNotEmpty()) {
+            // Update time slot list
+            viewModel.timeSlotList.value = timeSlotList
+            timeSlotsAdapter.setTimeSlotList(timeSlotList, viewModel.selectedSlotsList)
+            viewModel.showTimeSlot()
+            // Lead period verification
+            viewModel.updateLeadPeriodVerification(viewModel.serviceDate.value ?: "")
+            if (getQuestions) {
+                // Get Service Questions
+                viewModel.getServiceDetailQuestions()
+            }
+        } else {
+            val message = getString(R.string.no_service_is_available_)
+            viewModel.setServiceDateErrorText(message)
+            viewModel.showServiceDateError()
+            viewModel.hideTimeSlot()
+        }
+        // Update submit button background color
+        submitBtnColorVisibility()
+    }
+
+    override fun updateQuestions(eventQuestionsResponseDTO: EventQuestionsResponseDTO) {
+        // Update eventQuestionsResponse data to view model variable
+        viewModel.eventQuestionsResponseDTO = eventQuestionsResponseDTO
+        viewModel.questionListItem.clear()
+        viewModel.questionNumberList.clear()
+        if (viewModel.eventQuestionsResponseDTO?.data?.questionnaireDtos?.isEmpty() == true) {
+            viewModel.hideStartQuestionsBtn()
+        } else {
+            viewModel.showStartQuestionsBtn()
+            viewModel.editButtonVisibility()
+            // Update Questions
+            viewModel.questionListItem = viewModel.getQuesListItem(eventQuestionsResponseDTO.data)
+            // Update Question Number
+            viewModel.questionNumberList =
+                viewModel.getQuestionNumberList(viewModel.questionListItem.size)
+        }
+        // Update submit button background color
+        submitBtnColorVisibility()
+    }
+
     private fun liveDataObservers() {
-        // Observer for service date lead period verification
-        viewModel.updateServiceDate.observe(this, androidx.lifecycle.Observer {
-            if (it) {
-                // Lead period verification
-                viewModel.updateLeadPeriodVerification(viewModel.serviceDate.value!!)
-                // Get time slots based on selected date
-                viewModel.getServiceSlots()
-                // Update submit button background color
-                submitBtnColorVisibility()
-                // To avoid observer observe data multiple times
-                viewModel.updateServiceDate(false)
-            }
-        })
-
-        // Observer for update service time slots to UI
-        viewModel.timeSlotList.observe(this, androidx.lifecycle.Observer {
-            Log.d(TAG, "setTimeSlotsRecycler: $it")
-            // Show error and slots visibility based on timeslots
-            if (it.isNullOrEmpty()) {
-                val message = getString(R.string.no_service_is_available_)
-                viewModel.setServiceDateErrorText(message)
-                viewModel.showServiceDateError()
-                viewModel.hideTimeSlot()
-            } else {
-                viewModel.showTimeSlot()
-                timeSlotsAdapter.setTimeSlotList(it, viewModel.selectedSlotsList)
-                // Verify questions API call required
-                if (viewModel.getUpdateQuestionsValue()) {
-                    // Get Service Questions
-                    viewModel.getServiceDetailQuestions()
-                }
-            }
-        })
-
         // Observer for budget value
         viewModel.estimatedBudget.observe(this, androidx.lifecycle.Observer {
-            if (it != null) {
+            if (it.isNotEmpty()) {
                 // Refresh error message visibility
-                if (it.isNotEmpty() && Util.amountValidation(it)) {
+                if (Util.amountValidation(it)) {
                     viewModel.hideAmountErrorText()
                 } else {
                     viewModel.showAmountErrorText(getString(R.string.please_enter_the_valid_))
                 }
-                // Update submit button background color
-                submitBtnColorVisibility()
             }
+            // Update submit button background color
+            submitBtnColorVisibility()
         })
 
         // Observer for execute BudgetCalcInfo api call
@@ -293,26 +299,6 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
             // Update submit button background color
             submitBtnColorVisibility()
         })
-
-        viewModel.eventQuestionsResponseDTO.observe(
-            this,
-            androidx.lifecycle.Observer { eventQuestionsResponseDTO ->
-                if (eventQuestionsResponseDTO != null && viewModel.getUpdateQuestionsValue()) {
-                    viewModel.questionListItem.clear()
-                    if (eventQuestionsResponseDTO.data.questionnaireDtos.isEmpty()) {
-                        viewModel.hideStartQuestionsBtn()
-                    } else {
-                        viewModel.showStartQuestionsBtn()
-                        viewModel.editButtonVisibility()
-                        // Update Questions
-                        updateQuestionsList(eventQuestionsResponseDTO)
-                        // Update Question Number
-                        updateQuestionNumberList()
-                    }
-                    // Update submit button background color
-                    submitBtnColorVisibility()
-                }
-            })
     }
 
     override fun onSlotClicked(listPosition: Int, status: Boolean) {
@@ -349,7 +335,6 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
             true
         } else {
             showEstimationDialog(budgetCalcInfoDTO)
-            Log.d(TAG, "verifyRemainingBudget: else called")
             false
         }
     }
@@ -407,7 +392,7 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         dismissEstimationDialog()
         // Update error value
         viewModel.showAmountErrorText(getString(R.string.please_enter_the_valid_))
-        viewModel.setNullToEstimatedBudget()
+        viewModel.setEmptyToEstimatedBudget()
         // Hide total and remaining amount to UI
         viewModel.hideRemainingAmountLayout()
     }
@@ -427,55 +412,49 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
         }
     }
 
-    private fun updateQuestionsList(eventQuestionsResponseDTO: EventQuestionsResponseDTO) {
-        eventQuestionsResponseDTO.data.questionnaireDtos.forEach {
-            viewModel.questionListItem.add(
-                QuestionListItem(
-                    it.questionMetadata.question,
-                    it.questionMetadata.choices as ArrayList<String>,
-                    it.questionMetadata.questionType,
-                    it.questionMetadata.isMandatory
-                )
-            )
-        }
-    }
-
-    private fun updateQuestionNumberList() {
-        viewModel.questionNumberList.clear()
-        for (i in 0 until viewModel.questionListItem.size) {
-            viewModel.questionNumberList.add(i)
-        }
-    }
-
     private fun setInitialValues() {
         if (intent.extras?.getString(AppConstant.SERVICE_QUESTIONS) == AppConstant.SERVICE_QUESTIONS) {
-            viewModel.updateEnteredValues()
-            viewModel.setServiceName()
-            // Avoid getting initial Questions API call
-            viewModel.updateQuestions(false)
-            // Clear EventSelectedAnswerMap
-            viewModel.clearEventSelectedAnswerMap(false)
-            // Get Initial time slots based on event date
-            viewModel.updateServiceDate(false)
+            // Get and update user details before entered
+            intent.parcelable<ServiceDetailsDTO>(AppConstant.SERVICE_DATA)
+                ?.let { serviceDetailsDTO ->
+                    viewModel.updateDetailsToUI(serviceDetailsDTO)
+                }
+            // Update time slot list
+            viewModel.timeSlotList.value?.let {
+                updateTimeSlots(it, false)
+            }
         } else if (intent.extras?.getBoolean(AppConstant.MODIFY_ORDER_DETAILS) == true) {
+            // Get intent data
+            val serviceDetailsDTO = getIntentDetails(intent)
             // Update intent details to shared preferences
-            viewModel.getIntentDetails(intent)
-            viewModel.setServiceName()
+            viewModel.updateDetailsToUI(serviceDetailsDTO)
             // Get Service Description for modify
-            viewModel.getServiceDescription()
+            viewModel.getServiceDescription(viewModel.eventServiceDescriptionId)
         } else {
+            // Get intent data
+            val serviceDetailsDTO = getIntentDetails(intent)
             // Update intent details to shared preferences
-            viewModel.getIntentDetails(intent)
-            viewModel.serviceDate.value = sharedPrefsHelper[SharedPrefConstant.EVENT_DATE, ""]
-            viewModel.zipCode.value = sharedPrefsHelper[SharedPrefConstant.ZIPCODE, ""]
-            viewModel.setServiceName()
-            // Get Initial Questions API call
-            viewModel.updateQuestions(true)
-            // Clear EventSelectedAnswerMap
-            viewModel.clearEventSelectedAnswerMap(true)
-            // Get Initial time slots based on event date
-            viewModel.updateServiceDate(true)
+            viewModel.updateDetailsToUI(serviceDetailsDTO)
+            // Get time slots based on selected date
+            viewModel.getServiceSlots()
         }
+    }
+
+    private fun getIntentDetails(intent: Intent): ServiceDetailsDTO {
+        return ServiceDetailsDTO(
+            eventId = intent.getIntExtra(AppConstant.EVENT_ID, 0),
+            serviceName = intent.getStringExtra(AppConstant.SERVICE_NAME) ?: "",
+            eventServiceId = intent.getIntExtra(AppConstant.EVENT_SERVICE_ID, 0),
+            serviceCategoryId = intent.getIntExtra(AppConstant.SERVICE_CATEGORY_ID, 0),
+            eventServiceDescriptionId = intent.getLongExtra(
+                AppConstant.EVENT_SERVICE_DESCRIPTION_ID,
+                0
+            ),
+            eventServiceStatus = intent.getStringExtra(AppConstant.EVENT_SERVICE_STATUS) ?: "",
+            leadPeriod = intent.getLongExtra(AppConstant.LEAD_PERIOD, 0),
+            serviceDate = intent.getStringExtra(AppConstant.EVENT_DATE) ?: "",
+            zipCode = intent.getStringExtra(AppConstant.ZIPCODE) ?: ""
+        )
     }
 
     private fun submitBtnColorVisibility() {

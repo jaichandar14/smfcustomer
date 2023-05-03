@@ -100,6 +100,7 @@ object AppConstant {
     const val EVENT_DETAILS_ACTIVITY = "EventDetailsActivity"
     const val PROVIDE_SERVICE_DETAILS_ACTIVITY = "ProvideServiceDetailsActivity"
     const val EVENT_DATA = "eventData"
+    const val SERVICE_DATA = "serviceData"
     const val SELECTED_ANSWER_MAP = "selectedAnswerMap"
     const val QUESTION_LIST_ITEM = "questionListItem"
     const val QUESTION_NUMBER_LIST = "questionNumberList"
