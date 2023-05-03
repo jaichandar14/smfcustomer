@@ -374,7 +374,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
             this.putExtra(AppConstant.SERVICE_NAME, listMyEvents.serviceName)
             this.putExtra(
                 AppConstant.EVENT_ID,
-                sharedPrefsHelper[SharedPrefConstant.EVENT_ID, ""]
+                sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0]
             )
             this.putExtra(AppConstant.SERVICE_CATEGORY_ID, listMyEvents.serviceCategoryId)
             this.putExtra(AppConstant.EVENT_SERVICE_ID, listMyEvents.eventServiceId)
@@ -385,6 +385,12 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
             this.putExtra(AppConstant.LEAD_PERIOD, listMyEvents.leadPeriod)
             this.putExtra(AppConstant.EVENT_SERVICE_STATUS, listMyEvents.eventServiceStatus)
             this.putExtra(AppConstant.MODIFY_ORDER_DETAILS, isModify)
+            this.putExtra(AppConstant.EVENT_DATE,
+                viewModel.eventInfoDTO?.data?.eventMetaDataDto?.eventInformationDto?.eventDate
+            )
+            this.putExtra(AppConstant.ZIPCODE,
+                viewModel.eventInfoDTO?.data?.eventMetaDataDto?.venueInformationDto?.zipCode
+            )
             startActivity(this)
         }
     }

@@ -16,8 +16,8 @@ import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
 import com.smf.customer.data.model.dto.EventDetailsDTO
 import com.smf.customer.data.model.dto.QuestionListItem
+import com.smf.customer.data.model.dto.ServiceDetailsDTO
 import com.smf.customer.databinding.ActivityQuestionsBinding
-import com.smf.customer.di.sharedpreference.SharedPrefConstant
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.utility.Util.Companion.parcelable
 import com.smf.customer.view.eventDetails.EventDetailsActivity
@@ -179,13 +179,16 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
                 startActivity(this)
             }
         } else {
-            // Update selectedAnswerMap for service details page
-            sharedPrefsHelper.putHashMap(
-                SharedPrefConstant.SERVICE_SELECTED_ANSWER_MAP,
-                viewModel.selectedAnswerMap
-            )
+            val serviceDetailsDTO =
+                intent.parcelable<ServiceDetailsDTO>(AppConstant.SERVICE_DATA)?.let {
+                    it.apply {
+                        // Update user selected answer
+                        this.eventSelectedAnswerMap = viewModel.selectedAnswerMap
+                    }
+                }
             Intent(this, ProvideServiceDetailsActivity::class.java).apply {
                 this.putExtra(AppConstant.SERVICE_QUESTIONS, AppConstant.SERVICE_QUESTIONS)
+                this.putExtra(AppConstant.SERVICE_DATA, serviceDetailsDTO)
                 startActivity(this)
             }
         }
