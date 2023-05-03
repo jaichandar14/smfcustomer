@@ -167,12 +167,13 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
 
     private fun backToDetailsPage() {
         if (fromActivity == AppConstant.EVENT_DETAILS_ACTIVITY) {
-            val eventDetailsDTO = intent.parcelable<EventDetailsDTO>(AppConstant.EVENT_DATA)?.let {
-                it.apply {
-                    // Update user selected answer
-                    this.eventSelectedAnswerMap = viewModel.selectedAnswerMap
+            val eventDetailsDTO =
+                intent.parcelable<EventDetailsDTO>(AppConstant.EVENT_DATA)?.let { eventDetailsDTO ->
+                    eventDetailsDTO.apply {
+                        // Update user selected answer
+                        this.eventSelectedAnswerMap = viewModel.selectedAnswerMap
+                    }
                 }
-            }
             Intent(this, EventDetailsActivity::class.java).apply {
                 this.putExtra(AppConstant.EVENT_QUESTIONS, AppConstant.EVENT_QUESTIONS)
                 this.putExtra(AppConstant.EVENT_DATA, eventDetailsDTO)
@@ -180,12 +181,13 @@ class QuestionsActivity : BaseActivity<QuestionsViewModel>(),
             }
         } else {
             val serviceDetailsDTO =
-                intent.parcelable<ServiceDetailsDTO>(AppConstant.SERVICE_DATA)?.let {
-                    it.apply {
-                        // Update user selected answer
-                        this.eventSelectedAnswerMap = viewModel.selectedAnswerMap
+                intent.parcelable<ServiceDetailsDTO>(AppConstant.SERVICE_DATA)
+                    ?.let { serviceDetailsDTO ->
+                        serviceDetailsDTO.apply {
+                            // Update user selected answer
+                            this.eventSelectedAnswerMap = viewModel.selectedAnswerMap
+                        }
                     }
-                }
             Intent(this, ProvideServiceDetailsActivity::class.java).apply {
                 this.putExtra(AppConstant.SERVICE_QUESTIONS, AppConstant.SERVICE_QUESTIONS)
                 this.putExtra(AppConstant.SERVICE_DATA, serviceDetailsDTO)

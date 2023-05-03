@@ -519,13 +519,13 @@ class ProvideServiceViewModel : BaseViewModel() {
         eventQuestionMetaDataDto: com.smf.customer.data.model.response.QuestionnaireWrapperDto
     ): ArrayList<QuestionListItem> {
         return ArrayList<QuestionListItem>().apply {
-            eventQuestionMetaDataDto.questionnaireDtos.forEach {
+            eventQuestionMetaDataDto.questionnaireDtos.forEach { questionnaireDto ->
                 this.add(
                     QuestionListItem(
-                        it.questionMetadata.question,
-                        it.questionMetadata.choices as ArrayList<String>,
-                        it.questionMetadata.questionType,
-                        it.questionMetadata.isMandatory
+                        questionnaireDto.questionMetadata.question,
+                        questionnaireDto.questionMetadata.choices as ArrayList<String>,
+                        questionnaireDto.questionMetadata.questionType,
+                        questionnaireDto.questionMetadata.isMandatory
                     )
                 )
             }
@@ -534,8 +534,8 @@ class ProvideServiceViewModel : BaseViewModel() {
 
     fun getQuestionNumberList(questionListItemSize: Int): ArrayList<Int> {
         return ArrayList<Int>().apply {
-            for (i in 0 until questionListItemSize) {
-                this.add(i)
+            for (questionNumber in 0 until questionListItemSize) {
+                this.add(questionNumber)
             }
         }
     }
