@@ -111,25 +111,35 @@
                                 app:layout_constraintHorizontal_chainStyle="packed"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
+                                tools:itemCount="3"
                                 tools:listitem="@layout/service_dashboard_grid" />
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
+                        <View
+                            android:id="@+id/brake_line"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_1sdp"
+                            android:layout_marginTop="@dimen/_6sdp"
+                            android:background="@color/fade_gray"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/main_constraint" />
 
                         <TextView
                             android:id="@+id/cut_off_progress"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_12sdp"
+                            android:layout_marginTop="@dimen/_8sdp"
                             android:fontFamily="@font/mulish_semi_bold"
-                            android:text="@string/cut_off_date"
+                            android:text="@string/cut_date"
                             android:textColor="@color/text_gray_color"
                             android:textSize="@dimen/_12ssp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.0"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/main_constraint"
+                            app:layout_constraintTop_toBottomOf="@+id/brake_line"
                             app:layout_constraintVertical_bias="0.0"
                             app:visibility="@{dashBoardStatus.booleanValue ? View.VISIBLE : View.GONE}" />
 
@@ -155,7 +165,7 @@
                             android:layout_width="@dimen/_30sdp"
                             android:layout_height="@dimen/_30sdp"
                             android:layout_marginStart="@dimen/_6sdp"
-                            android:layout_marginTop="@dimen/_2sdp"
+                            android:layout_marginTop="@dimen/_1sdp"
                             android:layout_marginEnd="@dimen/_3sdp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -181,10 +191,10 @@
                             app:visibility="@{dashBoardStatus.booleanValue ? View.VISIBLE : View.GONE}" />
 
                         <TextView
+                            android:layout_marginStart="@dimen/_14sdp"
                             android:id="@+id/time_left"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/_12sdp"
                             android:fontFamily="@font/mulish_semi_bold"
                             android:text="@string/time_left"
                             android:textColor="@color/text_gray_color"
@@ -201,24 +211,33 @@
                             android:id="@+id/time_left_txt"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
                             android:background="@drawable/time_slot_curved_transparent"
                             android:paddingHorizontal="@dimen/_10sdp"
                             android:paddingVertical="@dimen/_2sdp"
                             android:text="@string/_4_days"
                             android:textSize="@dimen/_12ssp"
-                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintBottom_toBottomOf="@+id/progress_bar"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.0"
                             app:layout_constraintStart_toStartOf="@+id/time_left"
-                            app:layout_constraintTop_toBottomOf="@+id/time_left"
-                            app:layout_constraintVertical_bias="0.0"
+                            app:layout_constraintTop_toTopOf="@+id/progress_bar"
                             app:visibility="@{dashBoardStatus.booleanValue ? View.VISIBLE : View.GONE}" />
+
+                        <View
+                            android:id="@+id/brake_line2"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_1sdp"
+                            android:layout_marginTop="@dimen/_6sdp"
+                            android:background="@color/fade_gray"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/time_left_txt" />
 
                         <TextView
                             android:id="@+id/preferred_slot"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_8sdp"
                             android:fontFamily="@font/mulish_semi_bold"
                             android:text="@string/preferred_slots"
                             android:textColor="@color/text_gray_color"
@@ -227,39 +246,60 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.0"
                             app:layout_constraintStart_toStartOf="@+id/cut_off_progress"
-                            app:layout_constraintTop_toBottomOf="@+id/progress_bar"
+                            app:layout_constraintTop_toBottomOf="@+id/brake_line2"
                             app:layout_constraintVertical_bias="0.0" />
 
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/slots_recycler_view"
-                            android:layout_width="match_parent"
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/main_constraint2"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/_3sdp"
-                            android:orientation="horizontal"
-                            android:textSize="@dimen/_12ssp"
-                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.0"
                             app:layout_constraintStart_toStartOf="@+id/preferred_slot"
                             app:layout_constraintTop_toBottomOf="@+id/preferred_slot"
-                            app:layout_constraintVertical_bias="0.0"
-                            tools:itemCount="4"
-                            tools:listitem="@layout/prefered_slot_recyclerview" />
+                            app:layout_constraintVertical_bias="0.0">
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/slots_recycler_view"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="0.0"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                tools:listitem="@layout/prefered_slot_recyclerview" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <View
+                            android:id="@+id/brake_line3"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_1sdp"
+                            android:layout_marginTop="@dimen/_6sdp"
+                            android:background="@color/fade_gray"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/main_constraint2" />
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/exRecycle"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:layout_marginTop="@dimen/_4sdp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/slots_recycler_view" />
+                            app:layout_constraintTop_toBottomOf="@+id/brake_line3" />
 
                         <TextView
                             android:id="@+id/cut_off_progress1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
                             android:layout_marginEnd="@dimen/_12sdp"
                             android:fontFamily="@font/mulish_semi_bold"
                             android:text="@string/cut_off_date"
@@ -324,9 +364,9 @@
             </androidx.core.widget.NestedScrollView>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-        <include
-            layout="@layout/progressbar"
-            app:visibility="@{ events_dashboard_view_model.showLoading.booleanValue ? View.VISIBLE : View.GONE}" />
+        <!--        <include-->
+        <!--            layout="@layout/progressbar"-->
+        <!--            app:visibility="@{ events_dashboard_view_model.showLoading.booleanValue ? View.VISIBLE : View.GONE}" />-->
 
     </FrameLayout>
 </layout>

@@ -242,10 +242,10 @@
     <string name="_12_26">12:26AM</string>
     <string name="george_town">George Town</string>
     <string name="bid">Bid</string>
-    <string name="cut_off_date">Cut off date</string>
+    <string name="cut_off_date">Cut off\ndate</string>
     <string name="_11_bidders">11 bidders</string>
-    <string name="request_posted">Request posted</string>
-    <string name="responses_received">Responses received</string>
+    <string name="request_posted">Request\nposted</string>
+    <string name="responses_received">Responses\nreceived</string>
     <string name="_mar">MAR</string>
     <string name="_22">22</string>
     <string name="time_left">Time left</string>
@@ -270,9 +270,10 @@
     <string name="should_selected">should be selected in Service ,This action cannot be Performed</string>
     <string name="service_delete">\" Service will be removed from this event\"</string>
     <string name="bidders">Bidders</string>
-    <string name="days">\" days\"</string>
+    <string name="days"> days</string>
     <string name="messagre">message</string>
     <string name="acceptbtn">AcceptBtn</string>
     <string name="you_are_choosing">You are choosing</string>
     <string name="bidding_amount">Bidding amount</string>
+    <string name="cut_date">Cut of date</string>
 </resources>

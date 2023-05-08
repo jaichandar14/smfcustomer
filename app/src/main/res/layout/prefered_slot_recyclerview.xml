@@ -13,7 +13,7 @@
         android:paddingHorizontal="@dimen/_10sdp"
         android:paddingVertical="@dimen/_2sdp"
         android:text="@string/_4_days"
-        android:textSize="@dimen/_12ssp"
+        android:textSize="@dimen/_11ssp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

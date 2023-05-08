@@ -32,7 +32,6 @@ import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsda
 import com.smf.customer.view.dashboard.fragment.serviceFragment.servicedetailsdashboard.adaapter.SlotAdapter
 import com.smf.customer.view.dashboard.fragment.serviceFragment.sharedviewmodel.EventsDashBoardViewModel
 import com.smf.customer.view.dashboard.model.EventStatusDTO
-import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -60,17 +59,11 @@ class ServiceDetailDashboardFragment(private var serviceDescriptionId: String?) 
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        mDataBinding =
-            DataBindingUtil.inflate(
-                inflater,
-                R.layout.fragment_service_detail_dashboard,
-                container,
-                false
-            )
+        mDataBinding = DataBindingUtil.inflate(
+            inflater, R.layout.fragment_service_detail_dashboard, container, false
+        )
         viewModel = ViewModelProvider(this)[EventsDashBoardViewModel::class.java]
         mDataBinding.eventsDashboardViewModel = viewModel
         mDataBinding.lifecycleOwner = this
@@ -91,7 +84,6 @@ class ServiceDetailDashboardFragment(private var serviceDescriptionId: String?) 
         mServiceRecyclerView()
         // 3460 Time slots recycler view
         mSlotRecyclerView()
-        setEventServiceDetails()
         // 3460 pull down swipe refresh
         onSwipeRefresh()
         mAdapterStatusDetails.refreshItems(viewModel.setStatusFlowDetails(viewModel.stepThree))
@@ -100,22 +92,13 @@ class ServiceDetailDashboardFragment(private var serviceDescriptionId: String?) 
                 sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0], it
             )
         }
-        mAdapterBiddingServiceProvidersDetails.refreshItems(
-            viewModel.parentData,
-            viewModel.isExpandable,
-            childServiceProvideDetails(childDataData1)
-        )
-        if (tag==AppConstant.ON_SERVICE){
-            mDataBinding.dashBoardStatus=true
-            mDataBinding.timeLeftTxt.text =
-                " ${getString(R.string.days)}"
-        }else{
-            mDataBinding.dashBoardStatus=false
-        }
+       // viewModel.getBiddingResponse(1352, 101138)
     }
 
     private fun onSwipeRefresh() {
         mDataBinding.swipeRefresh.setOnRefreshListener {
+            // When ever we refresh the activity clearing the expandable list view data
+            childDataData1.clear()
             // Reload current fragment
             onReload()
         }
@@ -124,26 +107,22 @@ class ServiceDetailDashboardFragment(private var serviceDescriptionId: String?) 
     private fun onReload() {
         // Reload current fragment
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            requireActivity().supportFragmentManager.beginTransaction().detach(this)
-                .commitNow();
-            requireActivity().supportFragmentManager.beginTransaction().attach(this)
-                .commitNow();
+            requireActivity().supportFragmentManager.beginTransaction().detach(this).commitNow();
+            requireActivity().supportFragmentManager.beginTransaction().attach(this).commitNow();
         } else {
-            requireActivity().supportFragmentManager.beginTransaction().detach(this)
-                .attach(this).commit();
+            requireActivity().supportFragmentManager.beginTransaction().detach(this).attach(this)
+                .commit();
         }
     }
 
     // 3438 Intializing bidding recycler
     private fun mBiddingFlowRecycler() {
         mBiddingDetailsRecyclerView = mDataBinding.exRecycle
-        mAdapterBiddingServiceProvidersDetails =
-            ServiceProvidersListAdapter()
+        mAdapterBiddingServiceProvidersDetails = ServiceProvidersListAdapter()
         mBiddingDetailsRecyclerView.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
         mBiddingDetailsRecyclerView.adapter = mAdapterBiddingServiceProvidersDetails
         mAdapterBiddingServiceProvidersDetails.setOnClickListener(this)
-
     }
 
     private fun setEventServiceDetails() {
@@ -152,8 +131,7 @@ class ServiceDetailDashboardFragment(private var serviceDescriptionId: String?) 
         )
         val formatter1 = DateTimeFormatter.ofPattern("dd MMM yyyy")
         val formattedDate = date.format(formatter1)
-        mDataBinding.statusLayout.eventDateTxt.text =
-            formattedDate
+        mDataBinding.statusLayout.eventDateTxt.text = formattedDate
         mDataBinding.statusLayout.titleTxt.text =
             sharedPrefsHelper[SharedPrefConstant.EVENT_NAME, ""]
     }
@@ -183,80 +161,62 @@ class ServiceDetailDashboardFragment(private var serviceDescriptionId: String?) 
         mAdapterSlot = SlotAdapter()
         mSlotRecyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        val layoutManager = GridLayoutManager(requireContext(), 4)
+        val layoutManager = GridLayoutManager(requireContext(), 3)
         mSlotRecyclerView.layoutManager = layoutManager
         mSlotRecyclerView.adapter = mAdapterSlot
     }
 
 
     override fun getBiddingResponse(response: DataBidding) {
-        Log.d(TAG, "getBiddingResponse: get the log")
+        setEventServiceDetails()
+        val date = LocalDate.parse(
+            response.bidRequestedDate, formatter
+        )
         val formatter1 = DateTimeFormatter.ofPattern("dd MMM yyyy")
-        val formattedDate = response.bidRequestedDate?.format(formatter1)
+        val formattedDate = date.format(formatter1)
+
+        val bidCutOffDate = LocalDate.parse(
+            response.biddingCutOffDate, formatter
+        )
+        val monthFormatter = DateTimeFormatter.ofPattern("MMM")
+        val formattedMonth = bidCutOffDate.format(monthFormatter)
+        mDataBinding.apply {
+            cutoffMonthText.text = formattedMonth
+            progressDateNumber.text = bidCutOffDate.dayOfMonth.toString()
+            cutoffMonthText1.text = formattedMonth
+            progressDateNumber1.text = bidCutOffDate.dayOfMonth.toString()
+
+        }
+        if (tag == AppConstant.ON_SERVICE) {
+            mDataBinding.apply {
+                dashBoardStatus = true
+                timeLeftTxt.text =
+                    response.timeLeft.toString() + " " + getString(R.string.days)
+            }
+        } else {
+            mDataBinding.dashBoardStatus = false
+        }
+        // 3494 this is for cut off date required response
         mAdapterBiddingServiceProvidersDetails.refreshItems(
             viewModel.parentData,
             viewModel.isExpandable,
             settingServiceProviderChildListUI(response)
         )
+        // 3494 this is for expandable list of service providers list
         mAdapterServiceDetails.refreshItems(settingServiceAdapterUi(response, formattedDate))
-        if (tag==AppConstant.ON_SERVICE){
-            mDataBinding.dashBoardStatus=true
-            mDataBinding.timeLeftTxt.text =
-                response.timeLeft.toString() + " ${getString(R.string.days)}"
-        }else{
-            mDataBinding.dashBoardStatus=false
+        val preferredSlots = ArrayList<String?>().apply {
+            addAll(response.preferredTimeSlots)
         }
-
-        var preferredSlots = ArrayList<String>()
-        preferredSlots.addAll(response.preferredTimeSlots)
+        // 3494 this is for preferred time slot list
         mAdapterSlot.refreshItems(preferredSlots)
     }
 
     private fun settingServiceProviderChildListUI(response: DataBidding): ArrayList<ServiceProviderBiddingResponseDto> {
-        // Need to do some changes in future
-        if (response.serviceProviderBiddingResponseDtos.isEmpty()) {
-            childDataData1.addAll(childServiceProvideDetails(childDataData1))
-        } else {
-            childDataData1.addAll(response.serviceProviderBiddingResponseDtos)
-        }
-
-        return childDataData1
-    }
-
-    // 3460 Manual data used future we need to change
-    private fun childServiceProvideDetails(childDataData1: ArrayList<ServiceProviderBiddingResponseDto>): ArrayList<ServiceProviderBiddingResponseDto> {
-        childDataData1.run {
-            add(
-                ServiceProviderBiddingResponseDto(
-                    "jai ",
-                    BigDecimal(5200), "$", "Thanjvau1", "bidding"
-                )
-            )
-            add(
-                ServiceProviderBiddingResponseDto(
-                    "jai catering",
-                    BigDecimal(1200), "$", "Thanjvau2", "bidding"
-                )
-            )
-            add(
-                ServiceProviderBiddingResponseDto(
-                    "jai watch",
-                    BigDecimal(4200), "$", "Thanjva3", "bidding"
-                )
-            )
-            add(
-                ServiceProviderBiddingResponseDto(
-                    "jai food",
-                    BigDecimal(1200), "$", "Thanjva4", "bidding"
-                )
-            )
-        }
-        return childDataData1
+        return childDataData1.apply { addAll(response.serviceProviderBiddingResponseDtos) }
     }
 
     private fun settingServiceAdapterUi(
-        response: DataBidding,
-        formattedDate: String?
+        response: DataBidding, formattedDate: String?
     ): ArrayList<EventStatusDTO> {
         var event = java.util.ArrayList<EventStatusDTO>().apply {
             add(EventStatusDTO(formattedDate, getString(R.string.cut_off_date)))
@@ -272,7 +232,7 @@ class ServiceDetailDashboardFragment(private var serviceDescriptionId: String?) 
                     getString(R.string.responses_received)
                 )
             )
-        }
+            }
         return event
     }
 
@@ -283,16 +243,12 @@ class ServiceDetailDashboardFragment(private var serviceDescriptionId: String?) 
             twoButtonDialog = TwoButtonDialogFragment.newInstance(
                 getString(R.string.you_are_choosing) + " " + myEvents.serviceProviderName + "\n" + getString(
                     R.string.bidding_amount
-                ),
-                myEvents.currencyType + myEvents.bidValue,
-                this,
-                false
+                ), myEvents.currencyType + myEvents.bidValue, this, false
             )
         }
         if (twoButtonDialog?.isVisible != true) {
             twoButtonDialog?.show(
-                requireActivity().supportFragmentManager,
-                DialogConstant.AMOUNT_HIGHLIGHTED_DIALOG
+                requireActivity().supportFragmentManager, DialogConstant.AMOUNT_HIGHLIGHTED_DIALOG
             )
         }
     }

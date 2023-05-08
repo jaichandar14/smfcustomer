@@ -15,7 +15,7 @@ data class ResultsBidding(
 )
 
 data class DataBidding(
-    var eventId: Int,
+ var eventId: Int,
 
     val eventOrganizerId: String,
 
@@ -27,7 +27,7 @@ data class DataBidding(
 
     val bidRequestedCount: Int?,
 
-    val serviceDate: Date?,
+    val serviceDate: String?,
 
     val bidRequestedDate: String?,
 
