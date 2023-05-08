@@ -258,7 +258,7 @@
     <string name="the_service">The service</string>
     <string name="send_for_approval">Send for approval</string>
     <string name="no_service_is_available_">No Service is available for this date, You cannot proceed further" Contact Admin. You may want to remove this service from the event and continue with rest.</string>
-// 3443
+    // 3443
     <string name="waiting_for_aprproval">Waiting for Approval</string>
     // 3452
     <string name="bidding_in_progress">Bidding in progress</string>
@@ -276,4 +276,15 @@
     <string name="you_are_choosing">You are choosing</string>
     <string name="bidding_amount">Bidding amount</string>
     <string name="cut_date">Cut of date</string>
+    // 3489
+    <string name="q1">Q1.</string>
+    <string name="question">Question?</string>
+    <string name="answer_yes">Answer: Yes</string>
+    <string name="colon">:</string>
+    <string name="no_of_attendees">No of attendees</string>
+    <string name="address_line_1">Address line 1</string>
+    <string name="address_line_2">Address line 2</string>
+    <string name="email">Email</string>
+    <string name="event_questions">Event questions</string>
+    <string name="no_questions_mapped_to_this_event">No questions mapped to this event</string>
 </resources>

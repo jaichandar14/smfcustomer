@@ -17,6 +17,9 @@
     <color name="theme_color">#556CD4</color>
     <color name="black_event_title">#162232</color>
     <color name="gray_text">#707070</color>
+    <color name="highlight_text_color">#4B4B4B</color>
+    <color name="gray_font">#9596AD</color>
+    <color name="light_gray">#A1AEBE</color>
     <color name="button_color">#8D656464</color>
     <color name="fade_gray">#EBE1E1E1</color>
     <color name="fade_black">#F0333333</color>

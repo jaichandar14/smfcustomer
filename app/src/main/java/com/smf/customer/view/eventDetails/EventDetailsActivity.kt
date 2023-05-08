@@ -95,6 +95,7 @@ class EventDetailsActivity : BaseActivity<EventDetailsViewModel>(),
             this.putExtra(AppConstant.EVENT_ID, viewModel.eventId)
             this.putExtra(AppConstant.EVENT_NAME, viewModel.eventName.value)
             this.putExtra(AppConstant.EVENT_DATE, viewModel.eventDate.value)
+            this.putExtra(AppConstant.TEMPLATE_ID, viewModel.templateId)
         }
         finish()
         startActivity(intent)

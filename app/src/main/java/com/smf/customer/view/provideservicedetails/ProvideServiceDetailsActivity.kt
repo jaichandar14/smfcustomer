@@ -366,7 +366,8 @@ class ProvideServiceDetailsActivity : BaseActivity<ProvideServiceViewModel>(),
                 remainingBudgetAmount.substring(1, remainingBudgetAmount.length - 1)
         }
         // For update totalAmount while serviceAmount exceeds the totalAmount
-        viewModel.updateTotalAmount = viewModel.estimatedBudget.value ?: 0
+        viewModel.updateTotalAmount = budgetCalcInfoDTO.data.estimatedEventBudget.longValueExact()
+            .plus(viewModel.estimatedBudget.value?.toLong() ?: 0)
         val message =
             "${getString(R.string.service_Budget_Exceeds_)} $remainingBudgetAmount ${
                 getString(R.string.would_you_like_to_update_)
