@@ -125,7 +125,11 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
     private fun addService() {
         mDataBinding.addServiceIcon.setOnClickListener {
             Intent(requireActivity(), AddServiceActivity::class.java).apply {
-                putStringArrayListExtra(AppConstant.SERVICE_NAME_LIST, servicesName)
+                val serviceName = ArrayList<String>()
+                eventServiceDetails.forEach { eventServiceInfoDTO ->
+                    serviceName.add(eventServiceInfoDTO.serviceName ?: "")
+                }
+                putStringArrayListExtra(AppConstant.SERVICE_NAME_LIST, serviceName)
                 putExtra(
                     AppConstant.EVENT_ID,
                     sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0]
@@ -150,7 +154,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
                             getString(R.string.before_provide_details),
                     "ok",
                     this,
-                    false
+                    true
                 ).show(
                     requireActivity().supportFragmentManager,
                     DialogConstant.WITHOUT_PROVIDING_DETAILS
@@ -262,7 +266,7 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
     }
 
     override fun getEventInfo(eventInformationDto: EventInformationDto) {
-        setEventServiceDetails(eventInformationDto.eventName,eventInformationDto.eventDate)
+        setEventServiceDetails(eventInformationDto.eventName, eventInformationDto.eventDate)
     }
 
     // This status or not yet confirmed so only entered manually
@@ -385,10 +389,12 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
             this.putExtra(AppConstant.LEAD_PERIOD, listMyEvents.leadPeriod)
             this.putExtra(AppConstant.EVENT_SERVICE_STATUS, listMyEvents.eventServiceStatus)
             this.putExtra(AppConstant.MODIFY_ORDER_DETAILS, isModify)
-            this.putExtra(AppConstant.EVENT_DATE,
+            this.putExtra(
+                AppConstant.EVENT_DATE,
                 viewModel.eventInfoDTO?.data?.eventMetaDataDto?.eventInformationDto?.eventDate
             )
-            this.putExtra(AppConstant.ZIPCODE,
+            this.putExtra(
+                AppConstant.ZIPCODE,
                 viewModel.eventInfoDTO?.data?.eventMetaDataDto?.venueInformationDto?.zipCode
             )
             startActivity(this)

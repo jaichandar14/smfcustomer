@@ -85,6 +85,10 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
             SharedPrefConstant.EVENT_ID,
             intent.getIntExtra(AppConstant.EVENT_ID, 0)
         )
+        sharedPrefsHelper.put(
+            SharedPrefConstant.TEMPLATE_ID,
+            intent.getIntExtra(AppConstant.TEMPLATE_ID, 0)
+        )
     }
 
     override fun onPause() {
