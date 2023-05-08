@@ -50,8 +50,10 @@ class ServiceProvidersListAdapter :
             titleText.text = myEvents
             view.details = position == 0
             addClick.apply {
-                setOnClickListener {
-                    view.details = view.details != true
+                if (myEvents == AppConstant.BIDDING_RESPONSE) {
+                    setOnClickListener {
+                        view.details = view.details != true
+                    }
                 }
             }
             mBiddingFlowRecycler(view)

@@ -10,15 +10,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.smf.customer.R
 import com.smf.customer.view.dashboard.model.EventStatusDTO
 
-class ServiceDetailsAdapter : RecyclerView.Adapter<ServiceDetailsAdapter.ServiceDetailsViewHolder>() {
+class ServiceDetailsAdapter :
+    RecyclerView.Adapter<ServiceDetailsAdapter.ServiceDetailsViewHolder>() {
 
     private var myEventsList = ArrayList<EventStatusDTO>()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ServiceDetailsViewHolder {
-        val itemView =
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.service_dashboard_grid, parent, false)
+        val itemView = LayoutInflater.from(parent.context)
+            .inflate(R.layout.service_dashboard_grid, parent, false)
         return ServiceDetailsViewHolder(itemView)
     }
 
@@ -31,15 +31,19 @@ class ServiceDetailsAdapter : RecyclerView.Adapter<ServiceDetailsAdapter.Service
     }
 
     inner class ServiceDetailsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private var titleText = view.findViewById<TextView>(R.id.time_left_txt)
+        private var titleText = view.findViewById<TextView>(R.id.cut_off_date)
+        private var titleValueText = view.findViewById<TextView>(R.id.cut_off_date_tx)
 
         // Method For Fixing xml views and Values
         fun onBind(myEvents: EventStatusDTO, position: Int) {
+            Log.d("TAG", "onBind:$myEvents ")
             titleText.text = myEvents.title
+            titleValueText.text = myEvents.numberText
         }
 
 
     }
+
     //Method For Refreshing Invoices
     @SuppressLint("NotifyDataSetChanged")
     fun refreshItems(invoice: List<EventStatusDTO>) {

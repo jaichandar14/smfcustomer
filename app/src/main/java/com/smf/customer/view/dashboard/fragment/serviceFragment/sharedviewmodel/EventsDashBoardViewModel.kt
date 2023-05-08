@@ -15,22 +15,23 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
 
     private val itemClasses: MutableList<ItemClass> = ArrayList()
     val listData: MutableList<ParentData> = ArrayList()
-    var biddingResponseData=ArrayList<ServiceProviderBiddingResponseDto>()
+    private var biddingResponseData = ArrayList<ServiceProviderBiddingResponseDto>()
+
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
-    var countApi: Int = 1
+    private var countApi: Int = 1
     private var eventTrackStatus: String? = null
-     var isExpandable=true
+    var isExpandable = true
 
     init {
         MyApplication.applicationComponent?.inject(this)
         countApi = 1
     }
 
-    val LayoutTwo = 1
+    private val LayoutTwo = 1
     var stepOne = arrayListOf(0, 1, 2, 2, 2, 2)
     var stepTwo = arrayListOf(0, 0, 0, 1, 2, 2)
-    var stepThree= arrayListOf(0,0,0,0,1,2)
+    var stepThree = arrayListOf(0, 0, 0, 0, 1, 2)
     var eventInfoDTO: GetEventInfoDTO? = null
 
     fun getEventInfo(eventId: Int) {
@@ -48,20 +49,19 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
     }
 
     fun sendForApproval(eventId: Int) {
-        val observable: Observable<EventInfoResponseDto> =
-            retrofitHelper.getDashBoardRepository()
-                .sendForApproval((getUserToken()), eventId, "undefined")
+        val observable: Observable<EventInfoResponseDto> = retrofitHelper.getDashBoardRepository()
+            .sendForApproval((getUserToken()), eventId, "undefined")
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
     }
 
     fun sendEventTrackStatus(eventId: Int, eventTrackStatus: String) {
-        val observable: Observable<ServiceInfoResponse> =
-            retrofitHelper.getDashBoardRepository()
-                .sendEventTrackStatus((getUserToken()), eventId, eventTrackStatus)
+        val observable: Observable<ServiceInfoResponse> = retrofitHelper.getDashBoardRepository()
+            .sendEventTrackStatus((getUserToken()), eventId, eventTrackStatus)
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
     }
+
     fun getBiddingResponse(eventId: Int, eventServiceDescriptionId: Long) {
         val observable: Observable<EventServiceBiddingResponseDto> =
             retrofitHelper.getDashBoardRepository()
@@ -69,10 +69,10 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
     }
+
     fun deleteService(eventServiceId: Int?) {
-        val observable: Observable<BiddingInfoResponse> =
-            retrofitHelper.getDashBoardRepository()
-                .deleteService((getUserToken()), eventServiceId!!)
+        val observable: Observable<BiddingInfoResponse> = retrofitHelper.getDashBoardRepository()
+            .deleteService((getUserToken()), eventServiceId!!)
         this.observable.value = observable as Observable<ResponseDTO>
         doNetworkOperation()
     }
@@ -97,19 +97,18 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
             is ServiceInfoResponse -> {
                 callBackInterface?.sendForTrackStatus()
             }
-            is EventServiceBiddingResponseDto ->{
+            is EventServiceBiddingResponseDto -> {
                 var response = responseDTO.data
-                biddingResponseData.addAll(response.serviceProviderBiddingResponseDtos )
+                biddingResponseData.addAll(response.serviceProviderBiddingResponseDtos)
                 callBackServiceInterface?.getBiddingResponse(response)
             }
-            is BiddingInfoResponse->{
+            is BiddingInfoResponse -> {
                 callBackInterface?.deleteService()
             }
 
         }
 
     }
-
 
     fun setStatusFlowDetails(status: ArrayList<Int>): MutableList<ItemClass> {
 
@@ -161,18 +160,18 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
         }
         return itemClasses
     }
-    val parentData: Array<String> =
-        arrayOf(
-            AppConstant.BIDDING_RESPONSE,
-            AppConstant.PAYMENT,
-            AppConstant.REVIEW_AND_FEEDBACK
-        )
+
+    val parentData: Array<String> = arrayOf(
+        AppConstant.BIDDING_RESPONSE, AppConstant.PAYMENT, AppConstant.REVIEW_AND_FEEDBACK
+    )
     private var callBackInterface: OnServiceClickListener? = null
     private var callBackServiceInterface: OnServiceDetailsClickListener? = null
+
     // Initializing Listener Interface
     fun setOnClickListener(listener: OnServiceClickListener) {
         callBackInterface = listener
     }
+
     // Initializing Listener Interface
     fun setOnServiceClickListener(listeners: OnServiceDetailsClickListener) {
         callBackServiceInterface = listeners
@@ -186,6 +185,7 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
         fun deleteService()
         fun getEventInfo(eventInformationDto: EventInformationDto)
     }
+
     interface OnServiceDetailsClickListener {
         fun getBiddingResponse(response: DataBidding)
     }
