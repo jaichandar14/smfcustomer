@@ -107,7 +107,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/mulish_bold"
                 android:gravity="center_vertical"
-                android:text="@string/view_event_details"
+                android:text="@string/view_modify_event_details"
                 android:textColor="@color/darkblue_smf_font"
                 android:textSize="@dimen/_10ssp"
                 app:layout_constraintBottom_toBottomOf="parent"

@@ -52,7 +52,7 @@ class ProvideServiceViewModel : BaseViewModel() {
     // Variables for error message visibility
     var serviceDateErrorVisibility = MutableLiveData<Boolean>(false)
     var timeSlotErrorVisibility = MutableLiveData<Boolean>(false)
-    var amountErrorVisibility = MutableLiveData<Boolean>(false)
+    var amountErrVisibility = MutableLiveData<Boolean>(false)
     var zipCodeErrorVisibility = MutableLiveData<Boolean>(false)
 
     var timeSlotList = MutableLiveData<ArrayList<String>>()
@@ -319,14 +319,14 @@ class ProvideServiceViewModel : BaseViewModel() {
     fun showAmountErrorText(message: String) {
         // Set error text
         amountErrorMessage.value = message
-        amountErrorVisibility.value = true
+        amountErrVisibility.value = true
     }
 
     fun hideAmountErrorText() {
-        amountErrorVisibility.value = false
+        amountErrVisibility.value = false
     }
 
-    private fun getAmountErrorVisibility(): Boolean = amountErrorVisibility.value!!
+    private fun getAmountErrorVisibility(): Boolean = amountErrVisibility.value!!
 
     fun setDoBudgetAPICall(value: Boolean) {
         doBudgetAPICall.value = value

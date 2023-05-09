@@ -1,5 +1,6 @@
 package com.smf.customer.utility
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
@@ -8,9 +9,14 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Parcelable
 import android.text.InputFilter
+import android.util.Base64
 import android.util.Log
+import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
+import com.bumptech.glide.Glide
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.smf.customer.BuildConfig
+import com.smf.customer.R
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import java.io.IOException
 import java.text.NumberFormat
@@ -66,6 +72,21 @@ class Util {
 
         // Amount length restriction
         fun amountValidation(value: String): Boolean = value.length < 11
+
+        @SuppressLint("UseCompatLoadingForDrawables")
+        fun setIcon(context: Context, icon: String, defaultIcon: Int, iconView: ImageView) {
+            if (icon.startsWith(context.getString(R.string.data))) {
+                val img =
+                    icon.substring(icon.indexOf(",") + 1).trim()
+                Glide.with(context).load(Base64.decode(img, Base64.DEFAULT))
+                    .error(defaultIcon).into(iconView)
+            } else {
+                Glide.with(context)
+                    .load((BuildConfig.base_url + icon).replace(" ", "%20"))
+                    .error(defaultIcon)
+                    .into(iconView)
+            }
+        }
 
         // Setting Dialog Fragment Size
         fun DialogFragment.setWidthPercent(widthPercentage: Int, heightPercentage: Int) {

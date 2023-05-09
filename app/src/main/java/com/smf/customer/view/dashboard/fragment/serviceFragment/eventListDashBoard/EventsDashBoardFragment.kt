@@ -1,6 +1,5 @@
 package com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard
 
-
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -38,16 +37,15 @@ import com.smf.customer.view.dashboard.model.EventServiceInfoDTO
 import com.smf.customer.view.dashboard.model.EventVisibility
 import com.smf.customer.view.eventDetails.EventDetailsActivity
 import com.smf.customer.view.provideservicedetails.ProvideServiceDetailsActivity
+import com.smf.customer.view.vieweventdetails.ViewEventDetailsActivity
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 
-
 class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
     EventsDashBoardViewModel.OnServiceClickListener,
     EventDetailsAdaptor.OnServiceClickListener, DialogOneButtonListener {
-
 
     @Inject
     lateinit var sharedPrefsHelper: SharedPrefsHelper
@@ -79,6 +77,8 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Update initial details
+        setInitialDetails()
         mRecyclerViewIntializer()
         // 3420 Initialize the call back listeners
         viewModel.setOnClickListener(this)
@@ -181,10 +181,26 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
 
     private fun onClickViewDetails() {
         mDataBinding.statusLayout.eventViewDetails.setOnClickListener {
-            Intent(requireContext().applicationContext, EventDetailsActivity::class.java).apply {
-                putExtra(AppConstant.EVENT_DASH_BOARD, AppConstant.EVENT_DASH_BOARD)
-                putExtra(AppConstant.EVENT_ID, sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0])
-                startActivity(this)
+            if (mDataBinding.statusLayout.eventViewDetails.text == getString(R.string.view_event_details)) {
+                Intent(
+                    requireContext().applicationContext,
+                    ViewEventDetailsActivity::class.java
+                ).apply {
+                    this.putExtra(AppConstant.EVENT_DATA, viewModel.getViewEventDetails())
+                    startActivity(this)
+                }
+            } else {
+                Intent(
+                    requireContext().applicationContext,
+                    EventDetailsActivity::class.java
+                ).apply {
+                    putExtra(AppConstant.EVENT_DASH_BOARD, AppConstant.EVENT_DASH_BOARD)
+                    putExtra(
+                        AppConstant.EVENT_ID,
+                        sharedPrefsHelper[SharedPrefConstant.EVENT_ID, 0]
+                    )
+                    startActivity(this)
+                }
             }
         }
     }
@@ -407,14 +423,13 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
             when (tag) {
                 AppConstant.ONE_BUTTON -> {
                     Intent(requireActivity(), DashBoardActivity::class.java).apply {
-                        this.putExtra(AppConstant.ON_EVENT, AppConstant.ON_EVENT)
+                        this.putExtra(AppConstant.ON_EVENT, AppConstant.ON_SUBMITTING)
                         startActivity(this)
                     }
                 }
                 DialogConstant.NON_DELETABLE_SERVICE -> {
                     dialogFragment.dismiss()
                 }
-
                 DialogConstant.WITHOUT_PROVIDING_DETAILS -> {
                     dialogFragment.dismiss()
                 }
@@ -424,7 +439,13 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
                 }
             }
         }
+    }
 
-
+    private fun setInitialDetails() {
+        // Update text for View/Modify textview
+        val flow = arguments?.getString(AppConstant.ON_FLOW)
+        if (flow == AppConstant.ON_SUBMITTING) {
+            mDataBinding.statusLayout.eventViewDetails.text = getString(R.string.view_event_details)
+        }
     }
 }

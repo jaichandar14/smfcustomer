@@ -47,7 +47,7 @@ class QuesAndAnsAdaptor(val context: Context) :
 
         @SuppressLint("SetTextI18n")
         fun setData(position: Int) {
-            questionNumber.text = "Q${position + 1}. "
+            questionNumber.text = "Q${position + 1}."
             questionText.text = questions[position]
             answerText.text = "Ans: ${answers[position]}"
         }
