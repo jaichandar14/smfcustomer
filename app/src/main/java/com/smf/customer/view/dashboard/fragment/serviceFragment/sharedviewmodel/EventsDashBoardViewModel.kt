@@ -4,6 +4,7 @@ import com.smf.customer.R
 import com.smf.customer.app.base.BaseDashboardViewModel
 import com.smf.customer.app.base.MyApplication
 import com.smf.customer.app.constant.AppConstant
+import com.smf.customer.data.model.dto.ViewEventDetails
 import com.smf.customer.data.model.response.*
 import com.smf.customer.di.sharedpreference.SharedPrefsHelper
 import com.smf.customer.view.dashboard.fragment.serviceFragment.eventListDashBoard.model.ItemClass
@@ -164,6 +165,30 @@ class EventsDashBoardViewModel : BaseDashboardViewModel() {
     val parentData: Array<String> = arrayOf(
         AppConstant.BIDDING_RESPONSE, AppConstant.PAYMENT, AppConstant.REVIEW_AND_FEEDBACK
     )
+
+    fun getViewEventDetails(): ViewEventDetails {
+        return ViewEventDetails(
+            eventTitle = eventInfoDTO?.data?.eventTypeName ?: "",
+            categoryIcon = eventInfoDTO?.data?.categoryIcon ?: "",
+            eventName = eventInfoDTO?.data?.eventMetaDataDto?.eventInformationDto?.eventName ?: "",
+            eventDate = eventInfoDTO?.data?.eventMetaDataDto?.eventInformationDto?.eventDate ?: "",
+            noOfAttendees = eventInfoDTO?.data?.eventMetaDataDto
+                ?.eventInformationDto?.attendeesCount?.toString() ?: "",
+            address1 = eventInfoDTO?.data?.eventMetaDataDto?.venueInformationDto?.addressLine1
+                ?: "",
+            address2 = eventInfoDTO?.data?.eventMetaDataDto?.venueInformationDto?.addressLine2
+                ?: "",
+            state = eventInfoDTO?.data?.eventMetaDataDto?.venueInformationDto?.state ?: "",
+            city = eventInfoDTO?.data?.eventMetaDataDto?.venueInformationDto?.city ?: "",
+            zipCode = eventInfoDTO?.data?.eventMetaDataDto?.venueInformationDto?.zipCode ?: "",
+            name = eventInfoDTO?.data?.eventMetaDataDto?.hostInformationDto?.name ?: "",
+            emailId = eventInfoDTO?.data?.eventMetaDataDto?.hostInformationDto?.email ?: "",
+            mobileNumberWithCountryCode = eventInfoDTO?.data?.eventMetaDataDto?.hostInformationDto?.mobile
+                ?: "",
+            eventQuestionMetaDataDto = eventInfoDTO?.data?.eventQuestionMetaDataDto
+        )
+    }
+
     private var callBackInterface: OnServiceClickListener? = null
     private var callBackServiceInterface: OnServiceDetailsClickListener? = null
 

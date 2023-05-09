@@ -142,6 +142,8 @@ object AppConstant {
     // 3452
     const val BIDDING_STARTED = "BIDDING STARTED"
     const val ON_SERVICE = "serviceDashboard"
+    const val ON_SUBMITTING = "eventSubmitting"
+    const val ON_FLOW = "onFlow"
 
     // 3453
     const val MODIFY_ORDER_DETAILS = "ModifyOrderDetails"

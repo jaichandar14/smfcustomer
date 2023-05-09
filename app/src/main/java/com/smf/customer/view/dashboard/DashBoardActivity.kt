@@ -68,7 +68,7 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
                 updateValuesToSharedPref(intent)
                 eventListFragment()
             }
-            AppConstant.ON_PROVIDE_SERVICE_DETAILS, AppConstant.ON_ADD_SERVICE -> {
+            AppConstant.ON_PROVIDE_SERVICE_DETAILS, AppConstant.ON_ADD_SERVICE, AppConstant.ON_SUBMITTING  -> {
                 eventListFragment()
             }
             AppConstant.ON_SERVICE, AppConstant.QUOTE_ACCEPTED_SERVICE -> {
@@ -119,8 +119,13 @@ class DashBoardActivity : BaseActivity<DashBoardViewModel>() {
 
     fun eventListFragment() {
         Log.d(TAG, "mainFragment:  called")
-        //frag = MainDashBoardFragment() //create the fragment instance for the middle fragment
         frag = EventsDashBoardFragment()
+        // Update arguments for View/Modify textview
+        if (intent.getStringExtra(AppConstant.ON_EVENT) == AppConstant.ON_SUBMITTING) {
+            (frag as EventsDashBoardFragment).arguments = Bundle().apply {
+                this.putString(AppConstant.ON_FLOW, AppConstant.ON_SUBMITTING)
+            }
+        }
         val manager: FragmentManager =
             supportFragmentManager //create an instance of fragment manager
         var transaction =

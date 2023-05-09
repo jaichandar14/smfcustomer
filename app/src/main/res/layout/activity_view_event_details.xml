@@ -42,6 +42,7 @@
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent" />
 
             <TextView
+                android:id="@+id/event_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_10sdp"
@@ -159,14 +160,14 @@
                                 android:textColor="@color/gray_font"
                                 android:textSize="@dimen/_12ssp"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toStartOf="@+id/name_value"
+                                app:layout_constraintEnd_toStartOf="@+id/event_name_value"
                                 app:layout_constraintHorizontal_weight="0.2"
                                 app:layout_constraintStart_toEndOf="@+id/name_title"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintVertical_bias="0.0" />
 
                             <TextView
-                                android:id="@+id/name_value"
+                                android:id="@+id/event_name_value"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/mulish_medium"
