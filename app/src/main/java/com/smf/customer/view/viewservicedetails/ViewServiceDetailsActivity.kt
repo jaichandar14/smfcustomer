@@ -55,16 +55,17 @@ class ViewServiceDetailsActivity : BaseActivity<ViewServiceDetailsViewModel>(),
 
     override fun updateServiceDetails(getServiceDetailsDTO: GetServiceDetailsDTO) {
         viewModel.showProgress()
-        getServiceDetailsDTO.data.eventServiceDescriptionDto.let { eventServiceDescriptionDto ->
-            binding.serviceDateValue.text =
-                eventServiceDescriptionDto.eventServiceDateDto.serviceDate
-            binding.bidCutoffValue.text =
-                eventServiceDescriptionDto.eventServiceDateDto.biddingCutOffDate as String
-            binding.estimatedBudgetValue.text =
-                eventServiceDescriptionDto.eventServiceBudgetDto.estimatedBudget
-            binding.serviceRadiusValue.text = eventServiceDescriptionDto.eventServiceVenueDto.redius
-            binding.preferredSlotsValue.text =
-                eventServiceDescriptionDto.eventServiceDateDto.preferredSlots.joinToString()
+        binding.apply {
+            serviceDateValue.text =
+                getServiceDetailsDTO.data.eventServiceDescriptionDto.eventServiceDateDto.serviceDate
+            bidCutoffValue.text =
+                getServiceDetailsDTO.data.eventServiceDescriptionDto.eventServiceDateDto.biddingCutOffDate as String
+            estimatedBudgetValue.text =
+                getServiceDetailsDTO.data.eventServiceDescriptionDto.eventServiceBudgetDto.estimatedBudget
+            serviceRadiusValue.text =
+                getServiceDetailsDTO.data.eventServiceDescriptionDto.eventServiceVenueDto.redius
+            preferredSlotsValue.text =
+                getServiceDetailsDTO.data.eventServiceDescriptionDto.eventServiceDateDto.preferredSlots.joinToString()
         }
         // Update question and answers to adaptor
         setQuestionDetails(getServiceDetailsDTO)
