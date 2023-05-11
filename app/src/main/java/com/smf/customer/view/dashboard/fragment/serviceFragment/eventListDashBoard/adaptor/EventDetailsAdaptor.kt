@@ -54,8 +54,12 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
         fun onBind(myEvents: EventServiceInfoDTO) {
             //  titleText.text = myEvents.title
             binding.status =
-                (myEvents.eventServiceStatus == AppConstant.NEW) || (myEvents.eventServiceStatus == AppConstant.PENDING_ADMIN_APPROVAL)
-            binding.modifyStatus = myEvents.eventServiceStatus == AppConstant.NEW
+                (myEvents.eventServiceStatus == AppConstant.NEW) ||
+                        (myEvents.eventServiceStatus == AppConstant.PENDING_ADMIN_APPROVAL)
+            binding.modifyStatus =
+                (myEvents.eventServiceStatus == AppConstant.NEW) ||
+                        (myEvents.eventServiceStatus == AppConstant.PENDING_ADMIN_APPROVAL)
+                        || (myEvents.eventServiceStatus == AppConstant.BIDDING_STARTED)
             // 3443
             settingValueUi(myEvents)
             // Delete service
@@ -87,10 +91,14 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
             if (myEvents.eventServiceStatus == AppConstant.PENDING_ADMIN_APPROVAL) {
                 binding.statusTxt.text =
                     MyApplication.appContext.getString(R.string.waiting_for_aprproval)
+                binding.modifyTxt.text =
+                    MyApplication.appContext.getString(R.string.view_order_details)
             } else if (myEvents.eventServiceStatus == AppConstant.BIDDING_STARTED) {
                 binding.btnStartService.apply {
                     text = MyApplication.appContext.getString(R.string.bidding_in_progress)
                 }
+                binding.modifyTxt.text =
+                    MyApplication.appContext.getString(R.string.view_order_details)
             }
             if (myEvents.biddingCutOffDate != null) {
                 val cutDate = LocalDate.parse(myEvents.biddingCutOffDate, formatter)
@@ -114,10 +122,13 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
                 }
             }
             binding.modifyTxt.setOnClickListener {
-                callBackInterface?.onClickModifyDetails(myEvents)
+                if (binding.modifyTxt.text == MyApplication.appContext.getString(R.string.view_order_details)) {
+                    callBackInterface?.onClickModifyDetails(myEvents, false)
+                } else {
+                    callBackInterface?.onClickModifyDetails(myEvents, true)
+                }
             }
         }
-
     }
 
     //Method For Refreshing Invoices
@@ -138,7 +149,7 @@ class EventDetailsAdaptor : RecyclerView.Adapter<EventDetailsAdaptor.EventDetail
     // Interface For Invoice Click Listener
     interface OnServiceClickListener {
         fun onClickProvideDetails(listMyEvents: EventServiceInfoDTO)
-        fun onClickModifyDetails(listMyEvents: EventServiceInfoDTO)
+        fun onClickModifyDetails(listMyEvents: EventServiceInfoDTO, isModify: Boolean)
         fun onClickBidding(listMyEvents: EventServiceInfoDTO)
         fun onClickDelete(eventServiceId: String, serviceName: String?)
         fun nonDeletableService(serviceName: String?)

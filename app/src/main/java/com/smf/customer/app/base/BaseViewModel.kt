@@ -47,8 +47,10 @@ abstract class BaseViewModel : ViewModel() {
     var count = 100
     var idToken: String = ""
     var negativeCode = true
-//3372
-    var bindingRoot=MutableLiveData<ViewDataBinding>()
+
+    //3372
+    var bindingRoot = MutableLiveData<ViewDataBinding>()
+
     @Inject
     lateinit var retrofitHelper: RetrofitHelper
 
@@ -79,11 +81,20 @@ abstract class BaseViewModel : ViewModel() {
     var toast: String = ""
 
     init {
+        hideProgress()
+    }
+
+    fun showProgress() {
+        showLoading.value = true
+    }
+
+    fun hideProgress() {
         showLoading.value = false
     }
 
-    open fun getUserToken() :String{
-       return tokens.checkTokenExpiry(preferenceHelper[SharedPrefConstant.ACCESS_TOKEN, ""]).toString()
+    open fun getUserToken(): String {
+        return tokens.checkTokenExpiry(preferenceHelper[SharedPrefConstant.ACCESS_TOKEN, ""])
+            .toString()
     }
 
     fun prepareRequest(requestDTO: RequestDTO): RequestDTO {
@@ -184,11 +195,11 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     open fun onSuccess(responseDTO: ResponseDTO) {
-        showLoading.value = false
+        hideProgress()
     }
 
     open fun onSuccess(responseBody: ResponseBody) {
-        showLoading.value = false
+        hideProgress()
     }
 
     // Clear Toast
@@ -203,11 +214,11 @@ abstract class BaseViewModel : ViewModel() {
 
     override fun onCleared() {
         disposables.clear()
-        showLoading.value = false
+        hideProgress()
     }
 
     open fun doNetworkOperation() {
-        showLoading.value = true
+        showProgress()
         Log.d(TAG, "doNetworkOperation: ${TAG}")
 
         observable.value?.subscribeOn(Schedulers.io())
@@ -223,11 +234,14 @@ abstract class BaseViewModel : ViewModel() {
     var toastMessageG = MutableLiveData<ToastLayoutParam>()
     val getToastMessageG: LiveData<ToastLayoutParam> = toastMessageG
     fun showSnackMessage(
-        msg: String, duration: Int=Snackbar.LENGTH_LONG, properties: String=AppConstant.PLAIN_SNACK_BAR
+        msg: String,
+        duration: Int = Snackbar.LENGTH_LONG,
+        properties: String = AppConstant.PLAIN_SNACK_BAR
     ) {
         toastMessageG.value = ToastLayoutParam(msg, duration, properties)
         Log.d("TAG", "setCurrentDate: ${toastMessageG.value}")
     }
+
     data class ErrorResponse(
         var id: Int,
         var errorMessage: String,
