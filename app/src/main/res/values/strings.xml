@@ -288,4 +288,8 @@
     <string name="event_questions">Event questions</string>
     <string name="no_questions_mapped_to_this_event">No questions mapped to this event</string>
     <string name="view_event_details">View event details</string>
+    <string name="service_name">Service name</string>
+    <string name="service_details">Service details</string>
+    <string name="bid_cutoff_date">Bid cutoff date</string>
+    <string name="service_radius">Service radius</string>
 </resources>
