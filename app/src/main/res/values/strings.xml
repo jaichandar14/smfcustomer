@@ -292,4 +292,6 @@
     <string name="service_details">Service details</string>
     <string name="bid_cutoff_date">Bid cutoff date</string>
     <string name="service_radius">Service radius</string>
+    <string name="order_summary">Order Summary</string>
+    <string name="view_order_details">View order details</string>
 </resources>

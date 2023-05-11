@@ -416,7 +416,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_20sdp"
                         android:fontFamily="@font/mulish_semi_bold"
-                        android:paddingHorizontal="@dimen/_5sdp"
                         android:text="@string/event_questions"
                         android:textColor="@color/highlight_text_color"
                         android:textSize="@dimen/_14ssp"
@@ -457,5 +456,8 @@
 
             </androidx.core.widget.NestedScrollView>
         </androidx.constraintlayout.widget.ConstraintLayout>
+        <include
+            layout="@layout/progressbar"
+            app:visibility="@{viewServiceDetailsViewModel.showLoading.booleanValue ? View.VISIBLE : View.GONE}" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

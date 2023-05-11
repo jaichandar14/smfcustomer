@@ -38,6 +38,7 @@ import com.smf.customer.view.dashboard.model.EventVisibility
 import com.smf.customer.view.eventDetails.EventDetailsActivity
 import com.smf.customer.view.provideservicedetails.ProvideServiceDetailsActivity
 import com.smf.customer.view.vieweventdetails.ViewEventDetailsActivity
+import com.smf.customer.view.viewservicedetails.ViewServiceDetailsActivity
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -326,8 +327,31 @@ class EventsDashBoardFragment : BaseFragment<EventsDashBoardViewModel>(),
         goToProvideDetailsPage(listMyEvents, false)
     }
 
-    override fun onClickModifyDetails(listMyEvents: EventServiceInfoDTO) {
-        goToProvideDetailsPage(listMyEvents, true)
+    override fun onClickModifyDetails(listMyEvents: EventServiceInfoDTO, isModify: Boolean) {
+        if (isModify) {
+            goToProvideDetailsPage(listMyEvents, true)
+        } else {
+            goToViewServiceDetailsPage(listMyEvents)
+        }
+    }
+
+    private fun goToViewServiceDetailsPage(listMyEvents: EventServiceInfoDTO) {
+        Intent(requireActivity(), ViewServiceDetailsActivity::class.java).apply {
+            this.putExtra(AppConstant.SERVICE_NAME, listMyEvents.serviceName)
+            this.putExtra(
+                AppConstant.EVENT_SERVICE_DESCRIPTION_ID,
+                listMyEvents.eventServiceDescriptionId
+            )
+            this.putExtra(
+                AppConstant.EVENT_DATE,
+                viewModel.eventInfoDTO?.data?.eventMetaDataDto?.eventInformationDto?.eventDate
+            )
+            this.putExtra(
+                AppConstant.ZIPCODE,
+                viewModel.eventInfoDTO?.data?.eventMetaDataDto?.venueInformationDto?.zipCode
+            )
+            startActivity(this)
+        }
     }
 
     // 3454 On click Bidding in progress button we are redirecting to service details dashboard fragment
